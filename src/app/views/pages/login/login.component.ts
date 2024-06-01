@@ -67,5 +67,9 @@ export class LoginComponent {
   });
     console.log(loginRequest);
   }
+  register(){
+    this.router.navigate(['/register']);
+
+  }
 
 }
