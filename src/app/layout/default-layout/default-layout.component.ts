@@ -17,6 +17,9 @@ import {
 
 import { DefaultFooterComponent, DefaultHeaderComponent } from './';
 import { navItems } from './_nav';
+import { LoginService } from 'src/app/views/pages/login/login.service';
+import { HttpClientModule } from '@angular/common/http';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 function isOverflown(element: HTMLElement) {
   return (
@@ -45,8 +48,11 @@ function isOverflown(element: HTMLElement) {
     ShadowOnScrollDirective,
     ContainerComponent,
     RouterOutlet,
-    DefaultFooterComponent
-  ]
+    DefaultFooterComponent,
+    HttpClientModule,
+    ReactiveFormsModule
+  ],
+  providers: [LoginService],
 })
 export class DefaultLayoutComponent {
   public navItems = navItems;
