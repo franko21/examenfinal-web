@@ -55,7 +55,12 @@ export const routes: Routes = [
       {
         path: 'pages',
         loadChildren: () => import('./views/pages/routes').then((m) => m.routes)
+      },
+      {
+        path: 'mapa',
+        loadChildren: () => import('./views/mapa/routes').then((m) => m.routes)
       }
+      
     ]
   },
   {
@@ -86,5 +91,13 @@ export const routes: Routes = [
       title: 'Register Page'
     }
   },
-  { path: '**', redirectTo: 'login' }
+  
+  {
+    path: 'mapa',
+    loadComponent: () => import('./views/mapa/mapa.component').then(m => m.MapaComponent), // Añadir esta línea
+    data: {
+      title: 'GoogleMap'
+    }
+  },
+  
 ];

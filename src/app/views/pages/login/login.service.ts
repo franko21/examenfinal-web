@@ -15,7 +15,7 @@ export class LoginService {
   currentUserData: BehaviorSubject<string>;
 
   constructor(private http:HttpClient,private router:Router) { 
-
+    
     this.currentUserLoginOn = new BehaviorSubject<boolean>(false);
     this.currentUserData = new BehaviorSubject<string>("");
 
