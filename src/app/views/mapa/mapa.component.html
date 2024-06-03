@@ -1,4 +1,16 @@
-<!-- google-map-demo.component.html -->
-<google-map height="700px" width="100%" [center]="center" [zoom]="zoom">
-    <map-heatmap-layer [data]="heatmapData" [options]="heatmapOptions" />
-  </google-map>
+<div class="map-container">
+    <google-map
+      height="700px"
+      width="100%"
+      [center]="center"
+      [zoom]="zoom"
+      (mapClick)="addMarker($event)">
+      <map-marker *ngFor="let position of markerPositions; trackBy: trackByFn" [position]="position" [options]="markerOptions"></map-marker>
+    </google-map>
+    <div class="coordinates-info">
+      <p>Última posición clicada:</p>
+      <p>Latitud: {{ lastClickedPosition?.lat }}</p>
+      <p>Longitud: {{ lastClickedPosition?.lng }}</p>
+    </div>
+  </div>
+  
