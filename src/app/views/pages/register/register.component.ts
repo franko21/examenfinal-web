@@ -4,7 +4,7 @@ import { ContainerComponent, RowComponent, ColComponent, TextColorDirective, Car
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';  
 import {PersonaService} from '../../../service/persona.service';
-import{Persona} from '../../../model/persona';
+import{Persona} from '../register/persona';
 import { RegisterRequest } from '../login/RegisterRequest';
 import Swal from "sweetalert2";
 import { LoginService } from '../login/login.service';

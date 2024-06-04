@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { NgScrollbar } from 'ngx-scrollbar';
-
 import { IconDirective } from '@coreui/icons-angular';
+
 import {
   ContainerComponent,
   ShadowOnScrollDirective,
@@ -20,6 +20,9 @@ import { navItems } from './_nav';
 import { LoginService } from 'src/app/views/pages/login/login.service';
 import { HttpClientModule } from '@angular/common/http';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { authGuard } from 'src/app/auth.guard';
+import { PersonaService } from 'src/app/service/persona.service';
+import { LoginComponent } from 'src/app/views/pages/login/login.component';
 
 function isOverflown(element: HTMLElement) {
   return (
@@ -50,9 +53,10 @@ function isOverflown(element: HTMLElement) {
     RouterOutlet,
     DefaultFooterComponent,
     HttpClientModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    LoginComponent,
   ],
-  providers: [LoginService],
+  providers: [],
 })
 export class DefaultLayoutComponent {
   public navItems = navItems;

@@ -1,22 +1,17 @@
-import { ActivatedRouteSnapshot, CanActivateFn, RouterStateSnapshot } from '@angular/router';
-import { Injectable } from '@angular/core'; // Importa Injectable
-import { LoginService } from './views/pages/login/login.service';
-import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { CanActivateFn, Router } from '@angular/router';
+import { environment } from 'src/enviroments/environment';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class authGuard {
-  constructor(private loginService: LoginService, private router: Router,private httpCliente:HttpClient) {}
-
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    if (this.loginService.currentUserLoginOn.value) {
-      return true;
+  export const authGuard: CanActivateFn = (route, state) => {
+    // Aquí puedes agregar la lógica para determinar si el usuario puede acceder a la ruta
+    // Por ejemplo, puedes verificar si el usuario está autenticado
+    const isAuthenticated =environment.islogged;
+    if (isAuthenticated) {
+      return true; // Permitir el acceso a la ruta
     } else {
-      this.router.navigate(['/login']);
-      return false;
+      // Redirigir al usuario a la página de inicio de sesión u otra página
+      // En este caso, estamos redirigiendo al usuario a la página de inicio
+      // También puedes redirigir a la página de inicio de sesión utilizando la navegación del router
+      window.location.href = '/login'; // Redirigir al usuario a la página de inicio de sesión
+      return false; // Bloquear el acceso a la ruta
     }
-  }
-}
-
+  };
