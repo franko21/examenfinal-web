@@ -9,9 +9,11 @@ import { IconDirective } from '@coreui/icons-angular';
 import { ContainerComponent, RowComponent, ColComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, FormControlDirective, ButtonDirective } from '@coreui/angular';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PersonaService } from 'src/app/service/persona.service';
+import { DipositivoService } from 'src/app/service/dispositivo.service';
 import { Persona } from 'src/app/model/persona';
 import { Zona_seguraService } from 'src/app/service/zona_segura.service';
 import { Zona_segura } from 'src/app/model/Zona_segura';
+import { Dipositivo } from 'src/app/model/dispositivo.model';
 
 
 
@@ -19,7 +21,7 @@ import { Zona_segura } from 'src/app/model/Zona_segura';
   selector: 'app-prestamo',
   standalone: true,
   imports: [NgFor,HttpClientModule,NgIf,ContainerComponent, RowComponent, ColComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, IconDirective, FormControlDirective, ButtonDirective,ReactiveFormsModule,HttpClientModule],
-  providers:[PrestamoService,PersonaService,Zona_seguraService],
+  providers:[PrestamoService,PersonaService,Zona_seguraService,DipositivoService],
   templateUrl: './prestamo.component.html',
   styleUrl: './prestamo.component.scss'
 })
@@ -28,11 +30,12 @@ export class PrestamoComponent {
   prestamos:Prestamo[]=[];
   personas:Persona[]=[];
   zonaS:Zona_segura[]=[];
+  dispositivos:Dipositivo[]=[];
   prestamoSeleccionado: any = {};
   filaEditada: number | null = null;
   registerForm: FormGroup;
   registerFormIn: FormGroup;
-  constructor(private personaService:PersonaService,private prestamoService: PrestamoService,private router:Router,private fb:FormBuilder,private zonasService:Zona_seguraService){
+  constructor(private dispoService:DipositivoService, private personaService:PersonaService,private prestamoService: PrestamoService,private router:Router,private fb:FormBuilder,private zonasService:Zona_seguraService){
     this.registerForm = this.fb.group({
       beneficiario: [''],
       dispositivo: [''],
@@ -67,9 +70,15 @@ export class PrestamoComponent {
         this.zonaS=zona;
       }
     )
+    this.dispoService.listar().subscribe(
+      dipo=>{
+        this.dispositivos=dipo;
+      }
+    )
   }
   ingresarPrestamo(){
     this.mostrarFormularioIngreso = !this.mostrarFormularioIngreso;
+    console.log(this.dispositivos);
 
   }
   edit(index: number) {

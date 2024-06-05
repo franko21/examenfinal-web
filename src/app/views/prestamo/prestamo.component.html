@@ -12,7 +12,7 @@
             <svg cIcon name="cilCreditCard"></svg>
           </span>
           <select class="form-select" formControlName="beneficiario" cFormControl>
-            <option value="" disabled selected>Seleccione un beneficiario</option>
+            <option value="" disabled selected>Seleccione un Beneficiario</option>
             <option *ngFor="let persona of personas" [value]="persona">
               {{ persona.nombre }} {{ persona.apellido }}
             </option>
@@ -22,7 +22,12 @@
           <span cInputGroupText>
             <svg cIcon name="cilItalic"></svg>
           </span>
-          <input formControlName="dispositivo" cFormControl placeholder="Dispositivo" />
+          <select class="form-select" formControlName="dispositivo" cFormControl>
+            <option value="" disabled selected>Seleccione un Dispositivo</option>
+            <option *ngFor="let dispo of dispositivos" [value]="dispo">
+              {{ dispo.nombre }}-{{ dispo.modelo }}
+            </option>
+          </select>
         </c-input-group>
         <c-input-group class="mb-3">
           <span cInputGroupText>

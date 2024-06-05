@@ -8,7 +8,7 @@ import { Dipositivo } from '../model/dispositivo.model';
     providedIn: 'root'
   })
 export class DipositivoService{
-    private urlEndPoint:string =environment.urlApi+'api/dispositivo';
+    private urlEndPoint:string =environment.urlHost+'api/dispositivo';
   private httpHeaders = new HttpHeaders({'Content-Type':'application/json'});
     constructor(private http:HttpClient) { }
     
