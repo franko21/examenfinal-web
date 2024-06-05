@@ -1,16 +1,13 @@
 <div class="map-container">
-    <google-map
-      height="700px"
-      width="100%"
-      [center]="center"
-      [zoom]="zoom"
-      (mapClick)="addMarker($event)">
-      <map-marker *ngFor="let position of markerPositions; trackBy: trackByFn" [position]="position" [options]="markerOptions"></map-marker>
-    </google-map>
-    <div class="coordinates-info">
-      <p>Última posición clicada:</p>
-      <p>Latitud: {{ lastClickedPosition?.lat }}</p>
-      <p>Longitud: {{ lastClickedPosition?.lng }}</p>
-    </div>
-  </div>
-  
+  <google-map
+    height="600px"
+    width="100%"
+    [center]="center"
+    [zoom]="zoom"
+    (mapClick)="addMarker($event)">
+    <map-marker *ngFor="let position of markerPositions; trackBy: trackByFn" [position]="position" [options]="markerOptions"></map-marker>
+  </google-map>
+</div>
+<div class="button-container">
+  <button id="guardar-punto-seguro" (click)="ingresarZona()">Guardar Zona Seguro</button>
+</div>
