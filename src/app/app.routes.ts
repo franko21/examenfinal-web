@@ -115,12 +115,12 @@ export const routes: Routes = [
       title: 'GoogleMap'
     }
   },
-  {
-    path: 'prestamo',
-    loadComponent: () => import('./views/prestamo/prestamo.component').then(m => m.PrestamoComponent), // Añadir esta línea
-    data: {
-      title: 'Prestamo'
-    }
-  },
-  
+  // {
+  //   path: 'prestamo',
+  //   loadComponent: () => import('./views/prestamo/prestamo.component').then(m => m.PrestamoComponent), // Añadir esta línea
+  //   data: {
+  //     title: 'Prestamo'
+  //   }
+  // },
+
 ];

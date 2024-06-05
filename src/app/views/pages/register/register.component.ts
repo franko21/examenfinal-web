@@ -4,7 +4,7 @@ import { ContainerComponent, RowComponent, ColComponent, TextColorDirective, Car
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';  
 import {PersonaService} from '../../../service/persona.service';
-import{Persona} from '../register/persona';
+import{Persona} from '../../../model/persona';
 import { RegisterRequest } from '../login/RegisterRequest';
 import Swal from "sweetalert2";
 import { LoginService } from '../login/login.service';
@@ -36,11 +36,16 @@ export class RegisterComponent {
    onSubmit() {
     // if (this.registerForm.valid) {
       const formValues = this.registerForm.value;
-      const newPersona:Persona = new Persona(
-        formValues.cedula,
-        formValues.nombre,
-        formValues.apellido
-      );
+      let persona:Persona=new Persona();
+      persona.nombre=formValues.nombre;
+      persona.apellido=formValues.apellido;
+      persona.cedula=formValues.cedula;
+    //   const newPersona:Persona = new Persona(
+    //     formValues.cedula,
+    //     formValues.nombre,
+    //     formValues.apellido
+    //   );
+    const newPersona:Persona=persona;
       this.personaService.crearPersona(newPersona, 1).subscribe({
         next: (userData) => {
             console.log('Datos de persona recibidos:', userData);
