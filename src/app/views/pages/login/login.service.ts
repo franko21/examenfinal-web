@@ -5,7 +5,8 @@ import { LoginRequest } from './LoginRequest';
 import { environment } from '../../../../enviroments/environment';
 import { RegisterRequest } from './RegisterRequest';
 import Swal from "sweetalert2";
-import { Router } from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
+import { authGuard } from 'src/app/auth.guard';
 
 @Injectable({
   providedIn: 'root'
@@ -37,7 +38,7 @@ export class LoginService {
                 console.log("Token de sesión almacenado:", userData.token);
                 // console.log("Token de sesión almacenado:", userData.empleado.nombre);
                 this.currentUserLoginOn.next(true);
-                console.log(this.currentUserLoginOn);
+                console.log(this.currentUserLoginOn.value);
                 Swal.fire({
                     icon: 'success',
                     title: '¡Inicio de sesión exitoso!',
@@ -46,6 +47,8 @@ export class LoginService {
                     confirmButtonText: 'OK'
                 }).then((result)=>{
                     if(result.isConfirmed){
+                        environment.islogged=true;
+                        // authGuard(this.route,this.state).valueOf.prototype.islogged=true;
                         this.router.navigate(['/dashboard']);
                     }
                 }
@@ -53,7 +56,14 @@ export class LoginService {
                 );
             } else {
                 console.log("Datos de usuario recibidos:", userData);
-
+                console.log(this.currentUserLoginOn.value);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de inicio de sesión',
+                    text: 'Error al ingresar los datos.',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                });
                 console.error("Respuesta de inicio de sesión incompleta o sin token.");
             }
         }),
@@ -91,6 +101,9 @@ logout(): void {
     this.currentUserLoginOn.next(false);
     console.log("Sesión cerrada. Token eliminado.");
 }
+public isLoggedIn(): boolean {
+    return this.currentUserLoginOn.value;
+  }
 
 private handleError(error: HttpErrorResponse) {
     if (error.status === 0) {

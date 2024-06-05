@@ -35,6 +35,11 @@ export const navItems: INavData[] = [
     iconComponent: { name: 'cil-map' }
   },
   {
+    name: 'Prestamo',
+    url: '/prestamo',
+    iconComponent: { name: 'cil-bookmark' }
+  },
+  {
     name: 'Base',
     url: '/base',
     iconComponent: { name: 'cil-puzzle' },

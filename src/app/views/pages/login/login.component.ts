@@ -2,12 +2,14 @@ import { Component } from '@angular/core';
 import { NgStyle } from '@angular/common';
 import { IconDirective } from '@coreui/icons-angular';
 import { ContainerComponent, RowComponent, ColComponent, CardGroupComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, FormControlDirective, ButtonDirective } from '@coreui/angular';
-import { Router } from '@angular/router';
+import {  Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { LoginRequest } from './LoginRequest';
 import { LoginService } from './login.service';
 import { HttpClientModule } from '@angular/common/http';
 import Swal from "sweetalert2";
+import { authGuard } from 'src/app/auth.guard';
+
 
 @Component({
     selector: 'app-login',
@@ -38,14 +40,6 @@ export class LoginComponent {
     this.loginService.login(loginRequest).subscribe({
       next: (userData) => {
           console.log('Datos de usuario recibidos:', userData);
-          // Muestra una notificación de éxito con SweetAlert2
-          // Swal.fire({
-          //     icon: 'success',
-          //     title: '¡Inicio de sesión exitoso!',
-          //     text: 'Bienvenido de nuevo',
-          //     confirmButtonColor: '#3085d6',
-          //     confirmButtonText: 'OK'
-          // });
       },
       error: (errorData) => {
           console.error('Error al iniciar sesión:', errorData);
@@ -61,8 +55,7 @@ export class LoginComponent {
       complete: () => {
           console.info("Inicio de sesión completo");
           // Realiza acciones adicionales después del inicio de sesión, si es necesario
-          this.loginForm.reset();
-          
+          this.loginForm.reset(); 
       }
   });
     console.log(loginRequest);
