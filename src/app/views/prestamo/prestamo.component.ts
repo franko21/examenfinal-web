@@ -1,4 +1,4 @@
-import { NgFor, NgIf } from '@angular/common';
+import { DatePipe, NgFor, NgIf } from '@angular/common';
 import { Component,NgModule,OnInit } from '@angular/core';
 import{Prestamo} from '../../model/prestamo';
 import{PrestamoService} from '../../service/prestamo.service';
@@ -12,20 +12,26 @@ import { PersonaService } from 'src/app/service/persona.service';
 import { DipositivoService } from 'src/app/service/dispositivo.service';
 import { Persona } from 'src/app/model/persona';
 import { Zona_seguraService } from 'src/app/service/zona_segura.service';
+import { UsuarioService } from 'src/app/service/usuario.service';
 import { Zona_segura } from 'src/app/model/Zona_segura';
 import { Dipositivo } from 'src/app/model/dispositivo.model';
+import { Usuario } from 'src/app/model/usuario';
+import { environment } from 'src/enviroments/environment';
+import { NgxPaginationModule } from 'ngx-pagination';
+
 
 
 
 @Component({
   selector: 'app-prestamo',
   standalone: true,
-  imports: [NgFor,HttpClientModule,NgIf,ContainerComponent, RowComponent, ColComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, IconDirective, FormControlDirective, ButtonDirective,ReactiveFormsModule,HttpClientModule],
-  providers:[PrestamoService,PersonaService,Zona_seguraService,DipositivoService],
+  imports: [NgFor,HttpClientModule,NgIf,ContainerComponent, RowComponent, ColComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, IconDirective, FormControlDirective, ButtonDirective,ReactiveFormsModule,HttpClientModule,NgxPaginationModule],
+  providers:[PrestamoService,PersonaService,Zona_seguraService,DipositivoService,UsuarioService,DatePipe],
   templateUrl: './prestamo.component.html',
   styleUrl: './prestamo.component.scss'
 })
 export class PrestamoComponent {
+  selectedPrestamo: any;
   mostrarFormularioIngreso = false;
   prestamos:Prestamo[]=[];
   personas:Persona[]=[];
@@ -35,14 +41,18 @@ export class PrestamoComponent {
   filaEditada: number | null = null;
   registerForm: FormGroup;
   registerFormIn: FormGroup;
-  constructor(private dispoService:DipositivoService, private personaService:PersonaService,private prestamoService: PrestamoService,private router:Router,private fb:FormBuilder,private zonasService:Zona_seguraService){
+  usuario:Usuario;
+  idusu:number;
+  p: number = 1; // Página actual para la paginación
+  constructor(private datePipe:DatePipe,private usuarioService:UsuarioService, private dispoService:DipositivoService, private personaService:PersonaService,private prestamoService: PrestamoService,private router:Router,private fb:FormBuilder,private zonasService:Zona_seguraService){
     this.registerForm = this.fb.group({
       beneficiario: [''],
       dispositivo: [''],
+      zona_segura: [''],
       fecha: [''],
       motivo: [''],
       finalizado: [''],
-      estado:[''],
+      estado_devolucion:[''],
       // Otros campos del formulario
     });
     this.registerFormIn = this.fb.group({
@@ -55,6 +65,11 @@ export class PrestamoComponent {
   }
 
   ngOnInit():void {
+    this.usuarioService.getUsuarioByUsername(environment.username).subscribe(
+      usu=>{
+        this.idusu=usu.id_usuario;
+      }
+    )
     this.prestamoService.getPrestamos().subscribe(
       prestamo => {
         this.prestamos = prestamo;
@@ -82,23 +97,141 @@ export class PrestamoComponent {
 
   }
   edit(index: number) {
+    this.selectedPrestamo = this.prestamos[index];
+    console.log(this.selectedPrestamo.fecha_finalizacion);
+    console.log(this.formatDate(this.selectedPrestamo.fecha_finalizacion));
     this.filaEditada = index;
     const prestamoSeleccionado = this.prestamos[index]; // Suponiendo que prestamos es el array de datos
     this.registerForm.patchValue({
-      beneficiario: prestamoSeleccionado.persona.nombre,
-      dispositivo: prestamoSeleccionado.dispositivo.nombre,
-      fecha: prestamoSeleccionado.fecha_prestamo,
+      beneficiario: prestamoSeleccionado.persona.id_persona,
+      dispositivo: prestamoSeleccionado.dispositivo.id_dispositivo,
+      zona_segura:prestamoSeleccionado.zona_segura.id_zona_segura,
+      estado_devolucion:prestamoSeleccionado.estado_devolucion,
+      fecha: this.formatDate(this.selectedPrestamo.fecha_finalizacion),
       motivo: prestamoSeleccionado.motivo_prestamo,
       finalizado: prestamoSeleccionado.finalizado,
-      estado: prestamoSeleccionado.estado_devolucion,
       // Ajusta el resto de los campos según sea necesario
     });
   }
+  formatTime(time:any) {
+    var hours = Math.floor(time);
+    var minutes = Math.round((time - hours) * 60);
+    return ('0' + hours).slice(-2) + ':' + ('0' + minutes).slice(-2);
+  }
+  formatDate(date: Date): string {
+    return this.datePipe.transform(date, 'yyyy-MM-dd') || '';
+  }
   onSubmit2(){
+    console.log(this.idusu);
+    const fecha=new Date();
+    const formValues=this.registerFormIn.value;
+    let prestamo:Prestamo=new Prestamo();
+    let dispositivoo:Dipositivo=new Dipositivo();
+    prestamo.dispositivo=dispositivoo;
+    let personaa:Persona=new Persona();
+    prestamo.persona=personaa;
+    let zona_seguraa:Zona_segura=new Zona_segura();
+    prestamo.zona_segura=zona_seguraa;
+    let usuarioo:Usuario=new Usuario();
+    // prestamo.usuario=usuarioo;
 
+    prestamo.dispositivo.id_dispositivo=formValues.dispositivo;
+    prestamo.persona.id_persona=formValues.beneficiario;
+    prestamo.zona_segura.id_zona_segura=formValues.zona_segura;
+    prestamo.fecha_finalizacion=formValues.fecha;
+    prestamo.motivo_prestamo=formValues.motivo;
+    // prestamo.usuario.id_usuario=this.idusu;
+    prestamo.fecha_prestamo=fecha;
+    prestamo.hora_prestamo=this.convertirHoraADouble(fecha);
+    this.prestamoService.crearPrestamo(prestamo).subscribe({
+      next:(userData)=>{
+        console.log('Datos de prestamo recibidos:', userData);
+        this.prestamoService.getPrestamos().subscribe(
+          prestamo => {
+            this.prestamos = prestamo;
+          }
+        );
+        Swal.fire({
+          icon: 'success',
+          title: '¡Creacion de prestamo exitosa!',
+          text: 'EXITO',
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'OK'
+      })
+      },
+      error:(errorData)=>{
+        console.error('Error al crear prestamo:', errorData);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al crear prestamo',
+          text: 'Error al ingresar los datos.',
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'OK'
+      });
+      },
+      complete:()=>{
+        console.info("Creacion completa");
+      }
+    })
+  }
+  convertirHoraADouble(fecha: Date): number {
+    const horas = fecha.getHours();
+    const minutos = fecha.getMinutes();
+    const segundos = fecha.getSeconds();
+    return horas + (minutos / 60) + (segundos / 3600);
   }
   onSubmit(){
+    console.log(this.idusu);
+    const fecha=new Date();
+    const formValues=this.registerForm.value;
+    let prestamo:Prestamo=new Prestamo();
+    let dispositivoo:Dipositivo=new Dipositivo();
+    prestamo.dispositivo=dispositivoo;
+    let personaa:Persona=new Persona();
+    prestamo.persona=personaa;
+    let zona_seguraa:Zona_segura=new Zona_segura();
+    prestamo.zona_segura=zona_seguraa;
+    let usuarioo:Usuario=new Usuario();
+    // prestamo.usuario=usuarioo;
 
+    prestamo.dispositivo.id_dispositivo=formValues.dispositivo;
+    prestamo.persona.id_persona=formValues.beneficiario;
+    prestamo.zona_segura.id_zona_segura=formValues.zona_segura;
+    prestamo.fecha_finalizacion=formValues.fecha;
+    prestamo.motivo_prestamo=formValues.motivo;
+    prestamo.estado_devolucion=formValues.estado_devolucion;
+    prestamo.finalizado=formValues.finalizado;
+    // prestamo.usuario.id_usuario=this.idusu;
+    this.prestamoService.editPrestamo(this.selectedPrestamo.id_prestamo,prestamo).subscribe({
+      next:(userData)=>{
+        console.log('Datos de prestamo recibidos:', userData);
+        this.prestamoService.getPrestamos().subscribe(
+          prestamo => {
+            this.prestamos = prestamo;
+          }
+        );
+        Swal.fire({
+          icon: 'success',
+          title: '¡Edicion de prestamo exitosa!',
+          text: 'EXITO',
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'OK'
+      })
+      },
+      error:(errorData)=>{
+        console.error('Error al editar prestamo:', errorData);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al edita prestamo',
+          text: 'Error al ingresar los datos.',
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'OK'
+      });
+      },
+      complete:()=>{
+        console.info("Edicion completa");
+      }
+    })
   }
   cancelarEdicion() {
     this.filaEditada = null;

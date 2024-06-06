@@ -7,5 +7,6 @@ export class Persona {
     // ){}
     cedula:String;
     nombre:String;
-    apellido:String
+    apellido:String;
+    id_persona:number;
 }   
