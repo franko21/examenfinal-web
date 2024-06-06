@@ -77,8 +77,13 @@ export const routes: Routes = [
         
       },
       {
+<<<<<<< HEAD
         path: 'alerta',
         loadChildren: () => import('./views/alerta/routes').then((m) => m.routes),
+=======
+        path: 'dispositivo',
+        loadChildren: () => import('./views/dispositivo/dispositivo.routes').then((m) => m.routes),
+>>>>>>> 988d5b6314460b0ac926fbae93827e322e2c9a9d
         
       }
     ]
