@@ -75,6 +75,11 @@ export const routes: Routes = [
         path: 'prestamo',
         loadChildren: () => import('./views/prestamo/routes').then((m) => m.routes),
         
+      },
+      {
+        path: 'dispositivo',
+        loadChildren: () => import('./views/dispositivo/dispositivo.routes').then((m) => m.routes),
+        
       }
       
     ]
