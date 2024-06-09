@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   AvatarComponent,
   ButtonDirective,
@@ -30,14 +31,42 @@ interface IUser {
   status: string;
   color: string;
 }
+import { IconDirective } from '@coreui/icons-angular';
+import { Dipositivo } from 'src/app/model/dispositivo.model';
+import { DipositivoService } from 'src/app/service/dispositivo.service';
+import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-dispositivo',
   standalone: true,
-  imports: [ProgressComponent,AvatarComponent],
+  imports: [ProgressComponent,AvatarComponent,CommonModule,CardBodyComponent,CardComponent,RowComponent,ColComponent,IconDirective,TableDirective],
+  providers:[DipositivoService],
   templateUrl: './dispositivo.component.html',
   styleUrl: './dispositivo.component.scss'
 })
 export class DispositivoComponent {
+   dispositivos: Dipositivo[] = [];
+
+
+  constructor(private serdispo:DipositivoService,private router: Router,){
+   
+  }
+  
+  ngOnInit() {
+    this.listar();
+    console.log(this.dispositivos);
+    
+  }
+  listar() {
+    this.serdispo.listar().subscribe(
+      dispositivos => {
+        this.dispositivos = dispositivos;
+        console.log(this.dispositivos); // Mover aquí para que imprima después de obtener la respuesta del servicio
+      },
+      error => {
+        console.error('Error al listar dispositivos:', error);
+      }
+    );
+  }
 
   public users: IUser[] = [
     {
@@ -120,5 +149,5 @@ export class DispositivoComponent {
     }
   ];
 
-
+ 
 }
