@@ -1,7 +1,7 @@
 import { Modelo } from "./modelo.model";
 
 export class Marca{
-    id_modelo?:number;
+    id_marca?:number;
     nombre?:String;
     modelos?:Modelo[];
     

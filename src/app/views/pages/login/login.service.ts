@@ -48,6 +48,7 @@ export class LoginService {
                 }).then((result)=>{
                     if(result.isConfirmed){
                         environment.islogged=true;
+                        environment.username=credentials.username;
                         // authGuard(this.route,this.state).valueOf.prototype.islogged=true;
                         this.router.navigate(['/dashboard']);
                     }

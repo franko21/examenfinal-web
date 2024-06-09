@@ -75,8 +75,16 @@ export const routes: Routes = [
         path: 'prestamo',
         loadChildren: () => import('./views/prestamo/routes').then((m) => m.routes),
         
+      },
+      {
+        path: 'alerta',
+        loadChildren: () => import('./views/alerta/routes').then((m) => m.routes),
+      },
+       { path: 'dispositivo',
+        loadChildren: () => import('./views/dispositivo/dispositivo.routes').then((m) => m.routes),
+
+        
       }
-      
     ]
   },
   {
@@ -115,12 +123,12 @@ export const routes: Routes = [
       title: 'GoogleMap'
     }
   },
-  {
-    path: 'prestamo',
-    loadComponent: () => import('./views/prestamo/prestamo.component').then(m => m.PrestamoComponent), // Añadir esta línea
-    data: {
-      title: 'Prestamo'
-    }
-  },
-  
+  // {
+  //   path: 'prestamo',
+  //   loadComponent: () => import('./views/prestamo/prestamo.component').then(m => m.PrestamoComponent), // Añadir esta línea
+  //   data: {
+  //     title: 'Prestamo'
+  //   }
+  // },
+
 ];

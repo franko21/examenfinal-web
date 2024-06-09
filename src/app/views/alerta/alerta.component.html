@@ -1,0 +1,40 @@
+<div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Alertas</h5>
+        <table class="table table-bordered table-striped">
+            <thead>
+            <tr>
+                <th>Prestamo</th>
+                <th>Descripcion</th>
+                <th>Fecha</th>
+                <th>Ver Detalles</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let alert of alertas; let i = index">
+                <td>{{alert.prestamo.dispositivo.nombre}}-{{alert.prestamo.persona.nombre}} {{alert.prestamo.persona.apellido}}</td>
+                <td>{{alert.descripcion}}</td>
+                <td>{{ alert.fecha.toString().split("T")[0]}} {{ alert.fecha.toString().split("T")[1].split(".")[0]}}</td>
+                <td>
+                <button type="button" name="button"  class="btn btn-danger" (click)="mostrarDetalles(alert)">Detalles</button>
+                </td>
+            </tr>
+            <tr *ngIf="alertSeleccionado">
+                <td [attr.colspan]="4">
+                    <div class="detalles">
+                        <p><strong>Beneficiario:</strong> {{alertSeleccionado.prestamo.persona.cedula}} - {{alertSeleccionado.prestamo.persona.nombre}} {{alertSeleccionado.prestamo.persona.apellido}}</p>
+                        <p><strong>Dispositivo:</strong> {{alertSeleccionado.prestamo.dispositivo.nombre}} - {{alertSeleccionado.prestamo.dispositivo.modelo.nombre}} - {{alertSeleccionado.prestamo.dispositivo.numero_serie}} </p>
+                        <p><strong>Fecha Prestamo:</strong> {{alertSeleccionado.prestamo.fecha_prestamo.toString().split("T")[0]}}</p>  
+                        <p><strong>Fecha Devolucion:</strong> {{alertSeleccionado.prestamo.fecha_finalizacion.toString().split("T")[0]}}</p>  
+                        <p><strong>Descripción de Alerta:</strong> {{alertSeleccionado.descripcion}}</p>
+                        <p><strong>Fecha de Alerta:</strong> {{alertSeleccionado.fecha.toString().split("T")[0]}} {{alertSeleccionado.fecha.toString().split("T")[1].split(".")[0]}}</p>
+                        <button type="button" class="btn btn-secondary" (click)="cerrarDetalles()">Cerrar</button>
+                      </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+  </div>
+  
+  

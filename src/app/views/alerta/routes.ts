@@ -3,9 +3,9 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./prestamo.component').then(m => m.PrestamoComponent),
+    loadComponent: () => import('./alerta.component').then(m => m.AlertaComponent),
     data: {
-      title: `Prestamo`
+      title: `Alerta`
     }
   },
 ];

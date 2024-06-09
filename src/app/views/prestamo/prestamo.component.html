@@ -1,1 +1,185 @@
-<p>prestamo works!</p>
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">Prestamos</h5>
+    <div class="button-container">
+      <button id="guardar-prestamo" (click)="ingresarPrestamo()">Ingresar Prestamo</button>
+    </div>
+    <div *ngIf="mostrarFormularioIngreso">
+      <form [formGroup]="registerFormIn" (ngSubmit)="onSubmit2()">
+        <h1>Ingresar Prestamo</h1>
+        <c-input-group class="mb-3">
+          <span cInputGroupText>
+            <svg cIcon name="cilCreditCard"></svg>
+          </span>
+          <select class="form-select" formControlName="beneficiario" cFormControl>
+            <option value="" disabled selected>Seleccione un Beneficiario</option>
+            <option *ngFor="let persona of personas" [value]="persona.id_persona">
+              {{ persona.nombre }} {{ persona.apellido }}
+            </option>
+          </select>
+        </c-input-group>
+        <c-input-group class="mb-3">
+          <span cInputGroupText>
+            <svg cIcon name="cilItalic"></svg>
+          </span>
+          <select class="form-select" formControlName="dispositivo" cFormControl>
+            <option value="" disabled selected>Seleccione un Dispositivo</option>
+            <option *ngFor="let dispo of dispositivos" [value]="dispo.id_dispositivo">
+              {{ dispo.nombre }}-{{ dispo.modelo?.marca?.nombre }}
+            </option>
+          </select>
+        </c-input-group>
+        <c-input-group class="mb-3">
+          <span cInputGroupText>
+            <svg cIcon name="cilItalic"></svg>
+          </span>
+          <select class="form-select" formControlName="zona_segura" cFormControl>
+            <option value="" disabled selected>Seleccione una Zona Segura</option>
+            <option *ngFor="let zona of zonaS" [value]="zona.id_zona_segura">
+              {{ zona.id_zona_segura }} - {{ zona.descripcion }}
+            </option>
+          </select>
+        </c-input-group>
+        <c-input-group class="mb-3">
+          <span cInputGroupText>
+            <svg cIcon name="cilItalic"></svg>
+          </span>
+          <input formControlName="fecha" type="date" cFormControl placeholder="Fecha Devolucion" />
+        </c-input-group>
+        <c-input-group class="mb-3">
+          <span cInputGroupText>
+            <svg cIcon name="cilUser"></svg>
+          </span>
+          <input formControlName="motivo" cFormControl placeholder="Motivo" />
+        </c-input-group>
+        <div class="d-grid">
+          <button cButton color="success" type="submit">Guardar Prestamo</button>
+        </div><br>
+        <div class="d-grid">
+          <button cButton color="secondary" type="button" (click)="ingresarPrestamo()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Beneficiario</th>
+          <th>Dispositivo</th>
+          <th>Fecha Prestamo</th>
+          <th>Fecha Devolucion</th>
+          <th>Motivo</th>
+          <th>Finalizado</th>
+          <th>Editar</th>
+          <th>Eliminar</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let prestamo of prestamos  | paginate: { itemsPerPage: 5, currentPage: p }; let i = index">
+          <td>{{ prestamo.persona.cedula }} - {{ prestamo.persona.nombre }}</td>
+          <td>{{ prestamo.dispositivo.numero_serie }} - {{ prestamo.dispositivo.nombre }}</td>
+          <td>
+            {{ prestamo.fecha_prestamo ? prestamo.fecha_prestamo.toString().split("T")[0] + ' ' + formatTime(prestamo.hora_prestamo) : 'NA' }}
+          </td>
+          <td>
+            {{ prestamo.fecha_finalizacion ? prestamo.fecha_finalizacion.toString().split("T")[0]: 'NA' }}
+          </td>
+          <td>{{ prestamo.motivo_prestamo }}</td>
+          <td>{{ prestamo.finalizado }}</td>
+          <td>
+            <button type="button" name="button" (click)="edit(i)" class="btn btn-primary">Editar</button>
+          </td>
+          <td>
+            <button type="button" (click)="eliminarPrestamo(prestamo.id_prestamo)" class="btn btn-danger">Eliminar</button>
+          </td>
+        </tr>
+        <tr *ngIf="filaEditada !== null">
+          <td [attr.colspan]="8">
+            <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+              <h1>Editar</h1>
+              <c-input-group class="mb-3">
+                <span cInputGroupText>
+                  <svg cIcon name="cilCreditCard"></svg>
+                </span>
+                <select class="form-select" formControlName="beneficiario">
+                  <option value="" disabled selected>Seleccione un Beneficiario</option>
+                  <option *ngFor="let persona of personas" [value]="persona.id_persona">
+                    {{ persona.nombre }} {{ persona.apellido }}
+                  </option>
+                </select>
+                <!-- <input formControlName="beneficiario" cFormControl placeholder="Beneficiario" /> -->
+              </c-input-group>
+              <c-input-group class="mb-3">
+                <span cInputGroupText>
+                  <svg cIcon name="cilItalic"></svg>
+                </span>
+                <select class="form-select" formControlName="dispositivo">
+                  <option value="" disabled selected>Seleccione un Dispositivo</option>
+                  <option *ngFor="let dispo of dispositivos" [value]="dispo.id_dispositivo">
+                    {{ dispo.nombre }}-{{ dispo.modelo?.marca?.nombre }}
+                  </option>
+                </select>
+                <!-- <input formControlName="dispositivo" cFormControl placeholder="Dispositivo" /> -->
+              </c-input-group>
+              <c-input-group class="mb-3">
+                <span cInputGroupText>
+                  <svg cIcon name="cilItalic"></svg>
+                </span>
+                <select class="form-select" formControlName="zona_segura" cFormControl>
+                  <option value="" disabled selected>Seleccione una Zona Segura</option>
+                  <option *ngFor="let zona of zonaS" [value]="zona.id_zona_segura">
+                    {{ zona.id_zona_segura }} - {{ zona.descripcion }}
+                  </option>
+                </select>
+              </c-input-group>
+              <c-input-group class="mb-3">
+                <span cInputGroupText>
+                  <svg cIcon name="cilItalic"></svg>
+                </span>
+                <input formControlName="fecha" type="date"  cFormControl placeholder="Fecha" />
+              </c-input-group>
+              <c-input-group class="mb-3">
+                <span cInputGroupText>
+                  <svg cIcon name="cilUser"></svg>
+                </span>
+                <input formControlName="motivo" cFormControl placeholder="Motivo" />
+              </c-input-group>
+              <c-input-group class="mb-3">
+                <span cInputGroupText>
+                  <svg cIcon name="cilUser"></svg>
+                </span>
+                <select class="form-select" formControlName="estado_devolucion">
+                  <option value="" disabled selected>Seleccione Estado Devolución</option>
+                  <option value="Pendiente">Pendiente</option>
+                  <option value="Devuelto">Devuelto</option>
+                  <option value="Perdido">Perdido</option>
+                  <option value="Dañado">Dañado</option>
+                </select>
+              </c-input-group>
+              <c-input-group class="mb-3">
+                <span cInputGroupText>
+                  <svg cIcon name="cilUser"></svg>
+                </span>
+                <select class="form-select" formControlName="finalizado">
+                  <option value="" disabled selected>Seleccione si Finalizado</option>
+                  <option [value]="true">Sí</option>
+                  <option [value]="false">No</option>
+                </select>
+                <!-- <input formControlName="finalizado" cFormControl placeholder="Finalizado" /> -->
+              </c-input-group>
+              <div class="d-grid">
+                <button cButton color="success" type="submit">Guardar Cambios</button>
+              </div><br>
+              <div class="d-grid">
+                <button cButton color="secondary" type="button" (click)="cancelarEdicion()">Cancelar</button>
+              </div>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="d-flex justify-content-center mt-3">
+      <pagination-controls (pageChange)="p = $event"></pagination-controls>
+    </div>
+  </div>
+</div>
+

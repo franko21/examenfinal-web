@@ -1,0 +1,63 @@
+<c-row>
+  <c-col xs>
+    <c-card class="mb-4">
+      <c-card-body>
+        <h5 class="card-title">Dispositivos</h5>
+        <table
+          [hover]="true"
+          [responsive]="true"
+          [striped]="true"
+          align="middle"
+          cTable
+          class="mb-0 border"
+        >
+          <thead class="text-nowrap text-truncate">
+          <tr>
+            <th class="bg-body-tertiary"> Id </th>
+            <th class="bg-body-tertiary text-center">Marca-Modelo</th>
+            <th class="bg-body-tertiary text-center">Num Serie</th>
+            <th class="bg-body-tertiary text-center">Nombre</th>
+            <th class="bg-body-tertiary text-center">Estado</th>
+            <th class="bg-body-tertiary text-center">Categoria</th>
+          </tr>
+          </thead>
+          <tbody>
+    
+              <tr class="bg-body-tertiary text-center" *ngFor="let dispo of dispositivos; let i = index" >
+                <td>
+                   <div>                     
+                      {{ dispo.id_dispositivo }}   <!--se supoeque que aqui va el id del dispo -->           
+                   </div>
+                </td>
+                <td>
+                  <div>{{ dispo.modelo?.marca?.nombre }}</div>
+                  <div class="small text-body-secondary text-nowrap">
+                  <span>
+                    {{ dispo.modelo?.nombre }} <!--se supoeque que aqui vamarca y modelo -->  
+                  </span>
+                  </div>
+                </td>
+                <td>
+
+                  <div class="fw-semibold text-nowrap">{{ dispo.numero_serie }}</div>  <!--se supoeque que aqui el numero de serie-->  
+                </td>
+                <td>
+                  <div class="fw-semibold text-nowrap">{{ dispo.nombre }}</div> <!--se supoeque que aqui el nombre-->  
+                </td>
+                <td>
+                  <div class="fw-semibold text-nowrap"
+                       [ngStyle]="{ 'color': dispo.disponible ? 'green' : 'red', 'font-weight': dispo.disponible ? 'bold' : 'normal' }">
+                    {{ dispo.disponible ? 'Disponible' : 'Prestado' }}
+                  </div>
+                </td>
+                <td>
+                  <div class="fw-semibold text-nowrap">{{ dispo.categoria?.nombre }}</div>  <!--se supoeque que aqui el cate-->  
+                </td>
+              </tr>
+            
+          </tbody>
+        </table>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>

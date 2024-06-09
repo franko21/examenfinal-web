@@ -1,35 +1,21 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { HttpClient,HttpErrorResponse  } from '@angular/common/http';
 import { Observable, catchError, throwError } from 'rxjs';
 import { environment } from '../../enviroments/environment';
-import { Persona } from '../model/persona';
-import { map } from 'rxjs';
+import { Usuario } from '../model/usuario';
 
 @Injectable({
   providedIn: 'root'
 })
-export class PersonaService {
+export class UsuarioService {
 
   constructor(private http:HttpClient) { }
 
-  crearPersona(persona: any,id:number): Observable<any> {
-    return this.http.post<string>(`${environment.urlHost}api/persona/crear/${id}`, persona).pipe(
+  getUsuarioByUsername(username:String): Observable<Usuario> {
+    return this.http.get<Usuario>(`${environment.urlHost}api/usuarios/existe/${username}`).pipe(
       catchError(this.handleError)
     );
   }
-  obteenerPersonaXCedula(cedula:String): Observable<number> {
-    return this.http.get<number>(`${environment.urlHost}api/persona/cedula/${cedula}`).pipe(
-      catchError(this.handleError)
-    );
-  }
-  getPersonas(): Observable<Persona[]> {
-
-    return this.http.get(`${environment.urlHost}api/persona`).pipe(
-      map(Response => Response as Persona[])
-  
-    );
-  }
-
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'Error desconocido';
     if (error.error instanceof ErrorEvent) {

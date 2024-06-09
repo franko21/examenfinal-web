@@ -40,6 +40,17 @@ export const navItems: INavData[] = [
     iconComponent: { name: 'cil-bookmark' }
   },
   {
+
+    name: 'Alerta',
+    url: '/alerta',
+    iconComponent: { name: 'cil-bell' }
+  },
+   { name: 'Dispositivo',
+    url: '/dispositivo',
+    iconComponent: { name: 'cil-map' }
+
+  },
+  {
     name: 'Base',
     url: '/base',
     iconComponent: { name: 'cil-puzzle' },
