@@ -3,8 +3,8 @@ import { Component, ViewChild} from '@angular/core';
 import {GoogleMap, MapHeatmapLayer, MapMarker} from '@angular/google-maps';
 import { Punto } from "src/app/model/Punto";
 import { Zona_segura } from 'src/app/model/Zona_segura';
-import { PuntoService } from "src/app/service/punto.service";
-import { Zona_seguraService } from 'src/app/service/zona_segura.service';
+import { PuntoService } from "src/app/service/Punto.service";
+import { Zona_seguraService } from 'src/app/service/Zona_segura.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -18,9 +18,9 @@ import Swal from 'sweetalert2';
   providers: [PuntoService,Zona_seguraService]
 })
 export class MapaComponent {
-  constructor(puntoService:PuntoService,zonaService:Zona_seguraService) {
+  constructor(puntoService:PuntoService,ZonaService:Zona_seguraService) {
     this.puntoService = puntoService;
-    this.zonaService = zonaService;
+    this.zonaService = ZonaService;
   }
   //OBJETOS NECESARIOS PARA EL MAPA Y LOS PUNTOS
   @ViewChild(GoogleMap, { static: false }) map: GoogleMap;
@@ -49,7 +49,7 @@ export class MapaComponent {
         icon: {
           path: google.maps.SymbolPath.CIRCLE,
           scale: 10, 
-          strokeColor: '#f00', 
+          strokeColor: '#f00',
           strokeWeight: 5, 
           fillColor: '#000A02', 
           fillOpacity: 1
@@ -69,12 +69,24 @@ export class MapaComponent {
   }
 
   ingresarZona(){
-    var zona = new Zona_segura();
+    if(this.listadoPuntos.length < 3){
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al ingresar la zona segura',
+        text: 'DEBES SELECCIONAR POR LO MENOS 3 PUNTOS EN EL MAPA.',
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'OK'
+      });
+    }else{
+      var zona = new Zona_segura();
     zona.descripcion = "Zona del ISTA";
     this.zonaService.crear(zona).subscribe({
       next: (data) => {
         console.log(data.id_zona_segura);
-        this.IngresarPuntos(data.id_zona_segura);
+        this.listadoPuntos.forEach(punto => {
+          punto.zona_segura = data;
+        });
+        this.IngresarPuntos();
         Swal.fire({
           icon: 'success',
           title: 'Zona segura ingresada correctamente',
@@ -93,12 +105,11 @@ export class MapaComponent {
         });
       }
     });
+    }
   }
 
-  IngresarPuntos(id_zona_segura:number){ 
+  IngresarPuntos(){ 
     this.listadoPuntos.forEach(punto => {
-      punto.id_zona_segura = id_zona_segura;
-      console.log(punto.id_zona_segura);
       this.puntoService.crear(punto).subscribe({
         next: (data) => {
           data.id_punto
