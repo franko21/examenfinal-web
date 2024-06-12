@@ -31,6 +31,7 @@ export class MapaComponent {
   lastClickedPosition: google.maps.LatLngLiteral | null = null;
   marker: google.maps.Marker | null = null;
   listadoPuntos: Punto[] = [];
+  verticesPoligono = [];
   //SERVICIOS NECESARIOS PARA LA ZONA SEGURA Y LOS PUNTOS
   private puntoService:PuntoService;
   private zonaService:Zona_seguraService;
@@ -86,6 +87,7 @@ export class MapaComponent {
         this.listadoPuntos.forEach(punto => {
           punto.zona_segura = data;
         });
+        
         this.IngresarPuntos();
         Swal.fire({
           icon: 'success',
@@ -113,7 +115,23 @@ export class MapaComponent {
       this.puntoService.crear(punto).subscribe({
         next: (data) => {
           data.id_punto
-          console.log("se ingresó el punto correctamente");
+          const mapContainer = this.map.googleMap;
+          if(mapContainer){
+            //SE OBTIENE EL MAPA DE GOOGLE
+            //SE MAPEA EL ARRAY DE PUNTOS PARA CREAR EL POLIGONO
+            let vertices = this.listadoPuntos.map(punto => ({
+              lat: punto.latitud,
+              lng: punto.longitud
+            }));
+            //SE CREA EL POLIGONO
+            var poligono = new google.maps.Polygon({
+              paths: vertices,
+              map: mapContainer,
+              strokeColor: '#FF0000',
+              fillColor: '#B9D7FF',
+              strokeWeight: 4,
+            });
+          }   
         },
         error: (err) => {
           console.error(err);

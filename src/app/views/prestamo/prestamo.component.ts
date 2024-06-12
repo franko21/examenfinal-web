@@ -11,7 +11,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { PersonaService } from 'src/app/service/persona.service';
 import { DipositivoService } from 'src/app/service/dispositivo.service';
 import { Persona } from 'src/app/model/persona';
-import { Zona_seguraService } from 'src/app/service/zona_segura.service';
+import { Zona_seguraService } from 'src/app/service/Zona_segura.service';
 import { UsuarioService } from 'src/app/service/usuario.service';
 import { Zona_segura } from 'src/app/model/Zona_segura';
 import { Dipositivo } from 'src/app/model/dispositivo.model';
