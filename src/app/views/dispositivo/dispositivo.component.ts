@@ -2,12 +2,15 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   AvatarComponent,
+  InputGroupTextDirective,
+  FormControlDirective,
   ButtonDirective,
   ButtonGroupComponent,
   CardBodyComponent,
   CardComponent,
   CardFooterComponent,
   CardHeaderComponent,
+  InputGroupComponent,
   ColComponent,
   FormCheckLabelDirective,
   GutterDirective,
@@ -18,136 +21,87 @@ import {
   TextColorDirective
 } from '@coreui/angular';
 
-interface IUser {
-  name: string;
-  state: string;
-  registered: string;
-  country: string;
-  usage: number;
-  period: string;
-  payment: string;
-  activity: string;
-  avatar: string;
-  status: string;
-  color: string;
-}
 import { IconDirective } from '@coreui/icons-angular';
 import { Dipositivo } from 'src/app/model/dispositivo.model';
 import { DipositivoService } from 'src/app/service/dispositivo.service';
+import { MarcaService } from 'src/app/service/marca.service';
+import { ModeloService } from 'src/app/service/modelo.service';
+import { CategoriaService }from 'src/app/service/categoria.service';
 import { CommonModule } from '@angular/common';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { Marca } from 'src/app/model/marca.model';
+import { Modelo } from 'src/app/model/modelo.model';
+import { Categoria } from 'src/app/model/categoria.model';
+import { HttpClientModule } from '@angular/common/http'; 
 @Component({
   selector: 'app-dispositivo',
   standalone: true,
-  imports: [ProgressComponent,AvatarComponent,CommonModule,CardBodyComponent,CardComponent,RowComponent,ColComponent,IconDirective,TableDirective],
-  providers:[DipositivoService],
+  imports: [ProgressComponent,AvatarComponent,CommonModule,CardBodyComponent,CardComponent,RowComponent,ColComponent,IconDirective,TableDirective,NgxPaginationModule,HttpClientModule,InputGroupComponent,InputGroupTextDirective,FormControlDirective,ButtonDirective],
+  providers:[DipositivoService,ModeloService,MarcaService,CategoriaService],
   templateUrl: './dispositivo.component.html',
   styleUrl: './dispositivo.component.scss'
 })
 export class DispositivoComponent {
    dispositivos: Dipositivo[] = [];
-
-
-  constructor(private serdispo:DipositivoService,private router: Router,){
-   
+   marcas:Marca[]=[];
+   modelos:Modelo[]=[];
+   categorias:Categoria[]=[];
+   p: number = 1;
+   showTable: boolean = true;
+  toggleView() {
+    this.showTable = !this.showTable;
+  }
+  constructor(private serdispo:DipositivoService , private sermarca:MarcaService, private sermodelo:ModeloService, private sercateg:CategoriaService ,private router: Router){
+    //private sermarca:MarcaService, private sermodelo:ModeloService, private sercateg:CategoriaService
   }
   
   ngOnInit() {
-    this.listar();
-    console.log(this.dispositivos);
-    
+    this.listardispo();
+    this.listarmode();
+    this.listarcategorias();
+    this.listarmarcas();   
   }
-  listar() {
+  listardispo() {
     this.serdispo.listar().subscribe(
       dispositivos => {
-        this.dispositivos = dispositivos;
-        console.log(this.dispositivos); // Mover aquí para que imprima después de obtener la respuesta del servicio
+        this.dispositivos = dispositivos;   
       },
       error => {
         console.error('Error al listar dispositivos:', error);
       }
     );
   }
+  listarmode() {
+    this.sermodelo.listar().subscribe(
+      modelos => {
+        this.modelos = modelos;
+      },
+      error => {
+        console.error('Error al listar modelos:', error);
+      }
+    );
+  }
+  listarmarcas() {
+    this.sermarca.listar().subscribe(
+      marcas => {
+        this.marcas = marcas;
+      },
+      error => {
+        console.error('Error al listar marcas:', error);
+      }
+    );
+  }
 
-  public users: IUser[] = [
-    {
-      name: 'Yiorgos Avraamu',
-      state: 'New',
-      registered: 'Jan 1, 2021',
-      country: 'Us',
-      usage: 50,
-      period: 'Jun 11, 2021 - Jul 10, 2021',
-      payment: 'Mastercard',
-      activity: '10 sec ago',
-      avatar: './assets/images/avatars/1.jpg',
-      status: 'success',
-      color: 'success'
-    },
-    {
-      name: 'Avram Tarasios',
-      state: 'Recurring ',
-      registered: 'Jan 1, 2021',
-      country: 'Br',
-      usage: 10,
-      period: 'Jun 11, 2021 - Jul 10, 2021',
-      payment: 'Visa',
-      activity: '5 minutes ago',
-      avatar: './assets/images/avatars/2.jpg',
-      status: 'danger',
-      color: 'info'
-    },
-    {
-      name: 'Quintin Ed',
-      state: 'New',
-      registered: 'Jan 1, 2021',
-      country: 'In',
-      usage: 74,
-      period: 'Jun 11, 2021 - Jul 10, 2021',
-      payment: 'Stripe',
-      activity: '1 hour ago',
-      avatar: './assets/images/avatars/3.jpg',
-      status: 'warning',
-      color: 'warning'
-    },
-    {
-      name: 'Enéas Kwadwo',
-      state: 'Sleep',
-      registered: 'Jan 1, 2021',
-      country: 'Fr',
-      usage: 98,
-      period: 'Jun 11, 2021 - Jul 10, 2021',
-      payment: 'Paypal',
-      activity: 'Last month',
-      avatar: './assets/images/avatars/4.jpg',
-      status: 'secondary',
-      color: 'danger'
-    },
-    {
-      name: 'Agapetus Tadeáš',
-      state: 'New',
-      registered: 'Jan 1, 2021',
-      country: 'Es',
-      usage: 22,
-      period: 'Jun 11, 2021 - Jul 10, 2021',
-      payment: 'ApplePay',
-      activity: 'Last week',
-      avatar: './assets/images/avatars/5.jpg',
-      status: 'success',
-      color: 'primary'
-    },
-    {
-      name: 'Friderik Dávid',
-      state: 'New',
-      registered: 'Jan 1, 2021',
-      country: 'Pl',
-      usage: 43,
-      period: 'Jun 11, 2021 - Jul 10, 2021',
-      payment: 'Amex',
-      activity: 'Yesterday',
-      avatar: './assets/images/avatars/6.jpg',
-      status: 'info',
-      color: 'dark'
-    }
-  ];
+  listarcategorias() {
+    this.sercateg.listar().subscribe(
+      categorias => {
+        this.categorias = categorias;
+      },
+      error => {
+        console.error('Error al listar categorías:', error);
+      }
+    );
+  }
 
- 
+
 }

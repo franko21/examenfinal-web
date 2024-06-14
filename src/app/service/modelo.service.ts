@@ -7,8 +7,9 @@ import { Modelo } from '../model/modelo.model';
 @Injectable({
     providedIn: 'root'
   })
+  
 export class ModeloService{
-    private urlEndPoint:string = environment.urlApi+'api/modelo';
+    private urlEndPoint:string = environment.urlHost+'api/modelo';
     private httpHeaders = new HttpHeaders({'Content-Type':'application/json'});
       constructor(private http:HttpClient) { }
 

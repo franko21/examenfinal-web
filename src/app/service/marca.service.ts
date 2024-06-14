@@ -9,7 +9,7 @@ import { Marca } from '../model/marca.model';
   })
 
 export class MarcaService{
-    private urlEndPoint:string = environment.urlApi+'api/marca';
+    private urlEndPoint:string = environment.urlHost+'api/marca';
     private httpHeaders = new HttpHeaders({'Content-Type':'application/json'});
       constructor(private http:HttpClient) { }
 
@@ -20,6 +20,7 @@ export class MarcaService{
       listar(): Observable<Marca[]>{
         return this.http.get<Marca[]>(this.urlEndPoint);
       }
+      
 
       buscarporid(id: number):Observable<Marca>{
         return this.http.get<Marca>(`${this.urlEndPoint}/${id}`);

@@ -2,61 +2,131 @@
   <c-col xs>
     <c-card class="mb-4">
       <c-card-body>
-        <h5 class="card-title">Dispositivos</h5>
-        <table
-          [hover]="true"
-          [responsive]="true"
-          [striped]="true"
-          align="middle"
-          cTable
-          class="mb-0 border"
-        >
-          <thead class="text-nowrap text-truncate">
-          <tr>
-            <th class="bg-body-tertiary"> Id </th>
-            <th class="bg-body-tertiary text-center">Marca-Modelo</th>
-            <th class="bg-body-tertiary text-center">Num Serie</th>
-            <th class="bg-body-tertiary text-center">Nombre</th>
-            <th class="bg-body-tertiary text-center">Estado</th>
-            <th class="bg-body-tertiary text-center">Categoria</th>
-          </tr>
-          </thead>
-          <tbody>
-    
-              <tr class="bg-body-tertiary text-center" *ngFor="let dispo of dispositivos; let i = index" >
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h5 class="card-title" style="margin-bottom: 0;">Dispositivos</h5>
+          <button type="button" *ngIf="!showTable" class="btn btn-secondary" (click)="toggleView()">Volver</button>
+        </div>
+        <br>
+        <div class="button-container">
+          <button type="button" class="btn btn-outline-info bi bi-plus-circle" *ngIf="showTable" (click)="toggleView()">Agregar dispositivo</button>
+        </div><br>
+  
+
+        <!-- Tabla de dispositivos -->
+        <div *ngIf="showTable">
+          <table
+            [hover]="true"
+            [responsive]="true"
+            [striped]="true"
+            align="middle"
+            cTable
+            class="mb-0 border"
+          >
+            <thead class="text-nowrap text-truncate">
+              <tr>
+                <th class="bg-body-tertiary">Id</th>
+                <th class="bg-body-tertiary text-center">Marca-Modelo</th>
+                <th class="bg-body-tertiary text-center">Num Serie</th>
+                <th class="bg-body-tertiary text-center">Nombre</th>
+                <th class="bg-body-tertiary text-center">Estado</th>
+                <th class="bg-body-tertiary text-center">Categoria</th>
+                <th class="bg-body-tertiary text-center">Editar</th>
+                <th class="bg-body-tertiary text-center">Eliminar</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="bg-body-tertiary text-center" *ngFor="let dispo of dispositivos | paginate: { itemsPerPage: 5, currentPage: p }; let i = index">
                 <td>
-                   <div>                     
-                      {{ dispo.id_dispositivo }}   <!--se supoeque que aqui va el id del dispo -->           
-                   </div>
+                  <div>{{ dispo.id_dispositivo }}</div>
                 </td>
                 <td>
                   <div>{{ dispo.modelo?.marca?.nombre }}</div>
                   <div class="small text-body-secondary text-nowrap">
-                  <span>
-                    {{ dispo.modelo?.nombre }} <!--se supoeque que aqui vamarca y modelo -->  
-                  </span>
+                    <span>{{ dispo.modelo?.nombre }}</span>
                   </div>
                 </td>
                 <td>
-
-                  <div class="fw-semibold text-nowrap">{{ dispo.numero_serie }}</div>  <!--se supoeque que aqui el numero de serie-->  
+                  <div class="fw-semibold text-nowrap">{{ dispo.numero_serie }}</div>
                 </td>
                 <td>
-                  <div class="fw-semibold text-nowrap">{{ dispo.nombre }}</div> <!--se supoeque que aqui el nombre-->  
+                  <div class="fw-semibold text-nowrap">{{ dispo.nombre }}</div>
                 </td>
                 <td>
-                  <div class="fw-semibold text-nowrap"
-                       [ngStyle]="{ 'color': dispo.disponible ? 'green' : 'red', 'font-weight': dispo.disponible ? 'bold' : 'normal' }">
+                  <div class="fw-semibold text-nowrap" [ngStyle]="{ 'color': dispo.disponible ? 'green' : 'red', 'font-weight': dispo.disponible ? 'bold' : 'normal' }">
                     {{ dispo.disponible ? 'Disponible' : 'Prestado' }}
                   </div>
                 </td>
                 <td>
-                  <div class="fw-semibold text-nowrap">{{ dispo.categoria?.nombre }}</div>  <!--se supoeque que aqui el cate-->  
+                  <div class="fw-semibold text-nowrap">{{ dispo.categoria?.nombre }}</div>
+                </td>
+                <td>
+                  <button type="button" class="btn btn-primary" (click)="toggleView()">Editar</button>
+                </td>
+                <td>
+                  <button type="button" class="btn btn-danger">Eliminar</button>
                 </td>
               </tr>
-            
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+          <div class="d-flex justify-content-center mt-3">
+            <pagination-controls (pageChange)="p = $event"></pagination-controls>
+          </div>
+        </div>
+
+        <!-- AQUI INICIAN LOS FORMULARIOS DE INGRESO Y MODIFICACION SEGUN CORRESPONDA-->
+        <div *ngIf="!showTable">
+          <c-input-group class="mb-3">
+            <span cInputGroupText>
+              <svg cIcon name="cilItalic"></svg>
+            </span>
+            <select class="form-select" formControlName="categoria">
+              <option value="" disabled selected>Seleccione la Categoria</option>
+              <option *ngFor="let cate of categorias" [value]="cate.id_categoria">
+                {{ cate.nombre }}
+              </option>
+            </select>
+          </c-input-group>
+          <c-input-group class="mb-3">
+            <span cInputGroupText>
+              <svg cIcon name="cilItalic"></svg>
+            </span>
+            <select class="form-select" formControlName="marca">
+              <option value="" disabled selected>Seleccione la Marca</option>
+              <option *ngFor="let marca of marcas" [value]="marca.id_marca">
+                {{ marca.nombre }}
+              </option>
+            </select>
+          </c-input-group>
+          <c-input-group class="mb-3">
+            <span cInputGroupText>
+              <svg cIcon name="cilItalic"></svg>
+            </span>
+            <select class="form-select" formControlName="modelo">
+              <option value="" disabled selected>Seleccione el Modelo</option>
+              <option *ngFor="let modelo of modelos" [value]="modelo.id_modelo">
+                {{ modelo.nombre }}
+              </option>
+            </select>
+          </c-input-group> 
+          <c-input-group class="mb-3">
+            <span cInputGroupText>
+              <svg cIcon name="cilUser"></svg>
+            </span>
+            <input formControlName="nombre" cFormControl placeholder="Nombre" />
+          </c-input-group>
+          <div class="d-grid">
+            <button cButton color="success" type="submit">Guardar Cambios</button>
+          </div><br>
+          <div class="d-grid">
+            <button cButton color="secondary" type="button">Cancelar</button>
+          </div>
+          
+
+
+
+
+            <!-- AQUI ACABAN LOS FORMULARIOS DE INGRESO Y MODIFICACION SEGUN CORRESPONDA--> 
+        </div>
       </c-card-body>
     </c-card>
   </c-col>

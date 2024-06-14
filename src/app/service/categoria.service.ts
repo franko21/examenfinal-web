@@ -8,7 +8,7 @@ import { Categoria } from '../model/categoria.model';
     providedIn: 'root'
   })
 export class CategoriaService{
-    private urlEndPoint:string = environment.urlApi+'api/categoria';
+    private urlEndPoint:string = environment.urlHost+'api/categoria';
     private httpHeaders = new HttpHeaders({'Content-Type':'application/json'}); 
     constructor(private http:HttpClient) { }
 
