@@ -1,11 +1,11 @@
-import { Dipositivo } from "./dispositivo.model";
+import { Dispositivo } from "./dispositivo.model";
 import { Marca } from "./marca.model";
 
 export class Modelo{
     id_modelo?:number;
     nombre?:String;
     marca?:Marca;
-    dispositivos?:Dipositivo[];
+    dispositivos?:Dispositivo[];
     
 
 

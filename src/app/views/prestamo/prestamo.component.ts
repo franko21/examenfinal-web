@@ -14,7 +14,7 @@ import { Persona } from 'src/app/model/persona';
 import { Zona_seguraService } from 'src/app/service/Zona_segura.service';
 import { UsuarioService } from 'src/app/service/usuario.service';
 import { Zona_segura } from 'src/app/model/Zona_segura';
-import { Dipositivo } from 'src/app/model/dispositivo.model';
+import { Dispositivo } from 'src/app/model/dispositivo.model';
 import { Usuario } from 'src/app/model/usuario';
 import { environment } from 'src/enviroments/environment';
 import { NgxPaginationModule } from 'ngx-pagination';
@@ -36,7 +36,7 @@ export class PrestamoComponent {
   prestamos:Prestamo[]=[];
   personas:Persona[]=[];
   zonaS:Zona_segura[]=[];
-  dispositivos:Dipositivo[]=[];
+  dispositivos:Dispositivo[]=[];
   prestamoSeleccionado: any = {};
   filaEditada: number | null = null;
   registerForm: FormGroup;
@@ -126,7 +126,7 @@ export class PrestamoComponent {
     const fecha=new Date();
     const formValues=this.registerFormIn.value;
     let prestamo:Prestamo=new Prestamo();
-    let dispositivoo:Dipositivo=new Dipositivo();
+    let dispositivoo:Dispositivo=new Dispositivo();
     prestamo.dispositivo=dispositivoo;
     let personaa:Persona=new Persona();
     prestamo.persona=personaa;
@@ -185,7 +185,7 @@ export class PrestamoComponent {
     const fecha=new Date();
     const formValues=this.registerForm.value;
     let prestamo:Prestamo=new Prestamo();
-    let dispositivoo:Dipositivo=new Dipositivo();
+    let dispositivoo:Dispositivo=new Dispositivo();
     prestamo.dispositivo=dispositivoo;
     let personaa:Persona=new Persona();
     prestamo.persona=personaa;

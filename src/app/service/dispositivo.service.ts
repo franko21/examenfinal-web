@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { Injectable } from '@angular/core';
 import { Observable, catchError, throwError } from 'rxjs';
 import { environment } from '../../enviroments/environment';
-import { Dipositivo } from '../model/dispositivo.model';
+import { Dispositivo } from '../model/dispositivo.model';
 @Injectable({
     providedIn: 'root'
   })
@@ -12,25 +12,25 @@ export class DipositivoService{
   private httpHeaders = new HttpHeaders({'Content-Type':'application/json'});
     constructor(private http:HttpClient) { }
     
-      crear(dispositivo: Dipositivo): Observable<Dipositivo>{
-        return this.http.post<Dipositivo>(this.urlEndPoint, dispositivo,{headers: this.httpHeaders})
+      crear(dispositivo: Dispositivo): Observable<Dispositivo>{
+        return this.http.post<Dispositivo>(this.urlEndPoint, dispositivo,{headers: this.httpHeaders})
       }
 
-      listar(): Observable<Dipositivo[]>{
-        return this.http.get<Dipositivo[]>(this.urlEndPoint);
+      listar(): Observable<Dispositivo[]>{
+        return this.http.get<Dispositivo[]>(this.urlEndPoint);
       }
 
-      buscarporid(id: number):Observable<Dipositivo>{
-        return this.http.get<Dipositivo>(`${this.urlEndPoint}/${id}`);
+      buscarporid(id: number):Observable<Dispositivo>{
+        return this.http.get<Dispositivo>(`${this.urlEndPoint}/${id}`);
       }
 
-      editar(dispositivo: Dipositivo): Observable<Dipositivo> {
+      editar(dispositivo: Dispositivo): Observable<Dispositivo> {
         const id = `${this.urlEndPoint}/${dispositivo.id_dispositivo}`;
-        return this.http.put<Dipositivo>(id, dispositivo, { headers: this.httpHeaders});
+        return this.http.put<Dispositivo>(id, dispositivo, { headers: this.httpHeaders});
       }
     
-      eliminar(id: number): Observable<Dipositivo>{
-        return this.http.delete<Dipositivo>(`${this.urlEndPoint}/${id}`)
+      eliminar(id: number): Observable<Dispositivo>{
+        return this.http.delete<Dispositivo>(`${this.urlEndPoint}/${id}`)
       }
  
 

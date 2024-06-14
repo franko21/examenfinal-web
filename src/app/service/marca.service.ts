@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { Injectable } from '@angular/core';
 import { Observable, catchError, throwError } from 'rxjs';
 import { environment } from '../../enviroments/environment';
-import { Dipositivo } from '../model/dispositivo.model';
+import { Dispositivo } from '../model/dispositivo.model';
 import { Marca } from '../model/marca.model';
 @Injectable({
     providedIn: 'root'

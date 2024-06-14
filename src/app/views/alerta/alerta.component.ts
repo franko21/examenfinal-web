@@ -3,7 +3,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { AlertaService } from 'src/app/service/alerta.service';
 import { Alerta } from 'src/app/model/alerta';
-import { Dipositivo } from 'src/app/model/dispositivo.model';
+import { Dispositivo } from 'src/app/model/dispositivo.model';
 import { Persona } from 'src/app/model/persona';
 import { Prestamo } from 'src/app/model/prestamo';
 

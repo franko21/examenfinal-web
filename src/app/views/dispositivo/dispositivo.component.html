@@ -75,13 +75,14 @@
 
         <!-- AQUI INICIAN LOS FORMULARIOS DE INGRESO Y MODIFICACION SEGUN CORRESPONDA-->
         <div *ngIf="!showTable">
+          <form >
           <c-input-group class="mb-3">
             <span cInputGroupText>
               <svg cIcon name="cilItalic"></svg>
             </span>
-            <select class="form-select" formControlName="categoria">
+            <select name="Categoria" id="Categoria" class="form-control" [(ngModel)]="dispositivo.id_categoria">
               <option value="" disabled selected>Seleccione la Categoria</option>
-              <option *ngFor="let cate of categorias" [value]="cate.id_categoria">
+              <option *ngFor="let cate of categorias" [ngValue]="cate.id_categoria">
                 {{ cate.nombre }}
               </option>
             </select>
@@ -90,9 +91,9 @@
             <span cInputGroupText>
               <svg cIcon name="cilItalic"></svg>
             </span>
-            <select class="form-select" formControlName="marca">
+            <select class="form-control" name="Marcas" id="Marcas" >
               <option value="" disabled selected>Seleccione la Marca</option>
-              <option *ngFor="let marca of marcas" [value]="marca.id_marca">
+              <option *ngFor="let marca of marcas">
                 {{ marca.nombre }}
               </option>
             </select>
@@ -101,9 +102,9 @@
             <span cInputGroupText>
               <svg cIcon name="cilItalic"></svg>
             </span>
-            <select class="form-select" formControlName="modelo">
+            <select name="Modelo" id="Modelo" class="form-control" [(ngModel)]="dispositivo.id_modelo">
               <option value="" disabled selected>Seleccione el Modelo</option>
-              <option *ngFor="let modelo of modelos" [value]="modelo.id_modelo">
+              <option *ngFor="let modelo of modelos" [ngValue]="modelo.id_modelo" >
                 {{ modelo.nombre }}
               </option>
             </select>
@@ -112,19 +113,28 @@
             <span cInputGroupText>
               <svg cIcon name="cilUser"></svg>
             </span>
-            <input formControlName="nombre" cFormControl placeholder="Nombre" />
-          </c-input-group>
+            <input id="nombre" class="form-control" type="text"  placeholder="Numero de Serie" [(ngModel)]="dispositivo.numero_serie" name="nombre" />
+          </c-input-group> 
+          <c-input-group class="mb-3">
+            <span cInputGroupText>
+              <svg cIcon name="cilUser"></svg>
+            </span>
+            <input id="nombre" class="form-control" type="text"  placeholder="Nombre" [(ngModel)]="dispositivo.nombre" name="nombre" />
+          </c-input-group>  
+          <c-input-group class="mb-3">   
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="disponible" [(ngModel)]="dispositivo.disponible" name="disponible">
+              <label class="form-check-label" for="disponible">Disponible</label>
+            </div>
+          </c-input-group> 
           <div class="d-grid">
-            <button cButton color="success" type="submit">Guardar Cambios</button>
+            <button cButton color="success" type="submit"(click)="crearDispositivo()">Guardar Cambios</button>
           </div><br>
           <div class="d-grid">
             <button cButton color="secondary" type="button">Cancelar</button>
           </div>
           
-
-
-
-
+        </form>
             <!-- AQUI ACABAN LOS FORMULARIOS DE INGRESO Y MODIFICACION SEGUN CORRESPONDA--> 
         </div>
       </c-card-body>
