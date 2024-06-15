@@ -79,7 +79,6 @@ export class DispositivoComponent implements OnInit {
   constructor(private serdispo:DipositivoService , private sermarca:MarcaService, private sermodelo:ModeloService, private sercateg:CategoriaService ,private router: Router){
     //private sermarca:MarcaService, private sermodelo:ModeloService, private sercateg:CategoriaService
   }
-  
   ngOnInit() {
     this.listardispo();
     this.listarmode();
@@ -128,20 +127,33 @@ export class DispositivoComponent implements OnInit {
     );
   }
 
-  crearDispositivo(){
-    this.serdispo.crear(this.dispositivo)
-    console.log(this.dispositivo.disponible)
-    console.log(this.dispositivo.id_categoria)
-    console.log(this.dispositivo.id_modelo)
+  crearDispositivo() {
     console.log(this.dispositivo)
-    Swal.fire({
-      icon: 'success',
-      title: '¡Dispositivo creado con exito!',
-      text: 'EXITO',
-      confirmButtonColor: '#3085d6',
-      confirmButtonText: 'OK'
-  })
+    this.serdispo.crear(this.dispositivo).subscribe(
+      () => {
+        console.log('Dispositivo creado exitosamente:', this.dispositivo);
+        Swal.fire({
+          icon: 'success',
+          title: '¡Dispositivo creado con éxito!',
+          text: 'EXITO',
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'OK'
+        });
+      },
+      error => {
+        console.error('Error al crear dispositivo:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Hubo un problema al crear el dispositivo. Inténtalo de nuevo más tarde.',
+          confirmButtonColor: '#d33',
+          confirmButtonText: 'OK'
+        });
+      }
+    );
   }
+  
+  
 
 
 }

@@ -80,11 +80,10 @@
             <span cInputGroupText>
               <svg cIcon name="cilItalic"></svg>
             </span>
-            <select name="Categoria" id="Categoria" class="form-control" [(ngModel)]="dispositivo.id_categoria">
-              <option value="" disabled selected>Seleccione la Categoria</option>
-              <option *ngFor="let cate of categorias" [ngValue]="cate.id_categoria">
-                {{ cate.nombre }}
-              </option>
+            <select name="Categoria" id="Categoria" class="form-control" [(ngModel)]="dispositivo.categoria">
+              <option [ngValue]="null" disabled selected>Seleccione la Categoría</option>
+              <option *ngFor="let cate of categorias" [ngValue]="cate">
+                {{ cate.nombre }}</option>
             </select>
           </c-input-group>
           <c-input-group class="mb-3">
@@ -102,9 +101,9 @@
             <span cInputGroupText>
               <svg cIcon name="cilItalic"></svg>
             </span>
-            <select name="Modelo" id="Modelo" class="form-control" [(ngModel)]="dispositivo.id_modelo">
+            <select name="Modelo" id="Modelo" class="form-control" [(ngModel)]="dispositivo.modelo" >
               <option value="" disabled selected>Seleccione el Modelo</option>
-              <option *ngFor="let modelo of modelos" [ngValue]="modelo.id_modelo" >
+              <option *ngFor="let modelo of modelos" [ngValue]="modelo" >
                 {{ modelo.nombre }}
               </option>
             </select>
