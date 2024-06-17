@@ -30,6 +30,11 @@ export const navItems: INavData[] = [
     title: true
   },
   {
+    name: 'Monitoreo',
+    url: '/monitoreo',
+    iconComponent: { name: 'cil-map' }
+  },
+  {
     name: 'Mapa',
     url: '/mapa',
     iconComponent: { name: 'cil-map' }

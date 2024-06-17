@@ -67,6 +67,10 @@ export const routes: Routes = [
         
       },
       {
+        path: 'monitoreo',
+        loadChildren: () => import('./views/monitoreo/routes').then((m) => m.routes),
+      },
+      {
         path: 'mapa',
         loadChildren: () => import('./views/mapa/routes').then((m) => m.routes),
         

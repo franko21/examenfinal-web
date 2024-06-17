@@ -9,7 +9,7 @@ import { Dispositivo } from '../model/dispositivo.model';
   })
 export class DipositivoService{
     private urlEndPoint:string =environment.urlHost+'api/dispositivo';
-  private httpHeaders = new HttpHeaders({'Content-Type':'application/json'});
+    private httpHeaders = new HttpHeaders({'Content-Type':'application/json'});
     constructor(private http:HttpClient) { }
     
       crear(dispositivo: Dispositivo): Observable<Dispositivo>{
