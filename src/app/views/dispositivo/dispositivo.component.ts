@@ -67,6 +67,7 @@ import Swal from 'sweetalert2';
 })
 export class DispositivoComponent implements OnInit {
    public dispositivo:Dispositivo=new Dispositivo();
+   public titulo: string = "Dispositivo";
    dispositivos: Dispositivo[] = [];
    marcas:Marca[]=[];
    modelos:Modelo[]=[];
@@ -75,11 +76,12 @@ export class DispositivoComponent implements OnInit {
    showTable: boolean = true;
   toggleView() {
     this.showTable = !this.showTable;
+     this.titulo="Dispositivo"
   }
   constructor(private serdispo:DipositivoService , private sermarca:MarcaService, private sermodelo:ModeloService, private sercateg:CategoriaService ,private router: Router){
     //private sermarca:MarcaService, private sermodelo:ModeloService, private sercateg:CategoriaService
   }
-  ngOnInit() {
+  ngOnInit(): void {
     this.listardispo();
     this.listarmode();
     this.listarcategorias();
@@ -128,17 +130,30 @@ export class DispositivoComponent implements OnInit {
   }
 
   crearDispositivo() {
-    console.log(this.dispositivo)
+    if (this.validateForm()) {
+      //////////
     this.serdispo.crear(this.dispositivo).subscribe(
-      () => {
-        console.log('Dispositivo creado exitosamente:', this.dispositivo);
-        Swal.fire({
-          icon: 'success',
-          title: '¡Dispositivo creado con éxito!',
-          text: 'EXITO',
-          confirmButtonColor: '#3085d6',
-          confirmButtonText: 'OK'
-        });
+      () => { 
+        if(this.titulo=="Ingresar dispostivo"){
+          Swal.fire({
+            icon: 'success',
+            title: '¡Dispositivo creado con éxito!',
+            text: 'EXITO',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'OK'
+          });
+        }else{
+          Swal.fire({
+            icon: 'success',
+            title: '¡Dispositivo Editado con éxito!',
+            text: 'EXITO',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'OK'
+          });
+        }
+        this.toggleView();
+        this.vaciarcampos();
+        this.listardispo();
       },
       error => {
         console.error('Error al crear dispositivo:', error);
@@ -151,9 +166,81 @@ export class DispositivoComponent implements OnInit {
         });
       }
     );
+    //////
+      
+    }
+     
+ 
+  }
+
+  editardispo(dispo:Dispositivo){
+    this.dispositivo =dispo; 
+    this.toggleView();
+    this.titulo="Editar dispostivo"
+  }
+
+ eliminardispo(dispo:Dispositivo){
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: '¡No podrás revertir esto!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, eliminarlo'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.serdispo.eliminar(dispo.id_dispositivo!).subscribe(
+          () => {
+            Swal.fire(
+              '¡Eliminado!',
+              'El dispositivo ha sido eliminado.',
+              'success'
+            );
+            this.listardispo(); // Actualizar la lista de dispositivos después de eliminar uno
+          },
+          (error) => {
+            console.error('Error al eliminar dispositivo:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Hubo un problema al eliminar el dispositivo. Inténtalo de nuevo más tarde.',
+              confirmButtonColor: '#d33',
+              confirmButtonText: 'OK'
+            });
+          }
+        );
+      }
+    });
+  }
+
+  vaciarcampos(): void {
+    this.dispositivo = new Dispositivo();
+   
+  }
+  cancelar(): void{
+  this.toggleView();
+  this.vaciarcampos();
   }
   
-  
-
+  btncrear(): void{
+    this.toggleView();
+    this.titulo="Ingresar dispostivo"
+    }
+    validateForm(): boolean {
+      // Verificar si los campos obligatorios están llenos
+      if (
+        !this.dispositivo ||
+        !this.dispositivo.nombre ||
+        !this.dispositivo.categoria ||
+        !this.dispositivo.modelo ||
+        !this.dispositivo.numero_serie ||
+        !this.dispositivo.disponible
+      ) {
+        Swal.fire('¡Error!', 'Por favor, completa todos los campos obligatorios.', 'error');
+        return false;
+      }
+      return true;
+    }
 
 }

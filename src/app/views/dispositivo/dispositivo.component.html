@@ -3,12 +3,12 @@
     <c-card class="mb-4">
       <c-card-body>
         <div style="display: flex; justify-content: space-between; align-items: center;">
-          <h5 class="card-title" style="margin-bottom: 0;">Dispositivos</h5>
-          <button type="button" *ngIf="!showTable" class="btn btn-secondary" (click)="toggleView()">Volver</button>
+          <h5 class="card-title" style="margin-bottom: 0;">{{titulo}}</h5>
+          <button type="button" *ngIf="!showTable" class="btn btn-secondary" (click)="cancelar()">Volver</button>
         </div>
         <br>
         <div class="button-container">
-          <button type="button" class="btn btn-outline-info bi bi-plus-circle" *ngIf="showTable" (click)="toggleView()">Agregar dispositivo</button>
+          <button type="button" class="btn btn-outline-info bi bi-plus-circle" *ngIf="showTable" (click)="btncrear()">Agregar dispositivo</button>
         </div><br>
   
 
@@ -60,10 +60,10 @@
                   <div class="fw-semibold text-nowrap">{{ dispo.categoria?.nombre }}</div>
                 </td>
                 <td>
-                  <button type="button" class="btn btn-primary" (click)="toggleView()">Editar</button>
+                  <button type="button" class="btn btn-primary" (click)="editardispo(dispo)">Editar</button>
                 </td>
                 <td>
-                  <button type="button" class="btn btn-danger">Eliminar</button>
+                  <button type="button" class="btn btn-danger" (click)="eliminardispo(dispo)">Eliminar</button>
                 </td>
               </tr>
             </tbody>
@@ -90,9 +90,9 @@
             <span cInputGroupText>
               <svg cIcon name="cilItalic"></svg>
             </span>
-            <select class="form-control" name="Marcas" id="Marcas" >
+            <select class="form-control" name="Marcas" id="Marcas">
               <option value="" disabled selected>Seleccione la Marca</option>
-              <option *ngFor="let marca of marcas">
+              <option *ngFor="let marca of marcas"  >
                 {{ marca.nombre }}
               </option>
             </select>
@@ -112,7 +112,7 @@
             <span cInputGroupText>
               <svg cIcon name="cilUser"></svg>
             </span>
-            <input id="nombre" class="form-control" type="text"  placeholder="Numero de Serie" [(ngModel)]="dispositivo.numero_serie" name="nombre" />
+            <input id="numero_serie" class="form-control" type="text"  placeholder="Numero de Serie" [(ngModel)]="dispositivo.numero_serie" name="numero_serie" />
           </c-input-group> 
           <c-input-group class="mb-3">
             <span cInputGroupText>
@@ -130,7 +130,7 @@
             <button cButton color="success" type="submit"(click)="crearDispositivo()">Guardar Cambios</button>
           </div><br>
           <div class="d-grid">
-            <button cButton color="secondary" type="button">Cancelar</button>
+            <button cButton color="secondary" type="button"(click)="cancelar()" >Cancelar</button>
           </div>
           
         </form>
