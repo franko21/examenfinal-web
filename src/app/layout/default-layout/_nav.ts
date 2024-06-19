@@ -35,6 +35,11 @@ export const navItems: INavData[] = [
     iconComponent: { name: 'cil-map' }
   },
   {
+    name: 'Clientes',
+    url: '/clientes',
+    iconComponent: { name: 'cil-people' }
+  },
+  {
     name: 'Mapa',
     url: '/mapa',
     iconComponent: { name: 'cil-map' }

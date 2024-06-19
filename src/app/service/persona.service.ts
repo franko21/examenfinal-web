@@ -4,6 +4,7 @@ import { Observable, catchError, throwError } from 'rxjs';
 import { environment } from '../../enviroments/environment';
 import { Persona } from '../model/persona';
 import { map } from 'rxjs';
+import {Prestamo} from "../model/prestamo";
 
 @Injectable({
   providedIn: 'root'
@@ -26,8 +27,15 @@ export class PersonaService {
 
     return this.http.get(`${environment.urlHost}api/persona`).pipe(
       map(Response => Response as Persona[])
-  
+
     );
+  }
+  editPersona(id:any,persona:Persona):Observable<any>{
+    return this.http.put<Persona>(`${environment.urlHost}api/persona/${id}`,persona)
+  }
+
+  deletePersona(id: any):Observable<any>{
+    return this.http.delete<Persona>(`${environment.urlHost}api/persona/${id}`)
   }
 
   private handleError(error: HttpErrorResponse) {

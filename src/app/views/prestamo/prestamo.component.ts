@@ -94,7 +94,6 @@ export class PrestamoComponent {
   ingresarPrestamo(){
     this.mostrarFormularioIngreso = !this.mostrarFormularioIngreso;
     console.log(this.dispositivos);
-
   }
   edit(index: number) {
     this.selectedPrestamo = this.prestamos[index];
@@ -244,7 +243,7 @@ export class PrestamoComponent {
       },
       buttonsStyling: false
     });
-  
+
     swalWithBootstrapButtons.fire({
       title: 'Estas Seguro?',
       text: 'No se puede revertir',

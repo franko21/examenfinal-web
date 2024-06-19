@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { DefaultLayoutComponent } from './layout';
-import { authGuard } from './auth.guard'; 
+import { authGuard } from './auth.guard';
 
 export const routes: Routes = [
   {
@@ -24,37 +24,37 @@ export const routes: Routes = [
       {
         path: 'theme',
         loadChildren: () => import('./views/theme/routes').then((m) => m.routes),
-        
+
       },
       {
         path: 'base',
         loadChildren: () => import('./views/base/routes').then((m) => m.routes),
-        
+
       },
       {
         path: 'buttons',
         loadChildren: () => import('./views/buttons/routes').then((m) => m.routes),
-        
+
       },
       {
         path: 'forms',
         loadChildren: () => import('./views/forms/routes').then((m) => m.routes),
-        
+
       },
       {
         path: 'icons',
         loadChildren: () => import('./views/icons/routes').then((m) => m.routes),
-        
+
       },
       {
         path: 'notifications',
         loadChildren: () => import('./views/notifications/routes').then((m) => m.routes),
-        
+
       },
       {
         path: 'widgets',
         loadChildren: () => import('./views/widgets/routes').then((m) => m.routes),
-        
+
       },
       {
         path: 'charts',
@@ -64,7 +64,7 @@ export const routes: Routes = [
       {
         path: 'pages',
         loadChildren: () => import('./views/pages/routes').then((m) => m.routes),
-        
+
       },
       {
         path: 'monitoreo',
@@ -73,12 +73,12 @@ export const routes: Routes = [
       {
         path: 'mapa',
         loadChildren: () => import('./views/mapa/routes').then((m) => m.routes),
-        
+
       },
       {
         path: 'prestamo',
         loadChildren: () => import('./views/prestamo/routes').then((m) => m.routes),
-        
+
       },
       {
         path: 'alerta',
@@ -87,7 +87,12 @@ export const routes: Routes = [
        { path: 'dispositivo',
         loadChildren: () => import('./views/dispositivo/dispositivo.routes').then((m) => m.routes),
 
-        
+
+      },
+      { path: 'clientes',
+        loadChildren: () => import('./views/clientes/routes').then((m) => m.routes),
+
+
       }
     ]
   },
@@ -119,7 +124,7 @@ export const routes: Routes = [
       title: 'Register Page'
     }
   },
-  
+
   {
     path: 'mapa',
     loadComponent: () => import('./views/mapa/mapa.component').then(m => m.MapaComponent), // Añadir esta línea

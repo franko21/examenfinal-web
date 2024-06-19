@@ -1,3 +1,5 @@
+import {Rol} from "./rol";
+
 export class Persona {
 
     // constructor(
@@ -9,4 +11,6 @@ export class Persona {
     nombre:String;
     apellido:String;
     id_persona:number;
-}   
+    rol:Rol;
+    fecha_registro:Date;
+}
