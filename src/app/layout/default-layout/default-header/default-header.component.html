@@ -202,7 +202,7 @@
             </span>
           </span>
         </h5>
-
+         
         <div style="margin-left: 10px;"> <!-- Ajuste de margen izquierdo -->
           <span>Tiempo de Respuesta</span>
           <label class="d-block mt-2">
@@ -211,27 +211,17 @@
           <!-- Aquí van los campos para editar la configuración -->
 
           <div *ngIf="showTable">
-         
-          <form>
-            <div class="form-group">
-
-              <label for="horas">Horas:</label>
-              <input id="hora" class="form-control" min="0" type="number"  placeholder="Horas" [(ngModel)]="hora" name="hora" />
-              
-            </div>
-            <div class="form-group">
-              <label for="minutos">Minutos:</label>
-              <input id="minuto" class="form-control" min="0" max="59" type="number" placeholder="Minutos" [(ngModel)]="minuto" name="minuto" />
-            </div>
-            <div class="form-group">
-              <label for="segundos">Segundos:</label>
-              <input id="segundo" class="form-control" min="0" max="59" type="number" placeholder="Segundos" [(ngModel)]="segundo" name="segundo" />
-            </div>
+          
+  
+            <label cLabel for="customRange1">Segundos: <strong>{{value}}</strong></label>
             <br>
-            <button type="submit" class="btn btn-primary" (click)="actualizartiempo()" >Guardar</button>
-          </form>
-        </div>
-        
+            <input [(ngModel)]="value" cFormControl id="customRange1" [max]="480" [min]="1" type="range" class="full-width-range" />
+            <br>
+            <button type="submit" class="btn btn-primary" (click)="actualizartiempo()">Guardar</button>
+           
+           
+            
+          </div>
         </div>
       </div>
     </div>

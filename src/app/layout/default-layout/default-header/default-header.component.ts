@@ -59,10 +59,9 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   
   public configuracion:Configuracion=new Configuracion();
-  public hora: number=0;
-  public minuto: number=0;
   public segundo: number=0;
-  public recop :number=0;
+  recop :number=0;
+  value = 1;
 
 
   prestamos: Prestamo[] = [];
@@ -93,7 +92,7 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
   }
 
  convertirASegundos(): number {
-  return (this.hora * 3600) + (this.minuto * 60) + this.segundo;
+  return this.recop=this.value
 }
 
   desplegarcrud() {
@@ -147,9 +146,7 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
   }
 
   resetForm() {
-    this.hora = 0;
-    this.minuto = 0;
-    this.segundo = 0;
+    this.value = this.configuracion?.tiempoRespuesta ?? 0;
   }
 
 
