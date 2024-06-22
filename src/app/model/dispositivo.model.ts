@@ -2,7 +2,7 @@ import { Categoria } from "./categoria.model";
 import { Modelo } from "./modelo.model";
 
 export class Dispositivo {
-    id_dispositivo?: number;
+    idDispositivo?: number;
     nombre?: String;
     numero_serie?: String;
     disponible?:boolean;

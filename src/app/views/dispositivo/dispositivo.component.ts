@@ -190,7 +190,7 @@ export class DispositivoComponent implements OnInit {
       confirmButtonText: 'Sí, eliminarlo'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.serdispo.eliminar(dispo.id_dispositivo!).subscribe(
+        this.serdispo.eliminar(dispo.idDispositivo!).subscribe(
           () => {
             Swal.fire(
               '¡Eliminado!',

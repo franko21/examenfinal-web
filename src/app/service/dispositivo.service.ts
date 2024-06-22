@@ -25,7 +25,7 @@ export class DipositivoService{
       }
 
       editar(dispositivo: Dispositivo): Observable<Dispositivo> {
-        const id = `${this.urlEndPoint}/${dispositivo.id_dispositivo}`;
+        const id = `${this.urlEndPoint}/${dispositivo.idDispositivo}`;
         return this.http.put<Dispositivo>(id, dispositivo, { headers: this.httpHeaders});
       }
     
