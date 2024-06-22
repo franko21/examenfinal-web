@@ -1,5 +1,13 @@
-
-<app-widgets-dropdown/>
+<div class="carousel-container">
+  <div class="carousel">
+    <div class="card" *ngFor="let card of cards">
+      <div class="card-body">
+        <h5 class="card-title">{{ card.title }}</h5>
+        <p class="card-text">{{ card.text }}</p>
+      </div>
+    </div>
+  </div>
+</div>
 <app-mapa></app-mapa>
 
 

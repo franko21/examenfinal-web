@@ -1,0 +1,26 @@
+.carousel-container {
+  width: 100%;
+  overflow-x: scroll;
+  scroll-snap-type: x mandatory;
+  display: flex;
+}
+
+.carousel {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.card {
+  flex: 0 0 auto;
+  margin: 10px;
+  width: 200px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+  scroll-snap-align: start;
+}
+
+.card-body {
+  padding: 16px;
+  text-align: center;
+}
