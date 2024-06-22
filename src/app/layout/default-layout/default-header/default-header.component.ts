@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, inject, Input } from '@angular/core';
+import { Component, computed, DestroyRef, inject, Input,OnInit } from '@angular/core';
 import {
   AvatarComponent,
   BadgeComponent,
@@ -47,10 +47,9 @@ import {LoginService} from "../../../views/pages/login/login.service";
   selector: 'app-default-header',
   templateUrl: './default-header.component.html',
   styleUrl:'./default-header.component.scss',
-  providers:[ConfiguracionService,AlertaService,PrestamoService],
+  providers:[ConfiguracionService,AlertaService,PrestamoService,LoginService],
   standalone: true,
-  imports: [ContainerComponent,ReactiveFormsModule,FormsModule,CommonModule,CardBodyComponent,CardComponent, HeaderTogglerDirective, SidebarToggleDirective, IconDirective, HeaderNavComponent, NavItemComponent, NavLinkDirective, RouterLink, RouterLinkActive, NgTemplateOutlet, BreadcrumbRouterComponent, ThemeDirective, DropdownComponent, DropdownToggleDirective, TextColorDirective, AvatarComponent, DropdownMenuDirective, DropdownHeaderDirective, DropdownItemDirective, BadgeComponent, DropdownDividerDirective, ProgressBarDirective, ProgressComponent, NgStyle,HttpClientModule],
-  providers:[LoginService]
+  imports: [ContainerComponent,ReactiveFormsModule,FormsModule,CommonModule,CardBodyComponent,CardComponent, HeaderTogglerDirective, SidebarToggleDirective, IconDirective, HeaderNavComponent, NavItemComponent, NavLinkDirective, RouterLink, RouterLinkActive, NgTemplateOutlet, BreadcrumbRouterComponent, ThemeDirective, DropdownComponent, DropdownToggleDirective, TextColorDirective, AvatarComponent, DropdownMenuDirective, DropdownHeaderDirective, DropdownItemDirective, BadgeComponent, DropdownDividerDirective, ProgressBarDirective, ProgressComponent, NgStyle,HttpClientModule]
 })
 export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
 
@@ -193,7 +192,8 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
     private router: Router,
     private serconfig: ConfiguracionService,
     private seralerta: AlertaService,
-    private serpres: PrestamoService
+    private serpres: PrestamoService,
+    private loginService:LoginService
   ) {
     super();
     this.#colorModeService.localStorageItemName.set('coreui-free-angular-admin-template-theme-default');
@@ -295,6 +295,7 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
 
   public logout(){
     environment.islogged=false;
+    this.loginService.logout();
     this.router.navigate(['/login']);
   }
 
