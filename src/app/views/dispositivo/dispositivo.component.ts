@@ -190,7 +190,7 @@ export class DispositivoComponent implements OnInit {
       confirmButtonText: 'Sí, eliminarlo'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.serdispo.eliminar(dispo.id_dispositivo!).subscribe(
+        this.serdispo.eliminar(dispo.idDispositivo!).subscribe(
           () => {
             Swal.fire(
               '¡Eliminado!',
@@ -234,8 +234,8 @@ export class DispositivoComponent implements OnInit {
         !this.dispositivo.nombre ||
         !this.dispositivo.categoria ||
         !this.dispositivo.modelo ||
-        !this.dispositivo.numero_serie ||
-        !this.dispositivo.disponible
+        !this.dispositivo.numero_serie// ||
+        //!this.dispositivo.disponible
       ) {
         Swal.fire('¡Error!', 'Por favor, completa todos los campos obligatorios.', 'error');
         return false;

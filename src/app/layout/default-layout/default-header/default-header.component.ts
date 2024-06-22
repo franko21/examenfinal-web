@@ -20,30 +20,163 @@ import {
   ProgressComponent,
   SidebarToggleDirective,
   TextColorDirective,
-  ThemeDirective
+  CardBodyComponent,
+  CardComponent,
+  ThemeDirective,
+
 } from '@coreui/angular';
 import { NgStyle, NgTemplateOutlet } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { IconDirective } from '@coreui/icons-angular';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { delay, filter, map, tap } from 'rxjs/operators';
 import { environment } from 'src/enviroments/environment';
 import { HttpClientModule } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
+import { Configuracion } from 'src/app/model/configuracion';
+import { Alerta } from 'src/app/model/alerta';
+import { AlertaService } from 'src/app/service/alerta.service';
+import { ConfiguracionService } from 'src/app/service/configuracion.service';
+import { Prestamo } from 'src/app/model/prestamo';
+import { PrestamoService } from 'src/app/service/prestamo.service';
+import Swal from 'sweetalert2';
 import {LoginService} from "../../../views/pages/login/login.service";
 
 @Component({
   selector: 'app-default-header',
   templateUrl: './default-header.component.html',
+  styleUrl:'./default-header.component.scss',
+  providers:[ConfiguracionService,AlertaService,PrestamoService],
   standalone: true,
-  imports: [ContainerComponent, HeaderTogglerDirective, SidebarToggleDirective, IconDirective, HeaderNavComponent, NavItemComponent, NavLinkDirective, RouterLink, RouterLinkActive, NgTemplateOutlet, BreadcrumbRouterComponent, ThemeDirective, DropdownComponent, DropdownToggleDirective, TextColorDirective, AvatarComponent, DropdownMenuDirective, DropdownHeaderDirective, DropdownItemDirective, BadgeComponent, DropdownDividerDirective, ProgressBarDirective, ProgressComponent, NgStyle,HttpClientModule],
+  imports: [ContainerComponent,ReactiveFormsModule,FormsModule,CommonModule,CardBodyComponent,CardComponent, HeaderTogglerDirective, SidebarToggleDirective, IconDirective, HeaderNavComponent, NavItemComponent, NavLinkDirective, RouterLink, RouterLinkActive, NgTemplateOutlet, BreadcrumbRouterComponent, ThemeDirective, DropdownComponent, DropdownToggleDirective, TextColorDirective, AvatarComponent, DropdownMenuDirective, DropdownHeaderDirective, DropdownItemDirective, BadgeComponent, DropdownDividerDirective, ProgressBarDirective, ProgressComponent, NgStyle,HttpClientModule],
   providers:[LoginService]
 })
-export class DefaultHeaderComponent extends HeaderComponent {
+export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
 
   readonly #activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   readonly #colorModeService = inject(ColorModeService);
   readonly colorMode = this.#colorModeService.colorMode;
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
+
+  public configuracion:Configuracion=new Configuracion();
+  public segundo: number=0;
+  recop :number=0;
+  value = 1;
+
+
+  prestamos: Prestamo[] = [];
+  alertas:Alerta[]=[];
+  configuraciones:Configuracion[]=[];
+
+  showTable: boolean = false;
+  toggleView() {
+    this.showTable = !this.showTable;
+    console.log("se esta accionando el boton editar");
+  }
+
+  mostrarconfig() {
+    this.serconfig.listar().subscribe(
+      configuraciones => {
+        if (this.configuraciones) {
+          this.configuraciones = configuraciones;
+          this.configuracion = configuraciones[0];
+        }
+        console.log('Configuraciones:', this.configuraciones);
+      },
+      error => {
+        console.error('Error al listar configuraciones:', error);
+      }
+    );
+
+
+  }
+
+ convertirASegundos(): number {
+  return this.recop=this.value
+}
+
+  desplegarcrud() {
+    this.toggleView();
+    this.resetForm();
+  }
+
+
+  crud_close():void{
+    this.showTable=false;
+    this.mostrarconfig();
+
+
+  }
+  actualizartiempo() {
+
+   const tiempo :number=this.convertirASegundos();
+    if (tiempo==0) {
+      Swal.fire({
+        icon: 'question',
+        title: 'Valor incorrecto',
+        confirmButtonText: 'OK'
+      });
+    } else {
+      this.configuracion.tiempoRespuesta = this.convertirASegundos();
+      this.serconfig.crear(this.configuracion).subscribe(
+        response => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Tiempo de Respuesta Actualizado',
+            text: 'La configuración ha sido actualizada correctamente.',
+            confirmButtonText: 'OK'
+          });
+          this.showTable = false; // Ocultar el formulario después de guardar
+          this.resetForm()
+        },
+
+        error => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ocurrió un error al actualizar la configuración.',
+            confirmButtonText: 'OK'
+          });
+        }
+      );
+
+    }
+
+
+  }
+
+  resetForm() {
+    this.value = this.configuracion?.tiempoRespuesta ?? 0;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //////////////////////////////////////////
 
   readonly colorModes = [
     { name: 'light', text: 'Light', icon: 'cilSun' },
@@ -56,7 +189,12 @@ export class DefaultHeaderComponent extends HeaderComponent {
     return this.colorModes.find(mode=> mode.name === currentMode)?.icon ?? 'cilSun';
   });
 
-  constructor(private router:Router,private loginService:LoginService) {
+  constructor(
+    private router: Router,
+    private serconfig: ConfiguracionService,
+    private seralerta: AlertaService,
+    private serpres: PrestamoService
+  ) {
     super();
     this.#colorModeService.localStorageItemName.set('coreui-free-angular-admin-template-theme-default');
     this.#colorModeService.eventName.set('ColorSchemeChange');
@@ -73,6 +211,10 @@ export class DefaultHeaderComponent extends HeaderComponent {
       )
       .subscribe();
   }
+  ngOnInit(): void {
+
+  }
+
 
   @Input() sidebarId: string = 'sidebar1';
 
@@ -153,7 +295,6 @@ export class DefaultHeaderComponent extends HeaderComponent {
 
   public logout(){
     environment.islogged=false;
-    this.loginService.logout();
     this.router.navigate(['/login']);
   }
 
