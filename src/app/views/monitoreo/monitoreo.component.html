@@ -1,13 +1,34 @@
 <div class="carousel-container">
   <div class="carousel">
-    <div class="card" *ngFor="let card of cards">
+    <div class="card" *ngFor="let dispo of dispositivos">
       <div class="card-body">
-        <h5 class="card-title">{{ card.title }}</h5>
-        <p class="card-text">{{ card.text }}</p>
+        <div class="card-header">
+          <h5 class="card-title">{{ dispo.idDispositivo }} - {{ dispo.nombre }}</h5>
+          <!-- Dropdown integrado en el encabezado de la tarjeta -->
+          <ng-container *ngTemplateOutlet="ConfigDropdown"></ng-container>
+        </div>
+        <p class="card-text">{{ dispo.modelo?.nombre }} - {{ dispo.modelo?.marca?.nombre }}</p>
+        <p class="card-text">{{ dispo.categoria?.nombre }}</p>
       </div>
     </div>
   </div>
 </div>
 <app-mapa></app-mapa>
+
+
+<ng-template #ConfigDropdown>
+  <c-dropdown alignment="end" variant="nav-item" [autoClose]="true">
+    <button [caret]="false" cDropdownToggle aria-label="Open configuration picker" (click)="mensaje()">
+      <svg cIcon name="cilOptions" size="lg"></svg>
+    </button>
+      <ul cDropdownMenu style="width: 200px; padding: 5px;">
+        <li><a (click)="mensaje()" cDropdownItem>Accion1</a></li>
+        <li><a (click)="mensaje()" cDropdownItem>Accion2</a></li>
+      </ul>
+  </c-dropdown>
+</ng-template>
+
+
+
 
 
