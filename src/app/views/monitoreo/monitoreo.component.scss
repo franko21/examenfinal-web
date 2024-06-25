@@ -1,0 +1,89 @@
+.carousel-container {
+  width: 100%;
+  overflow-x: scroll;
+  scroll-snap-type: x mandatory;
+  display: flex;
+}
+
+.carousel {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.card {
+  flex: 0 0 auto;
+  margin: 10px;
+  width: 300px; /* Ancho ajustable según tu diseño */
+  border-radius: 15px; /* Bordes redondeados */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  overflow: hidden; /* Oculta el contenido que se desborda */
+  transition: transform 0.3s ease-in-out; /* Efecto de transición */
+  cursor: pointer; /* Cambia el cursor al pasar sobre la tarjeta */
+}
+
+.card:hover {
+  transform: translateY(-5px); /* Efecto de levantamiento al pasar el ratón */
+}
+
+.card-body {
+  padding: 16px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #3498db; /* Color de fondo del encabezado */
+  color: white; /* Color del texto */
+  padding: 12px; /* Espaciado interno */
+  border-top-left-radius: 15px; /* Bordes redondeados en la esquina superior izquierda */
+  border-top-right-radius: 15px; /* Bordes redondeados en la esquina superior derecha */
+  //border-radius: 10px; /* Bordes redondeados */
+}
+
+.card-title {
+  font-size: 1.2rem; /* Tamaño del título */
+  font-weight: bold; /* Texto en negrita */
+  margin: 0; /* Elimina el margen */
+}
+
+.card-text {
+  margin-top: 8px; /* Espacio superior para el texto */
+  color: #555; /* Color del texto secundario */
+}
+
+/* Estilos para el dropdown */
+.c-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.c-dropdown-toggle {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.c-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #fff; /* Fondo del menú desplegable */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra */
+  border: 1px solid #ccc; /* Borde */
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  z-index: 1000; /* Asegura que esté sobre otros elementos */
+}
+
+.c-dropdown-item {
+  padding: 10px 20px;
+  cursor: pointer;
+  white-space: nowrap; /* Evita el desbordamiento de texto */
+}
+
+.c-dropdown-item:hover {
+  background-color: #f0f0f0; /* Color de fondo al pasar el ratón */
+}

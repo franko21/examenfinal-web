@@ -94,7 +94,6 @@ export class PrestamoComponent {
   ingresarPrestamo(){
     this.mostrarFormularioIngreso = !this.mostrarFormularioIngreso;
     console.log(this.dispositivos);
-
   }
   edit(index: number) {
     this.selectedPrestamo = this.prestamos[index];
@@ -104,7 +103,7 @@ export class PrestamoComponent {
     const prestamoSeleccionado = this.prestamos[index]; // Suponiendo que prestamos es el array de datos
     this.registerForm.patchValue({
       beneficiario: prestamoSeleccionado.persona.id_persona,
-      dispositivo: prestamoSeleccionado.dispositivo.id_dispositivo,
+      dispositivo: prestamoSeleccionado.dispositivo.idDispositivo,
       zona_segura:prestamoSeleccionado.zona_segura.id_zona_segura,
       estado_devolucion:prestamoSeleccionado.estado_devolucion,
       fecha: this.formatDate(this.selectedPrestamo.fecha_finalizacion),
@@ -135,7 +134,7 @@ export class PrestamoComponent {
     let usuarioo:Usuario=new Usuario();
     // prestamo.usuario=usuarioo;
 
-    prestamo.dispositivo.id_dispositivo=formValues.dispositivo;
+    prestamo.dispositivo.idDispositivo=formValues.dispositivo;
     prestamo.persona.id_persona=formValues.beneficiario;
     prestamo.zona_segura.id_zona_segura=formValues.zona_segura;
     prestamo.fecha_finalizacion=formValues.fecha;
@@ -194,7 +193,7 @@ export class PrestamoComponent {
     let usuarioo:Usuario=new Usuario();
     // prestamo.usuario=usuarioo;
 
-    prestamo.dispositivo.id_dispositivo=formValues.dispositivo;
+    prestamo.dispositivo.idDispositivo=formValues.dispositivo;
     prestamo.persona.id_persona=formValues.beneficiario;
     prestamo.zona_segura.id_zona_segura=formValues.zona_segura;
     prestamo.fecha_finalizacion=formValues.fecha;
@@ -244,7 +243,7 @@ export class PrestamoComponent {
       },
       buttonsStyling: false
     });
-  
+
     swalWithBootstrapButtons.fire({
       title: 'Estas Seguro?',
       text: 'No se puede revertir',

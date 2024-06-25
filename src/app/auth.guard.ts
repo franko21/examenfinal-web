@@ -4,7 +4,8 @@ import { environment } from 'src/enviroments/environment';
   export const authGuard: CanActivateFn = (route, state) => {
     // Aquí puedes agregar la lógica para determinar si el usuario puede acceder a la ruta
     // Por ejemplo, puedes verificar si el usuario está autenticado
-    const isAuthenticated =environment.islogged;
+    // const isAuthenticated =environment.islogged;
+    const isAuthenticated = sessionStorage.getItem('token');
     if (isAuthenticated) {
       return true; // Permitir el acceso a la ruta
     } else {

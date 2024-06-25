@@ -36,6 +36,10 @@
     </c-header-nav>
 
     <c-header-nav class="ms-auto ms-md-0">
+      <ng-container *ngTemplateOutlet="ConfigDropdown" />
+    </c-header-nav>
+
+    <c-header-nav class="ms-auto ms-md-0">
       <div class="nav-item py-1">
         <div class="vr h-100 mx-2 text-body text-opacity-75"></div>
       </div>
@@ -177,6 +181,49 @@
           {{ mode.text }}
         </button>
       }
+    </div>
+  </c-dropdown>
+</ng-template>
+
+<ng-template #ConfigDropdown>
+  <c-dropdown alignment="end" variant="nav-item" [autoClose]="false">
+    <button [caret]="false" cDropdownToggle aria-label="Open configuration picker" (click)="crud_close()">
+      <svg cIcon name="cilSettings" size="lg"></svg>
+    </button>
+    <div cDropdownMenu style="width: 260px; padding: 10px;"> <!-- Ajuste de anchura y padding -->
+      <div>
+        <h5 class="card-title d-flex align-items-center mb-3">Tiempo de reporte</h5>
+        <h5 class="card-title d-flex align-items-center mb-3">
+          Configuración Actual
+          <span class="ms-2">
+            <span class="d-inline-block">
+              <button class="btn p-0 ml-2" (click)="desplegarcrud()"> <svg cIcon name="cilPencil" size="lg"></svg></button>
+             
+            </span>
+          </span>
+        </h5>
+         
+        <div style="margin-left: 10px;"> <!-- Ajuste de margen izquierdo -->
+          <span>Tiempo de Respuesta</span>
+          <label class="d-block mt-2">
+            <div class="morado">{{configuracion.tiempoRespuesta}} Segundos</div>
+          </label>
+          <!-- Aquí van los campos para editar la configuración -->
+
+          <div *ngIf="showTable">
+          
+  
+            <label cLabel for="customRange1">Segundos: <strong>{{value}}</strong></label>
+            <br>
+            <input [(ngModel)]="value" cFormControl id="customRange1" [max]="480" [min]="1" type="range" class="full-width-range" />
+            <br>
+            <button type="submit" class="btn btn-primary" (click)="actualizartiempo()">Guardar</button>
+           
+           
+            
+          </div>
+        </div>
+      </div>
     </div>
   </c-dropdown>
 </ng-template>
