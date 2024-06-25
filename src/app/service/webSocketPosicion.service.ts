@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Client, IMessage } from '@stomp/stompjs';
+import { Client, IMessage  } from '@stomp/stompjs';
 import { Observable, Subject } from 'rxjs';
 
 @Injectable({

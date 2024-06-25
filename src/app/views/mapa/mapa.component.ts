@@ -26,7 +26,6 @@ import { HttpClientModule } from '@angular/common/http';
 })
 export class MapaComponent implements OnInit, OnDestroy {
   @ViewChild(GoogleMap, { static: false }) map: GoogleMap;
-
   center: google.maps.LatLngLiteral = { lat: -2.879767894744873, lng: -78.97490692138672 };
   zoom = 12;
   markerOptions: google.maps.MarkerOptions = { draggable: false };
@@ -35,12 +34,17 @@ export class MapaComponent implements OnInit, OnDestroy {
   marker: google.maps.Marker | null = null;
   listadoPuntos: any[] = [];
   verticesPoligono = [];
-
   posiciones: Posicion[] = [];
   private posicionSubscription: Subscription;
   mostrarZonas: boolean = true;
+  blinkInterval: any;
+  //COLORES PARA EL PARPADEO DE LOS DISPOSITIVOS
+  colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00'];
+  currentColorIndex = 0;
+  
 
   constructor(
+    
     private webSocketPosicion: WebSocketPosicion,
     private posicionService: PosicionService,
     private puntoService: PuntoService,
@@ -48,19 +52,7 @@ export class MapaComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.listarposiciones();
-    //suscribirse al WebSocket para recibir actualización posiciones en tiempo real:
-    this.posicionSubscription = this.webSocketPosicion.obtenerPosiciones().subscribe(
-      (posiciones: any[]) => {
-        this.posiciones = posiciones.map(pos => ({
-          latitud: pos.lat, // Asegúrate de que 'lat' y 'lng' correspondan a las propiedades correctas
-          longitud: pos.lng
-        }));
-      },
-      error => {
-        console.error('Error al suscribirse a las posiciones:', error);
-      }
-    );
+    
   }
 
   ngOnDestroy(): void {
@@ -74,6 +66,7 @@ export class MapaComponent implements OnInit, OnDestroy {
     this.posicionService.listar().subscribe(
       (posiciones: Posicion[]) => {
         this.posiciones = posiciones;
+        console.log(this.posiciones.length);
       },
       error => {
         console.error('Error al listar posiciones:', error);
@@ -89,8 +82,8 @@ export class MapaComponent implements OnInit, OnDestroy {
         latitud: this.lastClickedPosition.lat,
         longitud: this.lastClickedPosition.lng
       };
+      console.log( "LATITUD "+punto.latitud, +" /"+"lONGITUD"+punto.longitud);
       this.listadoPuntos.push(punto);
-      console.log('Cantidad de puntos:', this.listadoPuntos.length);
       this.actualizarMarcadorEnMapa(position);
     }
   }
@@ -163,26 +156,90 @@ export class MapaComponent implements OnInit, OnDestroy {
   }
 
   actualizarMarcadorEnMapa(position: google.maps.LatLngLiteral) {
+    //RUTA PARA COLOCAR UN MARKADOR PERSONALIZADO
+    const ruta = 'https://th.bing.com/th/id/R.e6d5549d7d43ef8e34af49fed37e1196?rik=nb2KWBpNv895Bw&pid=ImgRaw&r=0';
+    //CÓDIGO PARA CREAER UN MARKADOR PERSONALIZADO
     this.marker = new google.maps.Marker({
       position: position,
       icon: {
-        path: google.maps.SymbolPath.CIRCLE,
-        scale: 10,
-        strokeColor: '#f00',
-        strokeWeight: 5,
-        fillColor: '#000A02',
-        fillOpacity: 1
+      url: ruta,
+        scaledSize: new google.maps.Size(30, 30),  // Escala del ícono
       },
       map: this.map?.googleMap || null
     });
+    //this.marker = new google.maps.Marker({
+    //  position: position,
+    //  icon: {
+    //    path: google.maps.SymbolPath.CIRCLE,
+    //    scale: 10,
+    //    strokeColor: '#f00',
+    //    strokeWeight: 5,
+    //    fillColor: '#000A02',
+    //    fillOpacity: 1,
+    //  },
+    //  map: this.map?.googleMap || null,
+    //});
   }
 
   toggleView() {
     this.mostrarZonas = !this.mostrarZonas;
+    this.loadOtherPositionsMarkers();
   }
 
 
   trackByFn(index: number, item: any) {
     return index;
+  }
+
+  //OBTENER EL COLOR PARA CADA MARCADOR
+  getColoredIcon(color: string) {
+    return {
+      path: google.maps.SymbolPath.CIRCLE,
+      scale: 10,
+      strokeColor: color,
+      strokeWeight: 5,
+      fillColor: color,
+      fillOpacity: 1
+    };
+  }
+
+  //MÉTODO PARA HACER QUE EL MARCADOR PARPADEE CADA CIERTO TIEMPO
+  startBlinking() {
+    this.blinkInterval = setInterval(() => {
+      if (this.marker) {
+        this.currentColorIndex = (this.currentColorIndex + 1) % this.colors.length;
+        this.marker.setIcon(this.getColoredIcon(this.colors[this.currentColorIndex]));
+      }
+    }, 500);
+  }
+
+  loadOtherPositionsMarkers() {
+    // Obtener posiciones de otros dispositivos y agregar marcadores en el mapa
+    this.listarposiciones();
+    console.log(this.posiciones.length);
+    const ruta = 'https://th.bing.com/th/id/R.e6d5549d7d43ef8e34af49fed37e1196?rik=nb2KWBpNv895Bw&pid=ImgRaw&r=0';
+    //suscribirse al WebSocket para recibir actualización posiciones en tiempo real:
+    this.posicionSubscription = this.webSocketPosicion.obtenerPosiciones().subscribe(
+      (posiciones: any[]) => {
+        this.posiciones = posiciones;
+        // Agregar marcadores de posiciones
+        this.posiciones.forEach((pos, index) => {
+          const marker = new google.maps.Marker({
+            position: { lat: pos.latitud, lng: pos.longitud },
+            icon: {
+              url: ruta,
+                scaledSize: new google.maps.Size(30, 30),  // Escala del ícono
+              },
+            map: this.map.googleMap
+          });
+        });
+      },
+      error => {
+        console.error('Error al suscribirse a las posiciones:', error);
+      }
+    );
+    
+    
+    
   }
 }
