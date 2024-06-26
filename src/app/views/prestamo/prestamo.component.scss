@@ -12,3 +12,17 @@
 #guardar-prestamo:hover {
     background-color: #249542;
 }
+
+.tooltip-container {
+  z-index: 1050; /* Asegura que el tooltip esté por encima de otros elementos */
+}
+
+.tooltip-container .arrow {
+  position: absolute;
+  top: 100%; /* Posiciona la flecha del tooltip */
+  right: 0;
+  border-width: 0.5rem;
+  border-style: solid;
+  border-color: transparent;
+  border-top-color: #dc3545; /* Color del borde del tooltip */
+}
