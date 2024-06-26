@@ -60,10 +60,10 @@
                   <div class="fw-semibold text-nowrap">{{ dispo.categoria?.nombre }}</div>
                 </td>
                 <td>
-                  <button type="button" class="btn btn-primary" (click)="editardispo(dispo)">Editar</button>
+                  <button type="button" class="btn btn-primary" (click)="editardispo(dispo)"><svg cIcon name="cilPencil" size="lg"></svg></button>
                 </td>
                 <td>
-                  <button type="button" class="btn btn-danger" (click)="eliminardispo(dispo)">Eliminar</button>
+                  <button type="button" class="btn btn-danger" (click)="eliminardispo(dispo)"> <svg cIcon name="cilTrash" size="lg"></svg></button>
                 </td>
               </tr>
             </tbody>
@@ -74,16 +74,17 @@
         </div>
 
         <!-- AQUI INICIAN LOS FORMULARIOS DE INGRESO Y MODIFICACION SEGUN CORRESPONDA-->
-        <div *ngIf="!showTable">
+        <div *ngIf="!showTablec">
           <form >
           <c-input-group class="mb-3">
             <span cInputGroupText>
               <svg cIcon name="cilItalic"></svg>
             </span>
-            <select name="Categoria" id="Categoria" class="form-control" [(ngModel)]="dispositivo.categoria">
-              <option [ngValue]="null" disabled selected>Seleccione la Categoría</option>
+            <select name="Categoria" id="Categoria" class="form-control" [(ngModel)]="categoriaselet">
+              <option Value="null" disabled selected>Seleccione la Categoría</option>
               <option *ngFor="let cate of categorias" [ngValue]="cate">
-                {{ cate.nombre }}</option>
+                {{ cate.nombre }}
+              </option>
             </select>
           </c-input-group>
           <c-input-group class="mb-3">
@@ -91,7 +92,7 @@
               <svg cIcon name="cilItalic"></svg>
             </span>
             <select class="form-control" name="Marcas" id="Marcas">
-              <option value="" disabled selected>Seleccione la Marca</option>
+              <option value="null" disabled selected>Seleccione la Marca</option>
               <option *ngFor="let marca of marcas"  >
                 {{ marca.nombre }}
               </option>
@@ -101,12 +102,13 @@
             <span cInputGroupText>
               <svg cIcon name="cilItalic"></svg>
             </span>
-            <select name="Modelo" id="Modelo" class="form-control" [(ngModel)]="dispositivo.modelo" >
-              <option value="" disabled selected>Seleccione el Modelo</option>
-              <option *ngFor="let modelo of modelos" [ngValue]="modelo" >
+            <select name="Modelo" id="Modelo" class="form-control" [(ngModel)]="modeloselet">
+              <option  [ngValue]="null" disabled selected>Seleccione el Modelo</option>
+              <option *ngFor="let modelo of modelos" [ngValue]="modelo">
                 {{ modelo.nombre }}
               </option>
             </select>
+            
           </c-input-group> 
           <c-input-group class="mb-3">
             <span cInputGroupText>
@@ -136,7 +138,77 @@
         </form>
             <!-- AQUI ACABAN LOS FORMULARIOS DE INGRESO Y MODIFICACION SEGUN CORRESPONDA--> 
         </div>
+
+        <!-- AQUI INICIAN LOS FORMULARIOS  DE MODIFICACION -->
+        <div *ngIf="!showTablem">
+          <form >
+          <c-input-group class="mb-3">
+            <span cInputGroupText>
+              <svg cIcon name="cilItalic"></svg>
+            </span>
+            <select name="Categoria" id="Categoria" class="form-control" [(ngModel)]="categoriamod.id_categoria">
+              <option Value="null" disabled selected>Seleccione la Categoría</option>
+              <option *ngFor="let cate of categorias" [ngValue]="cate.id_categoria">
+                {{ cate.nombre }}
+              </option>
+            </select>
+          </c-input-group>
+          <c-input-group class="mb-3">
+            <span cInputGroupText>
+              <svg cIcon name="cilItalic"></svg>
+            </span>
+            <select class="form-control" name="Marcas" id="Marcas">
+              <option value="null" disabled selected>Seleccione la Marca</option>
+              <option *ngFor="let marca of marcas"  >
+                {{ marca.nombre }}
+              </option>
+            </select>
+          </c-input-group>
+          <c-input-group class="mb-3">
+            <span cInputGroupText>
+              <svg cIcon name="cilItalic"></svg>
+            </span>
+            <select name="Modelo" id="Modelo" class="form-control" [(ngModel)]="modelomod.id_modelo">
+              <option  [ngValue]="null" disabled selected>Seleccione el Modelo</option>
+              <option *ngFor="let modelo of modelos" [ngValue]="modelo.id_modelo">
+                {{ modelo.nombre }}
+              </option>
+            </select>
+            
+          </c-input-group> 
+          <c-input-group class="mb-3">
+            <span cInputGroupText>
+              <svg cIcon name="cilUser"></svg>
+            </span>
+            <input id="numero_serie" class="form-control" type="text"  placeholder="Numero de Serie" [(ngModel)]="dispositivo.numero_serie" name="numero_serie" />
+          </c-input-group> 
+          <c-input-group class="mb-3">
+            <span cInputGroupText>
+              <svg cIcon name="cilUser"></svg>
+            </span>
+            <input id="nombre" class="form-control" type="text"  placeholder="Nombre" [(ngModel)]="dispositivo.nombre" name="nombre" />
+          </c-input-group>  
+          <c-input-group class="mb-3">   
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="disponible" [(ngModel)]="dispositivo.disponible" name="disponible">
+              <label class="form-check-label" for="disponible">Disponible</label>
+            </div>
+          </c-input-group> 
+          <div class="d-grid">
+            <button cButton color="success" type="submit"(click)="crearDispositivo()">Guardar Cambios</button>
+          </div><br>
+          <div class="d-grid">
+            <button cButton color="secondary" type="button"(click)="cancelar()" >Cancelar</button>
+          </div>
+          
+        </form>
+            <!-- AQUI ACABAN LOS FORMULARIOS DE MODIFICACION --> 
+        </div>
       </c-card-body>
     </c-card>
   </c-col>
 </c-row>
+
+
+
+
