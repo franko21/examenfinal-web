@@ -4,6 +4,10 @@
   </button>
 </div>
 
+<div class="search-container">
+  <input #autocomplete type="text" placeholder="Buscar dirección">
+</div>
+
 <div *ngIf="mostrarZonas; else otrasPosiciones">
   <div id="map-container">
     <google-map
