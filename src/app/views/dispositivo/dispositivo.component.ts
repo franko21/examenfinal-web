@@ -1,26 +1,19 @@
 import { Component,NgModule,OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule,FormBuilder,FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
 import {
   AvatarComponent,
   InputGroupTextDirective,
   FormControlDirective,
   ButtonDirective,
-  ButtonGroupComponent,
   CardBodyComponent,
   CardComponent,
-  CardFooterComponent,
-  CardHeaderComponent,
   InputGroupComponent,
   ColComponent,
-  FormCheckLabelDirective,
-  GutterDirective,
-  ProgressBarDirective,
   ProgressComponent,
   RowComponent,
-  TableDirective,
-  TextColorDirective,
-  
+  TableDirective
 } from '@coreui/angular';
 
 import { IconDirective } from '@coreui/icons-angular';
@@ -57,9 +50,7 @@ import Swal from 'sweetalert2';
     FormControlDirective,
     ButtonDirective,
     FormsModule,
-    ReactiveFormsModule
-
-     
+    ReactiveFormsModule,
   ],
   providers:[DipositivoService,ModeloService,MarcaService,CategoriaService],
   templateUrl: './dispositivo.component.html',
@@ -67,19 +58,41 @@ import Swal from 'sweetalert2';
 })
 export class DispositivoComponent implements OnInit {
    public dispositivo:Dispositivo=new Dispositivo();
+   public categoriaselet: Categoria | null = new Categoria();
+   public modeloselet: Modelo | null = new Modelo();
+   public categoriamod: Categoria = new Categoria();
+   public modelomod: Modelo = new Modelo();
    public titulo: string = "Dispositivo";
    dispositivos: Dispositivo[] = [];
    marcas:Marca[]=[];
    modelos:Modelo[]=[];
    categorias:Categoria[]=[];
+   dispositivoSeleccionado: string ='';
+   Seleccionado: string ='';
    p: number = 1;
    showTable: boolean = true;
+   showTablem: boolean = true;
+   showTablec: boolean = true;
+   registerForm: FormGroup;
+
+
+
+
   toggleView() {
     this.showTable = !this.showTable;
      this.titulo="Dispositivo"
   }
-  constructor(private serdispo:DipositivoService , private sermarca:MarcaService, private sermodelo:ModeloService, private sercateg:CategoriaService ,private router: Router){
-    //private sermarca:MarcaService, private sermodelo:ModeloService, private sercateg:CategoriaService
+  toggleViewm() {
+    this.showTablem = !this.showTablem;
+     this.titulo="Dispositivo"
+  
+  }
+  toggleViewc() {
+    this.showTablec = !this.showTablec;
+     this.titulo="Dispositivo"
+   
+  }
+  constructor(private serdispo:DipositivoService , private sermarca:MarcaService, private sermodelo:ModeloService, private sercateg:CategoriaService ,private router: Router,fb:FormBuilder){
   }
   ngOnInit(): void {
     this.listardispo();
@@ -130,6 +143,9 @@ export class DispositivoComponent implements OnInit {
   }
 
   crearDispositivo() {
+    this.asignacatmar() 
+    console.log(this.categoriaselet);
+    console.log(this.modeloselet);
     if (this.validateForm()) {
       //////////
     this.serdispo.crear(this.dispositivo).subscribe(
@@ -143,6 +159,7 @@ export class DispositivoComponent implements OnInit {
             confirmButtonText: 'OK'
           });
         }else{
+          console.log(this.dispositivo);
           Swal.fire({
             icon: 'success',
             title: '¡Dispositivo Editado con éxito!',
@@ -152,6 +169,8 @@ export class DispositivoComponent implements OnInit {
           });
         }
         this.toggleView();
+        this.showTablem=true;
+        this.showTablec=true;
         this.vaciarcampos();
         this.listardispo();
       },
@@ -165,18 +184,49 @@ export class DispositivoComponent implements OnInit {
           confirmButtonText: 'OK'
         });
       }
-    );
-    //////
-      
+    );  
     }
-     
- 
+    
   }
 
-  editardispo(dispo:Dispositivo){
-    this.dispositivo =dispo; 
+  editardispo(dispo: Dispositivo) {
+    this.dispositivo = structuredClone(dispo); // Utilizar structuredClone para una copia profunda
+    this.asigparaedit();
+    this.showTablem = false;
     this.toggleView();
-    this.titulo="Editar dispostivo"
+    this.titulo = "Editar dispostivo";
+  }
+
+
+  asignacatmar() {
+    if (this.dispositivo && this.categoriaselet&&this.modeloselet) {
+      if(this.titulo=="Ingresar dispostivo"){
+      this.dispositivo.categoria = this.categoriaselet;
+      this.dispositivo.modelo = this.modeloselet;
+      }else{
+        this.dispositivo.categoria = this.categoriamod;
+        this.dispositivo.modelo = this.modelomod;
+      }
+
+     
+
+      
+    }
+    console.log(this.categoriaselet);
+    console.log(this.modeloselet);
+
+  }
+  asigparaedit() {
+    if (this.dispositivo) {
+      if (this.dispositivo.categoria) {
+        this.categoriamod = this.dispositivo.categoria;
+      }
+      if (this.dispositivo.modelo) {
+        this.modelomod = this.dispositivo.modelo;
+      }
+    }
+    console.log(this.categoriaselet);
+    console.log(this.modeloselet);
   }
 
  eliminardispo(dispo:Dispositivo){
@@ -215,16 +265,29 @@ export class DispositivoComponent implements OnInit {
   }
 
   vaciarcampos(): void {
-    this.dispositivo = new Dispositivo();
-   
+  this.dispositivo = new Dispositivo();
+  this.categoriaselet= new Categoria();
+  this.modeloselet =new Modelo();
+  this.modelomod=new Modelo();
+  this.categoriamod=new Categoria();
   }
   cancelar(): void{
   this.toggleView();
+  this.showTablec=true;
+  this.showTablem=true;
   this.vaciarcampos();
   }
+
+  cancelarm(): void{
+    this.toggleView();
+    this.vaciarcampos();
+    }
   
   btncrear(): void{
+    this.categoriaselet = null;
+    this.modeloselet=null;
     this.toggleView();
+    this.toggleViewc();
     this.titulo="Ingresar dispostivo"
     }
     validateForm(): boolean {
