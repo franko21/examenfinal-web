@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Prestamo } from '../model/prestamo';
+import { Prestamo } from '../model/prestamo.model';
 import { Observable, catchError, throwError } from 'rxjs';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../enviroments/environment';

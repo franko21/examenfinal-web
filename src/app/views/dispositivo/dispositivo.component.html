@@ -2,15 +2,35 @@
   <c-col xs>
     <c-card class="mb-4">
       <c-card-body>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <h5 class="card-title" style="margin-bottom: 0;">{{titulo}}</h5>
-          <button type="button" *ngIf="!showTable" class="btn btn-secondary" (click)="cancelar()">Volver</button>
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          "
+        >
+          <h5 class="card-title" style="margin-bottom: 0">{{ titulo }}</h5>
+          <button
+            type="button"
+            *ngIf="!showTable"
+            class="btn btn-secondary"
+            (click)="cancelar()"
+          >
+            Volver
+          </button>
         </div>
-        <br>
+        <br />
         <div class="button-container">
-          <button type="button" class="btn btn-outline-info bi bi-plus-circle" *ngIf="showTable" (click)="btncrear()">Agregar dispositivo</button>
-        </div><br>
-  
+          <button
+            type="button"
+            class="btn btn-outline-info bi bi-plus-circle"
+            *ngIf="showTable"
+            (click)="btncrear()"
+          >
+            Agregar dispositivo
+          </button>
+        </div>
+        <br />
 
         <!-- Tabla de dispositivos -->
         <div *ngIf="showTable">
@@ -35,7 +55,14 @@
               </tr>
             </thead>
             <tbody>
-              <tr class="bg-body-tertiary text-center" *ngFor="let dispo of dispositivos | paginate: { itemsPerPage: 5, currentPage: p }; let i = index">
+              <tr
+                class="bg-body-tertiary text-center"
+                *ngFor="
+                  let dispo of dispositivos
+                    | paginate : { itemsPerPage: 5, currentPage: p };
+                  let i = index
+                "
+              >
                 <td>
                   <div>{{ dispo.idDispositivo }}</div>
                 </td>
@@ -46,95 +73,162 @@
                   </div>
                 </td>
                 <td>
-                  <div class="fw-semibold text-nowrap">{{ dispo.numero_serie }}</div>
+                  <div class="fw-semibold text-nowrap">
+                    {{ dispo.numSerie }}
+                  </div>
                 </td>
                 <td>
                   <div class="fw-semibold text-nowrap">{{ dispo.nombre }}</div>
                 </td>
                 <td>
-                  <div class="fw-semibold text-nowrap" [ngStyle]="{ 'color': dispo.disponible ? 'green' : 'red', 'font-weight': dispo.disponible ? 'bold' : 'normal' }">
-                    {{ dispo.disponible ? 'Disponible' : 'Prestado' }}
+                  <div
+                    class="fw-semibold text-nowrap"
+                    [ngStyle]="{
+                      color: dispo.disponible ? 'green' : 'red',
+                      'font-weight': dispo.disponible ? 'bold' : 'normal'
+                    }"
+                  >
+                    {{ dispo.disponible ? "Disponible" : "Prestado" }}
                   </div>
                 </td>
                 <td>
-                  <div class="fw-semibold text-nowrap">{{ dispo.categoria?.nombre }}</div>
+                  <div class="fw-semibold text-nowrap">
+                    {{ dispo.categoria?.nombre }}
+                  </div>
                 </td>
                 <td>
-                  <button type="button" class="btn btn-primary" (click)="editardispo(dispo)">Editar</button>
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    (click)="editardispo(dispo)"
+                  >
+                    Editar
+                  </button>
                 </td>
                 <td>
-                  <button type="button" class="btn btn-danger" (click)="eliminardispo(dispo)">Eliminar</button>
+                  <button
+                    type="button"
+                    class="btn btn-danger"
+                    (click)="eliminardispo(dispo)"
+                  >
+                    Eliminar
+                  </button>
                 </td>
               </tr>
             </tbody>
           </table>
           <div class="d-flex justify-content-center mt-3">
-            <pagination-controls (pageChange)="p = $event"></pagination-controls>
+            <pagination-controls
+              (pageChange)="p = $event"
+            ></pagination-controls>
           </div>
         </div>
 
         <!-- AQUI INICIAN LOS FORMULARIOS DE INGRESO Y MODIFICACION SEGUN CORRESPONDA-->
         <div *ngIf="!showTable">
-          <form >
-          <c-input-group class="mb-3">
-            <span cInputGroupText>
-              <svg cIcon name="cilItalic"></svg>
-            </span>
-            <select name="Categoria" id="Categoria" class="form-control" [(ngModel)]="dispositivo.categoria">
-              <option [ngValue]="null" disabled selected>Seleccione la Categoría</option>
-              <option *ngFor="let cate of categorias" [ngValue]="cate">
-                {{ cate.nombre }}</option>
-            </select>
-          </c-input-group>
-          <c-input-group class="mb-3">
-            <span cInputGroupText>
-              <svg cIcon name="cilItalic"></svg>
-            </span>
-            <select class="form-control" name="Marcas" id="Marcas">
-              <option value="" disabled selected>Seleccione la Marca</option>
-              <option *ngFor="let marca of marcas"  >
-                {{ marca.nombre }}
-              </option>
-            </select>
-          </c-input-group>
-          <c-input-group class="mb-3">
-            <span cInputGroupText>
-              <svg cIcon name="cilItalic"></svg>
-            </span>
-            <select name="Modelo" id="Modelo" class="form-control" [(ngModel)]="dispositivo.modelo" >
-              <option value="" disabled selected>Seleccione el Modelo</option>
-              <option *ngFor="let modelo of modelos" [ngValue]="modelo" >
-                {{ modelo.nombre }}
-              </option>
-            </select>
-          </c-input-group> 
-          <c-input-group class="mb-3">
-            <span cInputGroupText>
-              <svg cIcon name="cilUser"></svg>
-            </span>
-            <input id="numero_serie" class="form-control" type="text"  placeholder="Numero de Serie" [(ngModel)]="dispositivo.numero_serie" name="numero_serie" />
-          </c-input-group> 
-          <c-input-group class="mb-3">
-            <span cInputGroupText>
-              <svg cIcon name="cilUser"></svg>
-            </span>
-            <input id="nombre" class="form-control" type="text"  placeholder="Nombre" [(ngModel)]="dispositivo.nombre" name="nombre" />
-          </c-input-group>  
-          <c-input-group class="mb-3">   
-            <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" id="disponible" [(ngModel)]="dispositivo.disponible" name="disponible">
-              <label class="form-check-label" for="disponible">Disponible</label>
+          <form>
+            <!-- Para la categoría -->
+            <c-input-group class="mb-3">
+              <span cInputGroupText>
+                <svg cIcon name="cilItalic"></svg>
+              </span>
+              <select class="form-control" name="categoria" id="categoria" [(ngModel)]="dispositivo.categoria?.id_categoria">
+                <option value="" disabled selected>Seleccione la categoría</option>
+                <option *ngFor="let categoria of categorias" [ngValue]="categoria.id_categoria">
+                  {{ categoria.nombre }}
+                </option>
+              </select>
+            </c-input-group>
+
+            <!-- Para las marcas -->
+            <c-input-group class="mb-3">
+              <span cInputGroupText>
+                <svg cIcon name="cilItalic"></svg>
+              </span>
+              <select
+                class="form-control"
+                name="Marcas"
+                id="Marcas"
+                [(ngModel)]="dispositivo.modelo.marca.id_marca"
+              >
+                <option value="" disabled selected>Seleccione la Marca</option>
+                <option *ngFor="let marca of marcas" [ngValue]="marca.id_marca">
+                  {{ marca.nombre }}
+                </option>
+              </select>
+            </c-input-group>
+
+            <!-- Para los modelos -->
+            <c-input-group class="mb-3">
+              <span cInputGroupText>
+                <svg cIcon name="cilItalic"></svg>
+              </span>
+              <select
+                class="form-control"
+                name="modelos"
+                id="modelos"
+                [(ngModel)]="dispositivo.modelo.id_modelo"
+              >
+                <option value="" disabled selected>Seleccione el Modelo</option>
+                <option
+                  *ngFor="let modelo of modelos"
+                  [ngValue]="modelo.id_modelo"
+                >
+                  {{ modelo.nombre }}
+                </option>
+              </select>
+            </c-input-group>
+
+            <c-input-group class="mb-3">
+              <span cInputGroupText>
+                <svg cIcon name="cilUser"></svg>
+              </span>
+              <input
+                id="nombre"
+                class="form-control"
+                type="text"
+                placeholder="Nombre"
+                [(ngModel)]="dispositivo.nombre"
+                name="nombre"
+              />
+            </c-input-group>
+            <c-input-group class="mb-3">
+              <div class="form-check form-switch">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="disponible"
+                  [(ngModel)]="dispositivo.disponible"
+                  name="disponible"
+                />
+                <label class="form-check-label" for="disponible"
+                  >Disponible</label
+                >
+              </div>
+            </c-input-group>
+            <div class="d-grid">
+              <button
+                cButton
+                color="success"
+                type="submit"
+                (click)="crearDispositivo()"
+              >
+                Guardar Cambios
+              </button>
             </div>
-          </c-input-group> 
-          <div class="d-grid">
-            <button cButton color="success" type="submit"(click)="crearDispositivo()">Guardar Cambios</button>
-          </div><br>
-          <div class="d-grid">
-            <button cButton color="secondary" type="button"(click)="cancelar()" >Cancelar</button>
-          </div>
-          
-        </form>
-            <!-- AQUI ACABAN LOS FORMULARIOS DE INGRESO Y MODIFICACION SEGUN CORRESPONDA--> 
+            <br />
+            <div class="d-grid">
+              <button
+                cButton
+                color="secondary"
+                type="button"
+                (click)="cancelar()"
+              >
+                Cancelar
+              </button>
+            </div>
+          </form>
+          <!-- AQUI ACABAN LOS FORMULARIOS DE INGRESO Y MODIFICACION SEGUN CORRESPONDA-->
         </div>
       </c-card-body>
     </c-card>

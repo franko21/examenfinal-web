@@ -6,12 +6,12 @@ import {NgxPaginationModule} from "ngx-pagination";
 import {FormBuilder, FormGroup, ReactiveFormsModule} from "@angular/forms";
 import {PersonaService} from "../../service/persona.service";
 import {RolService} from "../../service/rol.service";
-import {Rol} from "../../model/rol";
-import {Persona} from "../../model/persona";
-import {Prestamo} from "../../model/prestamo";
+import {Rol} from "../../model/rol.model";
+import {Persona} from "../../model/persona.model";
+import {Prestamo} from "../../model/prestamo.model";
 import {Dispositivo} from "../../model/dispositivo.model";
-import {Zona_segura} from "../../model/Zona_segura";
-import {Usuario} from "../../model/usuario";
+import {Zona_segura} from "../../model/zona_segura";
+import {Usuario} from "../../model/usuario.model";
 import Swal from "sweetalert2";
 import {RegisterRequest} from "../pages/login/RegisterRequest";
 

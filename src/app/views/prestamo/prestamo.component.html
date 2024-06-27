@@ -76,7 +76,7 @@
       <tbody>
         <tr *ngFor="let prestamo of prestamos  | paginate: { itemsPerPage: 5, currentPage: p }; let i = index">
           <td>{{ prestamo.persona.cedula }} - {{ prestamo.persona.nombre }}</td>
-          <td>{{ prestamo.dispositivo.numero_serie }} - {{ prestamo.dispositivo.nombre }}</td>
+          <td>{{ prestamo.dispositivo.numSerie }} - {{ prestamo.dispositivo.nombre }}</td>
           <td>
             {{ prestamo.fecha_prestamo ? prestamo.fecha_prestamo.toString().split("T")[0] + ' ' + formatTime(prestamo.hora_prestamo) : 'NA' }}
           </td>

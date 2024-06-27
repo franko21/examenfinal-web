@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {map, Observable} from "rxjs";
-import {Prestamo} from "../model/prestamo";
+import {Prestamo} from "../model/prestamo.model";
 import {environment} from "../../enviroments/environment";
-import {Rol} from "../model/rol";
+import {Rol} from "../model/rol.model";
 
 @Injectable({
   providedIn: 'root'

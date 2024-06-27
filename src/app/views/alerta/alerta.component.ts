@@ -2,10 +2,10 @@ import { NgFor, NgIf } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { AlertaService } from 'src/app/service/alerta.service';
-import { Alerta } from 'src/app/model/alerta';
+import { Alerta } from 'src/app/model/alerta.model';
 import { Dispositivo } from 'src/app/model/dispositivo.model';
-import { Persona } from 'src/app/model/persona';
-import { Prestamo } from 'src/app/model/prestamo';
+import { Persona } from 'src/app/model/persona.model';
+import { Prestamo } from 'src/app/model/prestamo.model';
 
 @Component({
   selector: 'app-alerta',

@@ -66,7 +66,7 @@ import Swal from 'sweetalert2';
   styleUrl: './dispositivo.component.scss'
 })
 export class DispositivoComponent implements OnInit {
-   public dispositivo:Dispositivo=new Dispositivo();
+   dispositivo: Dispositivo = new Dispositivo(); 
    public titulo: string = "Dispositivo";
    dispositivos: Dispositivo[] = [];
    marcas:Marca[]=[];
@@ -81,7 +81,8 @@ export class DispositivoComponent implements OnInit {
   constructor(private serdispo:DipositivoService , private sermarca:MarcaService, private sermodelo:ModeloService, private sercateg:CategoriaService ,private router: Router){
     //private sermarca:MarcaService, private sermodelo:ModeloService, private sercateg:CategoriaService
   }
-  ngOnInit(): void {
+  ngOnInit(): void { 
+
     this.listardispo();
     this.listarmode();
     this.listarcategorias();
@@ -234,7 +235,7 @@ export class DispositivoComponent implements OnInit {
         !this.dispositivo.nombre ||
         !this.dispositivo.categoria ||
         !this.dispositivo.modelo ||
-        !this.dispositivo.numero_serie// ||
+        !this.dispositivo.numSerie// ||
         //!this.dispositivo.disponible
       ) {
         Swal.fire('¡Error!', 'Por favor, completa todos los campos obligatorios.', 'error');

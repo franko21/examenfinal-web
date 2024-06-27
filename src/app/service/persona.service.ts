@@ -2,9 +2,9 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, catchError, throwError } from 'rxjs';
 import { environment } from '../../enviroments/environment';
-import { Persona } from '../model/persona';
+import { Persona } from '../model/persona.model';
 import { map } from 'rxjs';
-import {Prestamo} from "../model/prestamo";
+import {Prestamo} from "../model/prestamo.model";
 
 @Injectable({
   providedIn: 'root'

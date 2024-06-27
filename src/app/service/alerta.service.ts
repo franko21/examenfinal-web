@@ -3,7 +3,7 @@ import { Observable, catchError, throwError } from 'rxjs';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../enviroments/environment';
 import { map } from 'rxjs';
-import { Alerta } from '../model/alerta';
+import { Alerta } from '../model/alerta.model';
 
 @Injectable({
   providedIn: 'root'
