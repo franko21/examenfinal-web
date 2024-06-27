@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import { AfterViewInit, Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {GoogleMap, MapHeatmapLayer, MapMarker} from '@angular/google-maps';
 import { Punto } from "src/app/model/Punto";
 import { Zona_segura } from 'src/app/model/Zona_segura';
@@ -24,43 +24,43 @@ import { HttpClientModule } from '@angular/common/http';
   ],
   providers: [PuntoService,Zona_seguraService, PosicionService]
 })
-export class MapaComponent implements OnInit, OnDestroy {
+export class MapaComponent implements OnInit, OnDestroy,AfterViewInit  {
   @ViewChild(GoogleMap, { static: false }) map: GoogleMap;
-
   center: google.maps.LatLngLiteral = { lat: -2.879767894744873, lng: -78.97490692138672 };
   zoom = 12;
+  //ELEMENTO PARA BUSCAR DIRECCIONES
+  @ViewChild('autocomplete', { static: false }) input: ElementRef | undefined;
+  autocomplete: google.maps.places.Autocomplete | undefined;
+  //ELEMENTO PARA BUSCAR DIRECCIONES
   markerOptions: google.maps.MarkerOptions = { draggable: false };
   markerPositions: google.maps.LatLngLiteral[] = [];
   lastClickedPosition: google.maps.LatLngLiteral | null = null;
   marker: google.maps.Marker | null = null;
   listadoPuntos: any[] = [];
   verticesPoligono = [];
-
   posiciones: Posicion[] = [];
   private posicionSubscription: Subscription;
   mostrarZonas: boolean = true;
+  blinkInterval: any;
+  
 
   constructor(
     private webSocketPosicion: WebSocketPosicion,
     private posicionService: PosicionService,
     private puntoService: PuntoService,
-    private zonaService: Zona_seguraService
+    private zonaService: Zona_seguraService,
+    private zone: NgZone
   ) {}
 
+  ngAfterViewInit(): void {
+    this.zone.runOutsideAngular(() => {
+      console.log('vista cargado correctamente con sus child');
+      this.initAutocomplete();
+    });
+  }
+
   ngOnInit(): void {
-    this.listarposiciones();
-    //suscribirse al WebSocket para recibir actualización posiciones en tiempo real:
-    this.posicionSubscription = this.webSocketPosicion.obtenerPosiciones().subscribe(
-      (posiciones: any[]) => {
-        this.posiciones = posiciones.map(pos => ({
-          latitud: pos.lat, // Asegúrate de que 'lat' y 'lng' correspondan a las propiedades correctas
-          longitud: pos.lng
-        }));
-      },
-      error => {
-        console.error('Error al suscribirse a las posiciones:', error);
-      }
-    );
+    
   }
 
   ngOnDestroy(): void {
@@ -69,11 +69,37 @@ export class MapaComponent implements OnInit, OnDestroy {
     }
   }
 
+  private initAutocomplete(): void {
+    if (this.input) {
+      console.log('CARGA DE DIRECCIONES INICIADA');
+      this.autocomplete = new google.maps.places.Autocomplete(this.input.nativeElement, {
+        types: ['address'],
+        componentRestrictions: { country: 'EC' },
+        fields: ['place_id', 'geometry', 'name']
+      });
+
+      this.autocomplete.addListener('place_changed', () => {
+        this.onPlaceChanged();
+      });
+    }
+  }
+
+  onPlaceChanged(): void {
+    if (this.autocomplete) {
+      const place = this.autocomplete.getPlace();
+      if (!place.geometry) {
+        // Handle invalid place
+      } else {
+        console.log(place.name);
+      }
+    }
+  }
   
   listarposiciones() {
     this.posicionService.listar().subscribe(
       (posiciones: Posicion[]) => {
         this.posiciones = posiciones;
+        console.log(this.posiciones.length);
       },
       error => {
         console.error('Error al listar posiciones:', error);
@@ -89,8 +115,8 @@ export class MapaComponent implements OnInit, OnDestroy {
         latitud: this.lastClickedPosition.lat,
         longitud: this.lastClickedPosition.lng
       };
+      console.log( "LATITUD "+punto.latitud, +" /"+"lONGITUD"+punto.longitud);
       this.listadoPuntos.push(punto);
-      console.log('Cantidad de puntos:', this.listadoPuntos.length);
       this.actualizarMarcadorEnMapa(position);
     }
   }
@@ -163,6 +189,17 @@ export class MapaComponent implements OnInit, OnDestroy {
   }
 
   actualizarMarcadorEnMapa(position: google.maps.LatLngLiteral) {
+    //RUTA PARA COLOCAR UN MARKADOR PERSONALIZADO
+    const ruta = 'https://th.bing.com/th/id/R.e6d5549d7d43ef8e34af49fed37e1196?rik=nb2KWBpNv895Bw&pid=ImgRaw&r=0';
+    //CÓDIGO PARA CREAER UN MARKADOR PERSONALIZADO
+    //this.marker = new google.maps.Marker({
+    //  position: position,
+    //  icon: {
+    //  url: ruta,
+    //    scaledSize: new google.maps.Size(30, 30),  // Escala del ícono
+    //  },
+    //  map: this.map?.googleMap || null
+    //});
     this.marker = new google.maps.Marker({
       position: position,
       icon: {
@@ -171,18 +208,46 @@ export class MapaComponent implements OnInit, OnDestroy {
         strokeColor: '#f00',
         strokeWeight: 5,
         fillColor: '#000A02',
-        fillOpacity: 1
+        fillOpacity: 1,
       },
-      map: this.map?.googleMap || null
+      map: this.map?.googleMap || null,
     });
   }
 
   toggleView() {
     this.mostrarZonas = !this.mostrarZonas;
+    this.loadOtherPositionsMarkers();
   }
 
 
   trackByFn(index: number, item: any) {
     return index;
+  }
+
+  loadOtherPositionsMarkers() {
+    // Obtener posiciones de otros dispositivos y agregar marcadores en el mapa
+    this.listarposiciones();
+    console.log(this.posiciones.length);
+    const ruta = 'https://th.bing.com/th/id/R.e6d5549d7d43ef8e34af49fed37e1196?rik=nb2KWBpNv895Bw&pid=ImgRaw&r=0';
+    //suscribirse al WebSocket para recibir actualización posiciones en tiempo real:
+    this.posicionSubscription = this.webSocketPosicion.obtenerPosiciones().subscribe(
+      (posiciones: any[]) => {
+        this.posiciones = posiciones;
+        // Agregar marcadores de posiciones
+        this.posiciones.forEach((pos, index) => {
+          const marker = new google.maps.Marker({
+            position: { lat: pos.latitud, lng: pos.longitud },
+            icon: {
+              url: ruta,
+                scaledSize: new google.maps.Size(30, 30),  // Escala del ícono
+              },
+            map: this.map.googleMap
+          });
+        });
+      },
+      error => {
+        console.error('Error al suscribirse a las posiciones:', error);
+      }
+    );
   }
 }

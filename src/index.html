@@ -1,11 +1,4 @@
 <!DOCTYPE html>
-<!--
-* CoreUI - Angular 17.3 Free Admin Template
-* @version v5.0.3
-* @link https://coreui.io/angular/
-* Copyright (c) 2017-2024 creativeLabs Łukasz Holeczek
-* License: MIT
--->
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -18,11 +11,8 @@
     name="keyword"
   />
   <link href="assets/favicon.ico" rel="icon" type="image/x-icon">
-  <script>
-    (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
-      v: "weekly",
-      key: "AIzaSyCpETSAfSgmQW_RCKz4GcPLvwo510MUcSw"
-    });
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCpETSAfSgmQW_RCKz4GcPLvwo510MUcSw&libraries=places&callback=initAutocomplete" async defer>
+    
   </script>
   <title>CoreUI Free Angular Admin Template</title>
 </head>
@@ -36,3 +26,4 @@
 </app-root>
 </body>
 </html>
+
