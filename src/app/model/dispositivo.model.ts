@@ -11,7 +11,7 @@ export class Dispositivo {
     nombre?: String;
     numSerie?: String;
     disponible?:boolean;
-    "categoria":Categoria;
+    categoria:Categoria;
     "modelo":Modelo;
     zona_segura?:Zona_segura;
     posicion?:Posicion;
