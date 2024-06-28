@@ -1,10 +1,10 @@
 <div class="card">
   <div class="card-body">
     <h5 class="card-title">Prestamos</h5>
-    <div class="button-container">
+    <div class="button-container" *ngIf="!mostrarFormularioEditar">
       <button id="guardar-prestamo" (click)="ingresarPrestamo()">Ingresar Prestamo</button>
     </div>
-    <div *ngIf="mostrarFormularioIngreso">
+    <div *ngIf="mostrarFormularioIngreso && !mostrarFormularioEditar">
       <form [formGroup]="registerFormIn" (ngSubmit)="onSubmit2()">
         <h1>Ingresar Prestamo</h1>
         <c-input-group class="mb-3">
@@ -30,39 +30,65 @@
           <span cInputGroupText>
             <svg cIcon name="cilItalic"></svg>
           </span>
-          <select class="form-select" formControlName="dispositivo" cFormControl
+          <select class="form-select" formControlName="dispositivo" cFormControl required
                   data-bs-toggle="tooltip" data-bs-placement="top-center" title=" "
-                  [class.is-invalid]="registerFormIn.get('beneficiario')?.invalid && (registerFormIn.get('beneficiario')?.touched || registerFormIn.get('beneficiario')?.dirty)"
-                  (mouseenter)="showBeneficiarioTooltip()" (mouseleave)="hideBeneficiarioTooltip()"
+                  [class.is-invalid]="registerFormIn.get('dispositivo')?.invalid && (registerFormIn.get('dispositivo')?.touched || registerFormIn.get('dispositivo')?.dirty)"
+                  (mouseenter)="showDisTooltip()" (mouseleave)="hideDisTooltip()"
           >
             <option value="" disabled selected>Seleccione un Dispositivo</option>
             <option *ngFor="let dispo of dispositivos" [value]="dispo.idDispositivo">
               {{ dispo.nombre }}-{{ dispo.modelo?.marca?.nombre }}
             </option>
           </select>
+          <div *ngIf="showTooltip2" class="tooltip-container position-absolute top-0 end-0 p-2 bg-white rounded border border-danger text-danger">
+            <div class="arrow"></div>
+            <span>Debe elegir un dispositivo.</span>
+          </div>
         </c-input-group>
         <c-input-group class="mb-3">
           <span cInputGroupText>
             <svg cIcon name="cilItalic"></svg>
           </span>
-          <select class="form-select" formControlName="zona_segura" cFormControl>
+          <select class="form-select" formControlName="zona_segura" cFormControl required
+                  data-bs-toggle="tooltip" data-bs-placement="top-center" title=" "
+                  [class.is-invalid]="registerFormIn.get('zona_segura')?.invalid && (registerFormIn.get('zona_segura')?.touched || registerFormIn.get('zona_segura')?.dirty)"
+                  (mouseenter)="showZonTooltip()" (mouseleave)="hideZonTooltip()"
+          >
             <option value="" disabled selected>Seleccione una Zona Segura</option>
             <option *ngFor="let zona of zonaS" [value]="zona.id_zona_segura">
               {{ zona.id_zona_segura }} - {{ zona.descripcion }}
             </option>
           </select>
+          <div *ngIf="showTooltip3" class="tooltip-container position-absolute top-0 end-0 p-2 bg-white rounded border border-danger text-danger">
+            <div class="arrow"></div>
+            <span>Debe elegir una zona segura.</span>
+          </div>
         </c-input-group>
         <c-input-group class="mb-3">
           <span cInputGroupText>
             <svg cIcon name="cilItalic"></svg>
           </span>
-          <input formControlName="fecha" type="date" cFormControl placeholder="Fecha Devolucion" />
+          <input formControlName="fecha" type="date" cFormControl placeholder="Fecha Devolucion" required
+                 min="{{ hoy | date: 'yyyy-MM-dd' }}"[class.is-invalid]="registerFormIn.get('fecha')?.invalid && (registerFormIn.get('fecha')?.touched || registerFormIn.get('fecha')?.dirty)"
+                 (mouseenter)="showFechaTooltip()" (mouseleave)="hideFechaTooltip()"
+          />
+          <div *ngIf="showTooltip4" class="tooltip-container position-absolute top-0 end-0 p-2 bg-white rounded border border-danger text-danger">
+            <div class="arrow"></div>
+            <span>Ingrese una fecha válida.</span>
+          </div>
         </c-input-group>
         <c-input-group class="mb-3">
           <span cInputGroupText>
             <svg cIcon name="cilUser"></svg>
           </span>
-          <input formControlName="motivo" cFormControl placeholder="Motivo" />
+          <input formControlName="motivo" cFormControl placeholder="Motivo" required
+                 [class.is-invalid]="registerFormIn.get('motivo')?.invalid && (registerFormIn.get('motivo')?.touched || registerFormIn.get('motivo')?.dirty)"
+                 (mouseenter)="showMotivoTooltip()" (mouseleave)="hideMotivoTooltip()"
+          />
+          <div *ngIf="showTooltip5" class="tooltip-container position-absolute top-0 end-0 p-2 bg-white rounded border border-danger text-danger">
+            <div class="arrow"></div>
+            <span>Ingrese un motivo válido.</span>
+          </div>
         </c-input-group>
         <div class="d-grid">
           <button cButton color="success" type="submit">Guardar Prestamo</button>
@@ -72,8 +98,9 @@
         </div>
       </form>
     </div>
-    <table class="table table-bordered table-striped" *ngIf="!mostrarFormularioIngreso  ">
-      <thead>
+    <div *ngIf="!mostrarFormularioIngreso &&!mostrarFormularioEditar">
+      <table class="table table-bordered table-striped" >
+        <thead>
         <tr>
           <th>Beneficiario</th>
           <th>Dispositivo</th>
@@ -84,8 +111,8 @@
           <th>Editar</th>
           <th>Eliminar</th>
         </tr>
-      </thead>
-      <tbody>
+        </thead>
+        <tbody>
         <tr *ngFor="let prestamo of prestamos  | paginate: { itemsPerPage: 5, currentPage: p }; let i = index">
           <td>{{ prestamo.persona.cedula }} - {{ prestamo.persona.nombre }}</td>
           <td>{{ prestamo.dispositivo.numero_serie }} - {{ prestamo.dispositivo.nombre }}</td>
@@ -98,100 +125,143 @@
           <td>{{ prestamo.motivo_prestamo }}</td>
           <td>{{ prestamo.finalizado ? 'Finalizado' : 'En proceso' }}</td>
           <td>
-            <button type="button" name="button" (click)="edit(i)" class="btn btn-primary">Editar</button>
+            <button type="button" name="button" (click)="edit(i)" class="btn btn-primary"><svg cIcon name="cilPencil" size="lg"></svg></button>
           </td>
           <td>
-            <button type="button" (click)="eliminarPrestamo(prestamo.id_prestamo)" class="btn btn-danger">Eliminar</button>
+            <button type="button" (click)="eliminarPrestamo(prestamo.id_prestamo)" class="btn btn-danger"><svg cIcon name="cilTrash" size="lg"></svg></button>
           </td>
         </tr>
-        <tr *ngIf="filaEditada !== null">
-          <td [attr.colspan]="8">
-            <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-              <h1>Editar</h1>
-              <c-input-group class="mb-3">
+
+        </tbody>
+      </table>
+      <div class="d-flex justify-content-center mt-3">
+        <pagination-controls (pageChange)="p = $event"></pagination-controls>
+      </div>
+    </div>
+    <div *ngIf="filaEditada !== null &&!mostrarFormularioIngreso &&mostrarFormularioEditar">
+
+          <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+            <h1>Editar</h1>
+            <c-input-group class="mb-3">
                 <span cInputGroupText>
                   <svg cIcon name="cilCreditCard"></svg>
                 </span>
-                <select class="form-select" formControlName="beneficiario">
-                  <option value="" disabled selected>Seleccione un Beneficiario</option>
-                  <option *ngFor="let persona of personas" [value]="persona.id_persona">
-                    {{ persona.nombre }} {{ persona.apellido }}
-                  </option>
-                </select>
-                <!-- <input formControlName="beneficiario" cFormControl placeholder="Beneficiario" /> -->
-              </c-input-group>
-              <c-input-group class="mb-3">
-                <span cInputGroupText>
-                  <svg cIcon name="cilItalic"></svg>
-                </span>
-                <select class="form-select" formControlName="dispositivo">
-                  <option value="" disabled selected>Seleccione un Dispositivo</option>
-                  <option *ngFor="let dispo of dispositivos" [value]="dispo.idDispositivo">
-                    {{ dispo.nombre }}-{{ dispo.modelo?.marca?.nombre }}
-                  </option>
-                </select>
-                <!-- <input formControlName="dispositivo" cFormControl placeholder="Dispositivo" /> -->
-              </c-input-group>
-              <c-input-group class="mb-3">
-                <span cInputGroupText>
-                  <svg cIcon name="cilItalic"></svg>
-                </span>
-                <select class="form-select" formControlName="zona_segura" cFormControl>
-                  <option value="" disabled selected>Seleccione una Zona Segura</option>
-                  <option *ngFor="let zona of zonaS" [value]="zona.id_zona_segura">
-                    {{ zona.id_zona_segura }} - {{ zona.descripcion }}
-                  </option>
-                </select>
-              </c-input-group>
-              <c-input-group class="mb-3">
-                <span cInputGroupText>
-                  <svg cIcon name="cilItalic"></svg>
-                </span>
-                <input formControlName="fecha" type="date"  cFormControl placeholder="Fecha" />
-              </c-input-group>
-              <c-input-group class="mb-3">
-                <span cInputGroupText>
-                  <svg cIcon name="cilUser"></svg>
-                </span>
-                <input formControlName="motivo" cFormControl placeholder="Motivo" />
-              </c-input-group>
-              <c-input-group class="mb-3">
-                <span cInputGroupText>
-                  <svg cIcon name="cilUser"></svg>
-                </span>
-                <select class="form-select" formControlName="estado_devolucion">
-                  <option value="" disabled selected>Seleccione Estado Devolución</option>
-                  <option value="Pendiente">Pendiente</option>
-                  <option value="Devuelto">Devuelto</option>
-                  <option value="Perdido">Perdido</option>
-                  <option value="Dañado">Dañado</option>
-                </select>
-              </c-input-group>
-              <c-input-group class="mb-3">
-                <span cInputGroupText>
-                  <svg cIcon name="cilUser"></svg>
-                </span>
-                <select class="form-select" formControlName="finalizado">
-                  <option value="" disabled selected>Seleccione si Finalizado</option>
-                  <option [value]="true">Sí</option>
-                  <option [value]="false">No</option>
-                </select>
-                <!-- <input formControlName="finalizado" cFormControl placeholder="Finalizado" /> -->
-              </c-input-group>
-              <div class="d-grid">
-                <button cButton color="success" type="submit">Guardar Cambios</button>
-              </div><br>
-              <div class="d-grid">
-                <button cButton color="secondary" type="button" (click)="cancelarEdicion()">Cancelar</button>
+              <select class="form-select" formControlName="beneficiario" required
+                      data-bs-toggle="tooltip" data-bs-placement="top-center" title=" "
+                      [class.is-invalid]="registerForm.get('beneficiario')?.invalid && (registerForm.get('beneficiario')?.touched || registerForm.get('beneficiario')?.dirty)"
+                      (mouseenter)="showBenTooltip()" (mouseleave)="hideBenTooltip()"
+              >
+                <option value="" disabled selected>Seleccione un Beneficiario</option>
+                <option *ngFor="let persona of personas" [value]="persona.id_persona">
+                  {{ persona.nombre }} {{ persona.apellido }}
+                </option>
+              </select>
+              <div *ngIf="showTooltip6" class="tooltip-container position-absolute top-0 end-0 p-2 bg-white rounded border border-danger text-danger">
+                <div class="arrow"></div>
+                <span>Debe elegir un beneficiario.</span>
               </div>
-            </form>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <div class="d-flex justify-content-center mt-3">
-      <pagination-controls (pageChange)="p = $event"></pagination-controls>
+              <!-- <input formControlName="beneficiario" cFormControl placeholder="Beneficiario" /> -->
+            </c-input-group>
+            <c-input-group class="mb-3">
+                <span cInputGroupText>
+                  <svg cIcon name="cilItalic"></svg>
+                </span>
+              <select class="form-select" formControlName="dispositivo" required
+                      data-bs-toggle="tooltip" data-bs-placement="top-center" title=" "
+                      [class.is-invalid]="registerForm.get('dispositivo')?.invalid && (registerForm.get('dispositivo')?.touched || registerForm.get('dispositivo')?.dirty)"
+                      (mouseenter)="showDis2Tooltip()" (mouseleave)="hideDis2Tooltip()"
+              >
+                <option value="" disabled selected>Seleccione un Dispositivo</option>
+                <option *ngFor="let dispo of dispositivos" [value]="dispo.idDispositivo">
+                  {{ dispo.nombre }}-{{ dispo.modelo?.marca?.nombre }}
+                </option>
+              </select>
+              <div *ngIf="showTooltip7" class="tooltip-container position-absolute top-0 end-0 p-2 bg-white rounded border border-danger text-danger">
+                <div class="arrow"></div>
+                <span>Debe elegir un dispositivo.</span>
+              </div>
+              <!-- <input formControlName="dispositivo" cFormControl placeholder="Dispositivo" /> -->
+            </c-input-group>
+<!--            <c-input-group class="mb-3">-->
+<!--                <span cInputGroupText>-->
+<!--                  <svg cIcon name="cilItalic"></svg>-->
+<!--                </span>-->
+<!--              <select class="form-select" formControlName="zona_segura" cFormControl-->
+<!--                      data-bs-toggle="tooltip" data-bs-placement="top-center" title=" "-->
+<!--                      [class.is-invalid]="registerForm.get('zona_segura')?.invalid && (registerForm.get('zona_segura')?.touched || registerForm.get('zona_segura')?.dirty)"-->
+<!--                      (mouseenter)="showDis2Tooltip()" (mouseleave)="hideDis2Tooltip()"-->
+<!--              >-->
+<!--                <option value="" disabled selected>Seleccione una Zona Segura</option>-->
+<!--                <option *ngFor="let zona of zonaS" [value]="zona.id_zona_segura">-->
+<!--                  {{ zona.id_zona_segura }} - {{ zona.descripcion }}-->
+<!--                </option>-->
+<!--              </select>-->
+<!--            </c-input-group>-->
+            <c-input-group class="mb-3">
+                <span cInputGroupText>
+                  <svg cIcon name="cilItalic"></svg>
+                </span>
+              <input formControlName="fecha" type="date"  cFormControl placeholder="Fecha" required
+                     min="{{ hoy | date: 'yyyy-MM-dd' }}"[class.is-invalid]="registerForm.get('fecha')?.invalid && (registerForm.get('fecha')?.touched || registerForm.get('fecha')?.dirty)"
+                     (mouseenter)="showFecha2Tooltip()" (mouseleave)="hideFecha2Tooltip()"
+              />
+              <div *ngIf="showTooltip8" class="tooltip-container position-absolute top-0 end-0 p-2 bg-white rounded border border-danger text-danger">
+                <div class="arrow"></div>
+                <span>Ingrese una fecha válida.</span>
+              </div>
+            </c-input-group>
+            <c-input-group class="mb-3">
+                <span cInputGroupText>
+                  <svg cIcon name="cilUser"></svg>
+                </span>
+              <input formControlName="motivo" cFormControl placeholder="Motivo" required
+                     [class.is-invalid]="registerForm.get('motivo')?.invalid && (registerForm.get('motivo')?.touched || registerForm.get('motivo')?.dirty)"
+                     (mouseenter)="showMotivo2Tooltip()" (mouseleave)="hideMotivo2Tooltip()"
+              />
+              <div *ngIf="showTooltip9" class="tooltip-container position-absolute top-0 end-0 p-2 bg-white rounded border border-danger text-danger">
+                <div class="arrow"></div>
+                <span>Ingrese un motivo válido.</span>
+              </div>
+            </c-input-group>
+            <c-input-group class="mb-3">
+                <span cInputGroupText>
+                  <svg cIcon name="cilUser"></svg>
+                </span>
+              <select class="form-select" formControlName="estado_devolucion" required
+                      data-bs-toggle="tooltip" data-bs-placement="top-center" title=" "
+                      [class.is-invalid]="registerForm.get('estado_devolucion')?.invalid && (registerForm.get('estado_devolucion')?.touched || registerForm.get('estado_devolucion')?.dirty)"
+                      (mouseenter)="showEstTooltip()" (mouseleave)="hideEstTooltip()"
+              >
+                <option value="" disabled selected>Seleccione Estado Devolución</option>
+                <option value="Pendiente">Pendiente</option>
+                <option value="Devuelto">Devuelto</option>
+                <option value="Perdido">Perdido</option>
+                <option value="Dañado">Dañado</option>
+              </select>
+              <div *ngIf="showTooltip10" class="tooltip-container position-absolute top-0 end-0 p-2 bg-white rounded border border-danger text-danger">
+                <div class="arrow"></div>
+                <span>Ingrese un estado de devolucion.</span>
+              </div>
+            </c-input-group>
+            <c-input-group class="mb-3">
+                <span cInputGroupText>
+                  <svg cIcon name="cilUser"></svg>
+                </span>
+              <select class="form-select" formControlName="finalizado">
+                <option value="" disabled selected>Seleccione si Finalizado</option>
+                <option [value]="true">Sí</option>
+                <option [value]="false">No</option>
+              </select>
+              <!-- <input formControlName="finalizado" cFormControl placeholder="Finalizado" /> -->
+            </c-input-group>
+            <div class="d-grid">
+              <button cButton color="success" type="submit">Guardar Cambios</button>
+            </div><br>
+            <div class="d-grid">
+              <button cButton color="secondary" type="button" (click)="cancelarEdicion()">Cancelar</button>
+            </div>
+          </form>
     </div>
+
   </div>
 </div>
-

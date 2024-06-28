@@ -38,7 +38,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
 @Component({
   selector: 'app-prestamo',
   standalone: true,
-  imports: [NgFor, HttpClientModule, NgIf, ContainerComponent, RowComponent, ColComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, IconDirective, FormControlDirective, ButtonDirective, ReactiveFormsModule, HttpClientModule, NgxPaginationModule, GutterDirective, FormFeedbackComponent],
+  imports: [NgFor, HttpClientModule, NgIf, ContainerComponent, RowComponent, ColComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, IconDirective, FormControlDirective, ButtonDirective, ReactiveFormsModule, HttpClientModule, NgxPaginationModule, GutterDirective, FormFeedbackComponent, DatePipe],
   providers:[PrestamoService,PersonaService,Zona_seguraService,DipositivoService,UsuarioService,DatePipe],
   templateUrl: './prestamo.component.html',
   styleUrl: './prestamo.component.scss'
@@ -46,6 +46,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
 export class PrestamoComponent {
   selectedPrestamo: any;
   mostrarFormularioIngreso = false;
+  mostrarFormularioEditar = false;
   prestamos:Prestamo[]=[];
   personas:Persona[]=[];
   zonaS:Zona_segura[]=[];
@@ -56,27 +57,44 @@ export class PrestamoComponent {
   registerFormIn: FormGroup;
   usuario:Usuario;
   showTooltip: boolean = false;
+  showTooltip2: boolean = false;
+  showTooltip3: boolean = false;
+  showTooltip4: boolean = false;
+  showTooltip5: boolean = false;
+  showTooltip6: boolean = false;
+  showTooltip7: boolean = false;
+  showTooltip8: boolean = false;
+  showTooltip9: boolean = false;
+  showTooltip10: boolean = false;
+  today: string;
+  hoy: Date = new Date();
+
 
   idusu:number;
   p: number = 1; // Página actual para la paginación
   constructor(private datePipe:DatePipe,private usuarioService:UsuarioService, private dispoService:DipositivoService, private personaService:PersonaService,private prestamoService: PrestamoService,private router:Router,private fb:FormBuilder,private zonasService:Zona_seguraService){
     this.registerForm = this.fb.group({
-      beneficiario: [''],
-      dispositivo: [''],
-      zona_segura: [''],
-      fecha: [''],
-      motivo: [''],
-      finalizado: [''],
-      estado_devolucion:[''],
+      beneficiario: ['', Validators.required],
+      dispositivo: ['', Validators.required],
+      // zona_segura: [''],
+      fecha: ['', Validators.required],
+      motivo: ['', Validators.required],
+      finalizado: ['', Validators.required],
+      estado_devolucion:['', Validators.required],
       // Otros campos del formulario
     });
     this.registerFormIn = this.fb.group({
       beneficiario: ['', Validators.required],
-      dispositivo: [''],
-      zona_segura: [''],
-      fecha: [''],
-      motivo: [''],
+      dispositivo: ['', Validators.required],
+      zona_segura: ['', Validators.required],
+      fecha: ['', Validators.required],
+      motivo: ['',Validators.required],
     });
+  }
+  fechaValida(control: AbstractControl): { [key: string]: boolean } | null {
+    const currentDate = new Date();
+    const selectedDate = new Date(control.value);
+    return selectedDate >= currentDate ? null : { fechaInvalida: true };
   }
 
   ngOnInit():void {
@@ -111,15 +129,19 @@ export class PrestamoComponent {
     console.log(this.dispositivos);
   }
   edit(index: number) {
+    this.mostrarFormularioEditar = true;
     this.selectedPrestamo = this.prestamos[index];
     console.log(this.selectedPrestamo.fecha_finalizacion);
+    console.log(index);
+
     console.log(this.formatDate(this.selectedPrestamo.fecha_finalizacion));
     this.filaEditada = index;
     const prestamoSeleccionado = this.prestamos[index]; // Suponiendo que prestamos es el array de datos
+    console.log(prestamoSeleccionado);
     this.registerForm.patchValue({
       beneficiario: prestamoSeleccionado.persona.id_persona,
       dispositivo: prestamoSeleccionado.dispositivo.idDispositivo,
-      zona_segura:prestamoSeleccionado.zona_segura.id_zona_segura,
+      // zona_segura:prestamoSeleccionado.zona_segura.id_zona_segura,
       estado_devolucion:prestamoSeleccionado.estado_devolucion,
       fecha: this.formatDate(this.selectedPrestamo.fecha_finalizacion),
       motivo: prestamoSeleccionado.motivo_prestamo,
@@ -140,10 +162,85 @@ export class PrestamoComponent {
       this.showTooltip = true;
     }
   }
+  showFechaTooltip() {
+    this.showTooltip4 = true;
+  }
 
+  hideFechaTooltip() {
+    this.showTooltip4 = false;
+  }
   hideBeneficiarioTooltip() {
     this.showTooltip = false;
   }
+  showDisTooltip() {
+    if (this.registerFormIn.get('dispositivo')?.invalid) {
+      this.showTooltip2 = true;
+    }
+  }
+
+  hideDisTooltip() {
+    this.showTooltip2 = false;
+  }
+  showZonTooltip() {
+    if (this.registerFormIn.get('zona_segura')?.invalid) {
+      this.showTooltip3 = true;
+    }
+  }
+  hideZonTooltip() {
+    this.showTooltip3 = false;
+  }
+
+  showMotivoTooltip() {
+    if (this.registerFormIn.get('motivo')?.invalid) {
+      this.showTooltip5 = true;
+    }
+  }
+  hideMotivoTooltip() {
+    this.showTooltip5 = false;
+  }
+  showBenTooltip() {
+    if (this.registerForm.get('beneficiario')?.invalid) {
+      this.showTooltip6 = true;
+    }
+  }
+  hideBenTooltip() {
+    this.showTooltip6 = false;
+  }
+
+  showDis2Tooltip() {
+    if (this.registerForm.get('dispositivo')?.invalid) {
+      this.showTooltip7 = true;
+    }
+  }
+  hideDis2Tooltip() {
+    this.showTooltip7 = false;
+  }
+  showFecha2Tooltip() {
+    if (this.registerForm.get('fecha')?.invalid) {
+      this.showTooltip8 = true;
+    }
+  }
+  hideFecha2Tooltip() {
+    this.showTooltip8 = false;
+  }
+  showMotivo2Tooltip() {
+    if (this.registerForm.get('motivo')?.invalid) {
+      this.showTooltip9 = true;
+    }
+  }
+  hideMotivo2Tooltip() {
+    this.showTooltip9 = false;
+  }
+  showEstTooltip() {
+    if (this.registerForm.get('estado_devolucion')?.invalid) {
+      this.showTooltip10 = true;
+    }
+  }
+  hideEstTooltip() {
+    this.showTooltip10 = false;
+  }
+
+
   onSubmit2(){
     console.log(this.registerFormIn.valid)
     if(this.registerFormIn.valid){
@@ -222,6 +319,7 @@ export class PrestamoComponent {
     console.log(this.idusu);
     const fecha=new Date();
     const formValues=this.registerForm.value;
+    if(this.registerForm.valid){
     let prestamo:Prestamo=new Prestamo();
     let dispositivoo:Dispositivo=new Dispositivo();
     prestamo.dispositivo=dispositivoo;
@@ -269,10 +367,13 @@ export class PrestamoComponent {
       complete:()=>{
         console.info("Edicion completa");
       }
-    })
+    })}else{
+      this.markFormGroupTouched(this.registerForm);
+    }
   }
   cancelarEdicion() {
     this.filaEditada = null;
+    this.mostrarFormularioEditar=false;
   }
   eliminarPrestamo(id: any): void {
     const swalWithBootstrapButtons = Swal.mixin({
