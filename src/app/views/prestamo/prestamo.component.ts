@@ -1,6 +1,6 @@
 import { DatePipe, NgFor, NgIf } from '@angular/common';
 import { Component,NgModule,OnInit } from '@angular/core';
-import{Prestamo} from '../../model/prestamo';
+import{Prestamo} from '../../model/prestamo.model';
 import{PrestamoService} from '../../service/prestamo.service';
 import { HttpClientModule } from '@angular/common/http';
 import Swal from 'sweetalert2';
@@ -23,12 +23,12 @@ import {
 import {AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import { PersonaService } from 'src/app/service/persona.service';
 import { DipositivoService } from 'src/app/service/dispositivo.service';
-import { Persona } from 'src/app/model/persona';
+import { Persona } from 'src/app/model/persona.model';
 import { Zona_seguraService } from 'src/app/service/Zona_segura.service';
 import { UsuarioService } from 'src/app/service/usuario.service';
-import { Zona_segura } from 'src/app/model/Zona_segura';
+import { Zona_segura } from 'src/app/model/zona_segura';
 import { Dispositivo } from 'src/app/model/dispositivo.model';
-import { Usuario } from 'src/app/model/usuario';
+import { Usuario } from 'src/app/model/usuario.model';
 import { environment } from 'src/enviroments/environment';
 import { NgxPaginationModule } from 'ngx-pagination';
 
