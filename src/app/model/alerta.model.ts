@@ -1,4 +1,4 @@
-import { Prestamo } from "./prestamo";
+import { Prestamo } from "./prestamo.model";
 
 export class Alerta {
     fecha:Date;

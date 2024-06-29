@@ -1,8 +1,8 @@
-import { Persona } from "./persona";
-import { Zona_segura } from '../model/Zona_segura';
-import { Alerta } from "./alerta";
+import { Persona } from "./persona.model";
+import { Zona_segura } from './zona_segura';
+import { Alerta } from "./alerta.model";
 import { Dispositivo } from "./dispositivo.model";
-import { Usuario } from "./usuario";
+import { Usuario } from "./usuario.model";
 export class Prestamo {
     id_prestamo:number;
     fecha_prestamo:Date;

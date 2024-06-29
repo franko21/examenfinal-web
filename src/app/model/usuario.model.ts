@@ -1,5 +1,5 @@
-import { Persona } from "./persona";
-import { Prestamo } from "./prestamo";
+import { Persona } from "./persona.model";
+import { Prestamo } from "./prestamo.model";
 
 export class Usuario {
     id_usuario:number;

@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Zona_segura } from '../model/Zona_segura';
+import { Zona_segura } from '../model/zona_segura';
 
 @Injectable({
     providedIn: 'root'

@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {GoogleMap, MapHeatmapLayer, MapMarker} from '@angular/google-maps';
-import { Punto } from "src/app/model/Punto";
-import { Zona_segura } from 'src/app/model/Zona_segura';
+import { Punto } from "src/app/model/punto.model";
+import { Zona_segura } from "src/app/model/zona_segura";
 import { PuntoService } from "src/app/service/Punto.service";
 import { Zona_seguraService } from 'src/app/service/Zona_segura.service';
 import { PosicionService} from "src/app/service/posicion.service";
