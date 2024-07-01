@@ -68,8 +68,6 @@ export class PrestamoComponent {
   showTooltip10: boolean = false;
   today: string;
   hoy: Date = new Date();
-
-
   idusu:number;
   p: number = 1; // Página actual para la paginación
   constructor(private datePipe:DatePipe,private usuarioService:UsuarioService, private dispoService:DipositivoService, private personaService:PersonaService,private prestamoService: PrestamoService,private router:Router,private fb:FormBuilder,private zonasService:Zona_seguraService){
@@ -86,7 +84,7 @@ export class PrestamoComponent {
     this.registerFormIn = this.fb.group({
       beneficiario: ['', Validators.required],
       dispositivo: ['', Validators.required],
-      zona_segura: ['', Validators.required],
+      // zona_segura: ['', Validators.required],
       fecha: ['', Validators.required],
       motivo: ['',Validators.required],
     });
@@ -111,11 +109,6 @@ export class PrestamoComponent {
     this.personaService.getPersonas().subscribe(
       persona=>{
         this.personas=persona;
-      }
-    )
-    this.zonasService.listar().subscribe(
-      zona=>{
-        this.zonaS=zona;
       }
     )
     this.dispoService.listar().subscribe(
@@ -253,13 +246,13 @@ export class PrestamoComponent {
       let personaa:Persona=new Persona();
       prestamo.persona=personaa;
       let zona_seguraa:Zona_segura=new Zona_segura();
-      prestamo.zona_segura=zona_seguraa;
+      // prestamo.zona_segura=zona_seguraa;
       let usuarioo:Usuario=new Usuario();
       // prestamo.usuario=usuarioo;
 
       prestamo.dispositivo.idDispositivo=formValues.dispositivo;
       prestamo.persona.id_persona=formValues.beneficiario;
-      prestamo.zona_segura.id_zona_segura=formValues.zona_segura;
+      // prestamo.zona_segura.id_zona_segura=formValues.zona_segura;
       prestamo.fecha_finalizacion=formValues.fecha;
       prestamo.motivo_prestamo=formValues.motivo;
       // prestamo.usuario.id_usuario=this.idusu;
@@ -326,13 +319,13 @@ export class PrestamoComponent {
     let personaa:Persona=new Persona();
     prestamo.persona=personaa;
     let zona_seguraa:Zona_segura=new Zona_segura();
-    prestamo.zona_segura=zona_seguraa;
+    // prestamo.zona_segura=zona_seguraa;
     let usuarioo:Usuario=new Usuario();
     // prestamo.usuario=usuarioo;
 
     prestamo.dispositivo.idDispositivo=formValues.dispositivo;
     prestamo.persona.id_persona=formValues.beneficiario;
-    prestamo.zona_segura.id_zona_segura=formValues.zona_segura;
+    // prestamo.zona_segura.id_zona_segura=formValues.zona_segura;
     prestamo.fecha_finalizacion=formValues.fecha;
     prestamo.motivo_prestamo=formValues.motivo;
     prestamo.estado_devolucion=formValues.estado_devolucion;
