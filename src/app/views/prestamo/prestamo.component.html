@@ -45,25 +45,25 @@
             <span>Debe elegir un dispositivo.</span>
           </div>
         </c-input-group>
-        <c-input-group class="mb-3">
-          <span cInputGroupText>
-            <svg cIcon name="cilItalic"></svg>
-          </span>
-          <select class="form-select" formControlName="zona_segura" cFormControl required
-                  data-bs-toggle="tooltip" data-bs-placement="top-center" title=" "
-                  [class.is-invalid]="registerFormIn.get('zona_segura')?.invalid && (registerFormIn.get('zona_segura')?.touched || registerFormIn.get('zona_segura')?.dirty)"
-                  (mouseenter)="showZonTooltip()" (mouseleave)="hideZonTooltip()"
-          >
-            <option value="" disabled selected>Seleccione una Zona Segura</option>
-            <option *ngFor="let zona of zonaS" [value]="zona.id_zona_segura">
-              {{ zona.id_zona_segura }} - {{ zona.descripcion }}
-            </option>
-          </select>
-          <div *ngIf="showTooltip3" class="tooltip-container position-absolute top-0 end-0 p-2 bg-white rounded border border-danger text-danger">
-            <div class="arrow"></div>
-            <span>Debe elegir una zona segura.</span>
-          </div>
-        </c-input-group>
+<!--        <c-input-group class="mb-3">-->
+<!--          <span cInputGroupText>-->
+<!--            <svg cIcon name="cilItalic"></svg>-->
+<!--          </span>-->
+<!--          <select class="form-select" formControlName="zona_segura" cFormControl required-->
+<!--                  data-bs-toggle="tooltip" data-bs-placement="top-center" title=" "-->
+<!--                  [class.is-invalid]="registerFormIn.get('zona_segura')?.invalid && (registerFormIn.get('zona_segura')?.touched || registerFormIn.get('zona_segura')?.dirty)"-->
+<!--                  (mouseenter)="showZonTooltip()" (mouseleave)="hideZonTooltip()"-->
+<!--          >-->
+<!--            <option value="" disabled selected>Seleccione una Zona Segura</option>-->
+<!--            <option *ngFor="let zona of zonaS" [value]="zona.id_zona_segura">-->
+<!--              {{ zona.id_zona_segura }} - {{ zona.descripcion }}-->
+<!--            </option>-->
+<!--          </select>-->
+<!--          <div *ngIf="showTooltip3" class="tooltip-container position-absolute top-0 end-0 p-2 bg-white rounded border border-danger text-danger">-->
+<!--            <div class="arrow"></div>-->
+<!--            <span>Debe elegir una zona segura.</span>-->
+<!--          </div>-->
+<!--        </c-input-group>-->
         <c-input-group class="mb-3">
           <span cInputGroupText>
             <svg cIcon name="cilItalic"></svg>
@@ -114,8 +114,8 @@
         </thead>
         <tbody>
         <tr *ngFor="let prestamo of prestamos  | paginate: { itemsPerPage: 5, currentPage: p }; let i = index">
-          <td>{{ prestamo.persona.cedula }} - {{ prestamo.persona.nombre }}</td>
-          <td>{{ prestamo.dispositivo.numSerie }} - {{ prestamo.dispositivo.nombre }}</td>
+          <td>{{ prestamo.persona?.cedula }} - {{ prestamo.persona?.nombre }}</td>
+          <td>{{ prestamo.dispositivo?.numSerie }} - {{ prestamo.dispositivo?.nombre }}</td>
           <td>
             {{ prestamo.fecha_prestamo ? prestamo.fecha_prestamo.toString().split("T")[0] + ' ' + formatTime(prestamo.hora_prestamo) : 'NA' }}
           </td>

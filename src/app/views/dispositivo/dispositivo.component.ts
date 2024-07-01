@@ -1,6 +1,6 @@
 import { Component,NgModule,OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormsModule,FormBuilder,FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule,FormBuilder,FormGroup, ReactiveFormsModule,Validators,AbstractControl, NgForm } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import {
   AvatarComponent,
@@ -13,7 +13,8 @@ import {
   ColComponent,
   ProgressComponent,
   RowComponent,
-  TableDirective
+  TableDirective,
+  FormFeedbackComponent
 } from '@coreui/angular';
 
 import { IconDirective } from '@coreui/icons-angular';
@@ -51,6 +52,7 @@ import Swal from 'sweetalert2';
     ButtonDirective,
     FormsModule,
     ReactiveFormsModule,
+    FormFeedbackComponent
   ],
   providers:[DipositivoService,ModeloService,MarcaService,CategoriaService],
   templateUrl: './dispositivo.component.html',
@@ -62,10 +64,12 @@ export class DispositivoComponent implements OnInit {
    public modeloselet: Modelo | null = new Modelo();
    public categoriamod: Categoria = new Categoria();
    public modelomod: Modelo = new Modelo();
+   public marcaselect: Marca | null = new Marca();
    public titulo: string = "Dispositivo";
    dispositivos: Dispositivo[] = [];
    marcas:Marca[]=[];
    modelos:Modelo[]=[];
+   modelosfiltro:Modelo[]=[];
    categorias:Categoria[]=[];
    dispositivoSeleccionado: string ='';
    Seleccionado: string ='';
@@ -74,8 +78,9 @@ export class DispositivoComponent implements OnInit {
    showTablem: boolean = true;
    showTablec: boolean = true;
    registerForm: FormGroup;
-
-
+   browserDefaultsValidated: boolean = false;
+   showTooltip3: boolean = false;
+   modelosOriginales: any[];
 
 
   toggleView() {
@@ -110,6 +115,32 @@ export class DispositivoComponent implements OnInit {
       }
     );
   }
+  onSubmit1(form: NgForm): void {
+    if (form.valid) {
+      // Procesar el formulario
+    } else {
+      // Mostrar errores
+    }
+  }
+
+  filtrarModelosPorMarca() {
+    console.log("Modelos org antes del filtro:");
+    console.log(this.modelos);
+    if (this.marcaselect && this.marcaselect.nombre) {
+      this.modelosfiltro = this.modelos.filter(modelo => modelo.marca?.nombre === this.marcaselect?.nombre);
+      console.log("Nombre de marca");
+      console.log(this.marcaselect.nombre);
+      console.log("Modelosfiltro despues del filtro:");
+    console.log(this.modelosfiltro);
+    } else {
+
+    }
+  }
+  
+ modelonull(){
+  this.modeloselet=null;
+ }
+
   listarmode() {
     this.sermodelo.listar().subscribe(
       modelos => {
@@ -146,6 +177,7 @@ export class DispositivoComponent implements OnInit {
     this.asignacatmar() 
     console.log(this.categoriaselet);
     console.log(this.modeloselet);
+    console.log(this.marcaselect)
     if (this.validateForm()) {
       //////////
     this.serdispo.crear(this.dispositivo).subscribe(
@@ -270,6 +302,8 @@ export class DispositivoComponent implements OnInit {
   this.modeloselet =new Modelo();
   this.modelomod=new Modelo();
   this.categoriamod=new Categoria();
+  this.modelosfiltro= [];
+  
   }
   cancelar(): void{
   this.toggleView();
@@ -286,6 +320,7 @@ export class DispositivoComponent implements OnInit {
   btncrear(): void{
     this.categoriaselet = null;
     this.modeloselet=null;
+    this.marcaselect=null;
     this.toggleView();
     this.toggleViewc();
     this.titulo="Ingresar dispostivo"

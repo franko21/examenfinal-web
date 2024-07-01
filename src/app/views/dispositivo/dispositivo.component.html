@@ -75,67 +75,87 @@
 
         <!-- AQUI INICIAN LOS FORMULARIOS DE INGRESO Y MODIFICACION SEGUN CORRESPONDA-->
         <div *ngIf="!showTablec">
-          <form >
-          <c-input-group class="mb-3">
-            <span cInputGroupText>
-              <svg cIcon name="cilItalic"></svg>
-            </span>
-            <select name="Categoria" id="Categoria" class="form-control" [(ngModel)]="categoriaselet">
-              <option Value="null" disabled selected>Seleccione la Categoría</option>
-              <option *ngFor="let cate of categorias" [ngValue]="cate">
-                {{ cate.nombre }}
-              </option>
-            </select>
-          </c-input-group>
-          <c-input-group class="mb-3">
-            <span cInputGroupText>
-              <svg cIcon name="cilItalic"></svg>
-            </span>
-            <select class="form-control" name="Marcas" id="Marcas">
-              <option value="null" disabled selected>Seleccione la Marca</option>
-              <option *ngFor="let marca of marcas"  >
-                {{ marca.nombre }}
-              </option>
-            </select>
-          </c-input-group>
-          <c-input-group class="mb-3">
-            <span cInputGroupText>
-              <svg cIcon name="cilItalic"></svg>
-            </span>
-            <select name="Modelo" id="Modelo" class="form-control" [(ngModel)]="modeloselet">
-              <option  [ngValue]="null" disabled selected>Seleccione el Modelo</option>
-              <option *ngFor="let modelo of modelos" [ngValue]="modelo">
-                {{ modelo.nombre }}
-              </option>
-            </select>
-            
-          </c-input-group> 
-          <c-input-group class="mb-3">
-            <span cInputGroupText>
-              <svg cIcon name="cilUser"></svg>
-            </span>
-            <input id="numero_serie" class="form-control" type="text"  placeholder="Numero de Serie" [(ngModel)]="dispositivo.numSerie" name="numero_serie" />
-          </c-input-group> 
-          <c-input-group class="mb-3">
-            <span cInputGroupText>
-              <svg cIcon name="cilUser"></svg>
-            </span>
-            <input id="nombre" class="form-control" type="text"  placeholder="Nombre" [(ngModel)]="dispositivo.nombre" name="nombre" />
-          </c-input-group>  
-          <c-input-group class="mb-3">   
-            <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" id="disponible" [(ngModel)]="dispositivo.disponible" name="disponible">
-              <label class="form-check-label" for="disponible">Disponible</label>
-            </div>
-          </c-input-group> 
-          <div class="d-grid">
-            <button cButton color="success" type="submit"(click)="crearDispositivo()">Guardar Cambios</button>
-          </div><br>
-          <div class="d-grid">
-            <button cButton color="secondary" type="button"(click)="cancelar()" >Cancelar</button>
-          </div>
+          <form #myForm="ngForm" (ngSubmit)="crearDispositivo()">
+            <c-input-group class="mb-3">
+              <span cInputGroupText>
+                <svg cIcon name="cilItalic"></svg>
+              </span>
+              <select name="Categoria" id="Categoria" class="form-control" [(ngModel)]="categoriaselet" required>
+                <option value="null" disabled selected>Seleccione la Categoría</option>
+                <option *ngFor="let cate of categorias" [ngValue]="cate">
+                  {{ cate.nombre }}
+                </option>
+              </select>
+              <div *ngIf="myForm.controls['Categoria']?.invalid && myForm.controls['Categoria']?.touched" class="invalid-feedback">
+                La Categoria es obligatoria.
+              </div>
+            </c-input-group>
           
-        </form>
+            <c-input-group class="mb-3">
+              <span cInputGroupText>
+                <svg cIcon name="cilItalic"></svg>
+              </span>
+              <select class="form-control" name="Marcas" id="Marcas" [(ngModel)]="marcaselect" required (change)="filtrarModelosPorMarca()">
+                <option value="null" disabled selected>Seleccione la Marca</option>
+                <option *ngFor="let marca of marcas" [ngValue]="marca">
+                  {{ marca.nombre }}
+                </option>
+              </select>
+              <div *ngIf="myForm.controls['Marcas']?.invalid && myForm.controls['Marcas']?.touched" class="invalid-feedback">
+                La Marca es obligatoria.
+              </div>
+            </c-input-group>
+          
+            <c-input-group class="mb-3">
+              <span cInputGroupText>
+                <svg cIcon name="cilItalic"></svg>
+              </span>
+              <select name="Modelo" id="Modelo" class="form-control" [(ngModel)]="modeloselet" required>
+                <option value="null" disabled selected>Seleccione el Modelo</option>
+                <option *ngFor="let modelo of modelosfiltro" [ngValue]="modelo">
+                  {{ modelo.nombre }}
+                </option>
+              </select>
+              <div *ngIf="myForm.controls['Modelo']?.invalid && myForm.controls['Modelo']?.touched" class="invalid-feedback">
+                El Modelo es obligatorio.
+              </div>
+            </c-input-group>
+          
+            <c-input-group class="mb-3">
+              <span cInputGroupText>
+                <svg cIcon name="cilUser"></svg>
+              </span>
+              <input id="numero_serie" class="form-control" type="text" placeholder="Número de Serie" [(ngModel)]="dispositivo.numSerie" name="numero_serie" required/>
+              <div *ngIf="myForm.controls['numero_serie']?.invalid && myForm.controls['numero_serie']?.touched" class="invalid-feedback">
+                El número de serie es obligatorio.
+              </div>
+            </c-input-group>
+          
+            <c-input-group class="mb-3">
+              <span cInputGroupText>
+                <svg cIcon name="cilUser"></svg>
+              </span>
+              <input id="nombre" class="form-control" type="text" placeholder="Nombre" [(ngModel)]="dispositivo.nombre" name="nombre" required/>
+              <div *ngIf="myForm.controls['nombre']?.invalid && myForm.controls['nombre']?.touched" class="invalid-feedback">
+                El nombre es obligatorio.
+              </div>
+            </c-input-group>
+          
+            <c-input-group class="mb-3">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="disponible" [(ngModel)]="dispositivo.disponible" name="disponible">
+                <label class="form-check-label" for="disponible">Disponible</label>
+              </div>
+            </c-input-group>
+          
+            <div class="d-grid">
+              <button cButton color="success" type="submit" [disabled]="myForm.invalid">Guardar Cambios</button>
+            </div>
+            <br>
+            <div class="d-grid">
+              <button cButton color="secondary" type="button" (click)="cancelar()">Cancelar</button>
+            </div>
+          </form>
             <!-- AQUI ACABAN LOS FORMULARIOS DE INGRESO Y MODIFICACION SEGUN CORRESPONDA--> 
         </div>
 

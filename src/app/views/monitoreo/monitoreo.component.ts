@@ -10,14 +10,17 @@ import {
   RowComponent,
   ColComponent,
   WidgetStatAComponent,
-  TemplateIdDirective,
   ThemeDirective,
   DropdownComponent,
   ButtonDirective,
   DropdownToggleDirective,
   DropdownMenuDirective,
   DropdownItemDirective,
-  DropdownDividerDirective
+  DropdownDividerDirective,
+  AccordionButtonDirective,
+  AccordionComponent,
+  AccordionItemComponent,
+  TemplateIdDirective
 } from '@coreui/angular';
 import { Dispositivo } from 'src/app/model/dispositivo.model';
 import { DipositivoService } from 'src/app/service/dispositivo.service';
@@ -45,7 +48,11 @@ import { DipositivoService } from 'src/app/service/dispositivo.service';
     DropdownToggleDirective,
     DropdownMenuDirective,
     DropdownItemDirective,
-    DropdownDividerDirective
+    DropdownDividerDirective,
+    AccordionButtonDirective,
+    AccordionComponent,
+    AccordionItemComponent,
+
   ],
   providers:[DipositivoService],
   templateUrl: './monitoreo.component.html',

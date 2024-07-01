@@ -1,0 +1,11 @@
+.ng-touched.ng-invalid {
+    border-color: #dc3545; /* color rojo para indicar error */
+  }
+  
+  .invalid-feedback {
+    display: none;
+  }
+  
+  .ng-touched.ng-invalid ~ .invalid-feedback {
+    display: block;
+  }
