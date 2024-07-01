@@ -13,8 +13,8 @@
 .card {
   flex: 0 0 auto;
   margin: 10px;
-  width: 300px; /* Ancho ajustable según tu diseño */
-  border-radius: 15px; /* Bordes redondeados */
+  width: 200px; /* Ancho ajustable según tu diseño */
+  border-radius: 14px; /* Bordes redondeados */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
   overflow: hidden; /* Oculta el contenido que se desborda */
   transition: transform 0.3s ease-in-out; /* Efecto de transición */
@@ -33,9 +33,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #3498db; /* Color de fondo del encabezado */
+  background-color: #263f50; /* Color de fondo del encabezado */
   color: white; /* Color del texto */
-  padding: 12px; /* Espaciado interno */
+  padding: 10px; /* Espaciado interno */
   border-top-left-radius: 15px; /* Bordes redondeados en la esquina superior izquierda */
   border-top-right-radius: 15px; /* Bordes redondeados en la esquina superior derecha */
   //border-radius: 10px; /* Bordes redondeados */
@@ -48,7 +48,7 @@
 }
 
 .card-text {
-  margin-top: 8px; /* Espacio superior para el texto */
+  margin-top: -10px; /* Espacio superior para el texto */
   color: #555; /* Color del texto secundario */
 }
 

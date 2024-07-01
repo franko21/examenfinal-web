@@ -1,21 +1,39 @@
+<app-mapa></app-mapa>
+
 <div class="carousel-container">
   <div class="carousel">
     <div class="card" *ngFor="let dispo of dispositivos">
+      <div class="card-header">
+        <h5 class="card-title">{{ dispo.idDispositivo }} - {{ dispo.nombre }}</h5>
+        <!-- Dropdown integrado en el encabezado de la tarjeta -->
+        <ng-container *ngTemplateOutlet="ConfigDropdown"></ng-container>
+      </div>
       <div class="card-body">
-        <div class="card-header">
-          <h5 class="card-title">{{ dispo.idDispositivo }} - {{ dispo.nombre }}</h5>
-          <!-- Dropdown integrado en el encabezado de la tarjeta -->
-          <ng-container *ngTemplateOutlet="ConfigDropdown"></ng-container>
-        </div>
-        <p class="card-text">{{ dispo.modelo?.nombre }} - {{ dispo.modelo?.marca?.nombre }}</p>
-        <p class="card-text">{{ dispo.categoria?.nombre }}</p>
+        <p class="card-text">{{ dispo.modelo.nombre }} - {{ dispo.modelo.marca?.nombre }}</p>
+        <p class="card-text">{{ dispo.categoria.nombre }}</p>
       </div>
     </div>
   </div>
 </div>
-<app-mapa></app-mapa>
-
-
+<c-accordion>
+  <c-accordion-item #item0="cAccordionItem" [visible]="false">
+    <ng-template cTemplateId="accordionHeaderTemplate">
+      <button (click)="item0.toggleItem()" [collapsed]="!item0.visible" cAccordionButton>
+        Detalles de prestamos
+      </button>
+    </ng-template>
+    <ng-template cTemplateId="accordionBodyTemplate">
+      <div class="accordion-body">
+        <strong>This is the first item's accordion body.</strong> It is hidden by default,
+        until the collapse plugin adds the appropriate classes that we use to style each
+        element. These classes control the overall appearance, as well as the showing and
+        hiding via CSS transitions. You can modify any of this with custom CSS or overriding
+        our default variables. It's also worth noting that just about any HTML can go within
+        the <code>.accordion-body</code>, though the transition does limit overflow.
+      </div>
+    </ng-template>
+  </c-accordion-item>
+</c-accordion>
 <ng-template #ConfigDropdown>
   <c-dropdown alignment="end" variant="nav-item" [autoClose]="true">
     <button [caret]="false" cDropdownToggle aria-label="Open configuration picker" (click)="mensaje()">
