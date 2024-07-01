@@ -1,0 +1,25 @@
+<div class="search-container">
+    <input #autocomplete type="text" placeholder="Buscar dirección">
+  </div>
+  
+  <div>
+    <div id="map-container">
+      <google-map
+        height="600px"
+        width="100%"
+        [center]="center"
+        [zoom]="zoom"
+        (mapClick)="addMarker($event)"
+      >
+        <!--<map-marker
+          *ngFor="let position of markerPositions"
+          [position]="position"
+        ></map-marker>-->
+      </google-map>
+    </div>
+    <div class="button-container">
+      <button id="guardar-punto-seguro" (click)="ingresarZona()">
+        Guardar Zona Segura
+      </button>
+    </div>
+  </div>

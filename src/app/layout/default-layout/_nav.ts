@@ -30,9 +30,21 @@ export const navItems: INavData[] = [
     title: true
   },
   {
-    name: 'Monitoreo',
-    url: '/monitoreo',
-    iconComponent: { name: 'cil-map' }
+    name: 'Mapas',
+    url: '/mapas',
+    iconComponent: { name: 'cil-map' },
+    children: [
+      {
+        name: 'Zonas Seguras',
+        url: '/mapas/zonas-seguras',
+        icon: 'nav-icon-bullet'
+      },
+      {
+        name: 'Ubicaciones',
+        url: '/mapas/ubicaciones',
+        icon: 'nav-icon-bullet'
+      }
+    ]
   },
   {
     name: 'Clientes',

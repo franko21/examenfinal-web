@@ -1,6 +1,6 @@
 import { Component, ElementRef, HostListener, OnInit } from '@angular/core';
 import { WidgetsDropdownComponent } from '../widgets/widgets-dropdown/widgets-dropdown.component';
-import { MapaComponent } from '../mapa/mapa.component';
+import { ZonasSegurasComponent } from '../mapas/zonas-seguras/zonas-seguras.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ChartjsComponent } from '@coreui/angular-chartjs';
@@ -32,7 +32,7 @@ import { DipositivoService } from 'src/app/service/dispositivo.service';
     ChartjsComponent,
     CommonModule,
     RouterLink,
-    MapaComponent,
+    ZonasSegurasComponent,
     FormsModule,
     ReactiveFormsModule,
     RowComponent,

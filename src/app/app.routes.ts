@@ -71,11 +71,6 @@ export const routes: Routes = [
         loadChildren: () => import('./views/monitoreo/routes').then((m) => m.routes),
       },
       {
-        path: 'mapa',
-        loadChildren: () => import('./views/mapa/routes').then((m) => m.routes),
-
-      },
-      {
         path: 'prestamo',
         loadChildren: () => import('./views/prestamo/routes').then((m) => m.routes),
 
@@ -92,6 +87,11 @@ export const routes: Routes = [
       { path: 'clientes',
         loadChildren: () => import('./views/clientes/routes').then((m) => m.routes),
 
+
+      },
+      {
+        path: 'mapas',
+        loadChildren: () => import('./views/mapas/routes').then((m) => m.routes),
 
       }
     ]
@@ -122,14 +122,6 @@ export const routes: Routes = [
     loadComponent: () => import('./views/pages/register/register.component').then(m => m.RegisterComponent),
     data: {
       title: 'Register Page'
-    }
-  },
-
-  {
-    path: 'mapa',
-    loadComponent: () => import('./views/mapa/mapa.component').then(m => m.MapaComponent), // Añadir esta línea
-    data: {
-      title: 'GoogleMap'
     }
   },
   // {
