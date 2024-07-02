@@ -114,8 +114,13 @@
         </thead>
         <tbody>
         <tr *ngFor="let prestamo of prestamos  | paginate: { itemsPerPage: 5, currentPage: p }; let i = index">
-          <td>{{ prestamo.persona?.cedula }} - {{ prestamo.persona?.nombre }}</td>
-          <td>{{ prestamo.dispositivo?.numSerie }} - {{ prestamo.dispositivo?.nombre }}</td>
+          <td><div>{{ prestamo.persona?.nombre}} {{ prestamo.persona?.apellido }}  </div>
+             <div class="small text-body-secondary text-nowrap">
+               <span>{{ prestamo.persona?.cedula }} </span></div>
+          </td>
+          <td><div>{{ prestamo.dispositivo?.nombre }}{{ prestamo.dispositivo?.modelo?.marca?.nombre}}</div>
+            <div class="small text-body-secondary text-nowrap"><span>{{ prestamo.dispositivo?.numSerie }} {{ prestamo.dispositivo?.modelo?.nombre}}</span></div>
+            </td>
           <td>
             {{ prestamo.fecha_prestamo ? prestamo.fecha_prestamo.toString().split("T")[0]  : 'NA' }}
           </td>

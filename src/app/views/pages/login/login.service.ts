@@ -15,13 +15,16 @@ export class LoginService {
   currentUserLoginOn: BehaviorSubject<boolean>;
   currentUserData: BehaviorSubject<string>;
 
-  constructor(private http:HttpClient,private router:Router) { 
-    
+  constructor(private http:HttpClient,private router:Router) {
+
     this.currentUserLoginOn = new BehaviorSubject<boolean>(false);
     this.currentUserData = new BehaviorSubject<string>("");
 
     // Comprueba si hay un token en el sessionStorage al inicializar el servicio
     const token = sessionStorage.getItem("token");
+    const cedula = sessionStorage.getItem("cedula");
+    const nombre = sessionStorage.getItem("nombre");
+    const apellido = sessionStorage.getItem("apellido");
     if (token) {
         this.currentUserLoginOn.next(true);
         this.currentUserData.next(token);
@@ -34,6 +37,9 @@ export class LoginService {
             console.log("Datos de usuario recibidos:", userData);
             if (userData && userData.token) {
                 sessionStorage.setItem("token", userData.token);
+                sessionStorage.setItem("cedula", userData.usuario.persona.cedula);
+                sessionStorage.setItem("nombre", userData.usuario.persona.nombre);
+                sessionStorage.setItem("apellido", userData.usuario.persona.apellido);
                 this.currentUserData.next(userData.token);
                 console.log("Token de sesión almacenado:", userData.token);
                 // console.log("Token de sesión almacenado:", userData.empleado.nombre);
@@ -48,6 +54,10 @@ export class LoginService {
                 }).then((result)=>{
                     if(result.isConfirmed){
                         environment.islogged=true;
+                        environment.cedula=userData.usuario.persona.cedula;
+                        environment.nombre=userData.usuario.persona.nombre;
+                        environment.apellido=userData.usuario.persona.apellido;
+                        console.log(environment.nombre);
                         environment.username=credentials.username;
                         // authGuard(this.route,this.state).valueOf.prototype.islogged=true;
                         this.router.navigate(['/dashboard']);
@@ -98,6 +108,9 @@ register(credentials: RegisterRequest): Observable<any> {
 }
 logout(): void {
     sessionStorage.removeItem("token");
+    sessionStorage.removeItem("cedula");
+    sessionStorage.removeItem("nombre");
+    sessionStorage.removeItem("apellido");
     this.currentUserData.next('');
     this.currentUserLoginOn.next(false);
     console.log("Sesión cerrada. Token eliminado.");
