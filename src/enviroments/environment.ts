@@ -10,5 +10,8 @@ export const environment = {
   urlApi: 'http://localhost:8080/auth/v1/signin',
   userId:1,
   islogged:false,
-  username:''
+  username:'',
+  nombre:'',
+  apellido:'',
+  cedula:''
 };

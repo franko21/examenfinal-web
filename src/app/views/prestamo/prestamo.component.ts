@@ -24,7 +24,6 @@ import {AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators
 import { PersonaService } from 'src/app/service/persona.service';
 import { DipositivoService } from 'src/app/service/dispositivo.service';
 import { Persona } from 'src/app/model/persona.model';
-import { Zona_seguraService } from 'src/app/service/Zona_segura.service';
 import { UsuarioService } from 'src/app/service/usuario.service';
 import { Zona_segura } from 'src/app/model/zona_segura';
 import { Dispositivo } from 'src/app/model/dispositivo.model';
@@ -39,7 +38,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
   selector: 'app-prestamo',
   standalone: true,
   imports: [NgFor, HttpClientModule, NgIf, ContainerComponent, RowComponent, ColComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, IconDirective, FormControlDirective, ButtonDirective, ReactiveFormsModule, HttpClientModule, NgxPaginationModule, GutterDirective, FormFeedbackComponent, DatePipe],
-  providers:[PrestamoService,PersonaService,Zona_seguraService,DipositivoService,UsuarioService,DatePipe],
+  providers:[PrestamoService,PersonaService,DipositivoService,UsuarioService,DatePipe],
   templateUrl: './prestamo.component.html',
   styleUrl: './prestamo.component.scss'
 })
@@ -70,11 +69,10 @@ export class PrestamoComponent {
   hoy: Date = new Date();
   idusu:number;
   p: number = 1; // Página actual para la paginación
-  constructor(private datePipe:DatePipe,private usuarioService:UsuarioService, private dispoService:DipositivoService, private personaService:PersonaService,private prestamoService: PrestamoService,private router:Router,private fb:FormBuilder,private zonasService:Zona_seguraService){
+  constructor(private datePipe:DatePipe,private usuarioService:UsuarioService, private dispoService:DipositivoService, private personaService:PersonaService,private prestamoService: PrestamoService,private router:Router,private fb:FormBuilder){
     this.registerForm = this.fb.group({
       beneficiario: ['', Validators.required],
       dispositivo: ['', Validators.required],
-      // zona_segura: [''],
       fecha: ['', Validators.required],
       motivo: ['', Validators.required],
       finalizado: ['', Validators.required],
@@ -84,7 +82,6 @@ export class PrestamoComponent {
     this.registerFormIn = this.fb.group({
       beneficiario: ['', Validators.required],
       dispositivo: ['', Validators.required],
-      // zona_segura: ['', Validators.required],
       fecha: ['', Validators.required],
       motivo: ['',Validators.required],
     });
@@ -103,7 +100,8 @@ export class PrestamoComponent {
     )
     this.prestamoService.getPrestamos().subscribe(
       prestamo => {
-        this.prestamos = prestamo;
+        this.prestamos = prestamo; // @ts-ignore
+        console.log(this.prestamos?.at(0).persona);
       }
     );
     this.personaService.getPersonas().subscribe(
@@ -174,14 +172,7 @@ export class PrestamoComponent {
   hideDisTooltip() {
     this.showTooltip2 = false;
   }
-  showZonTooltip() {
-    if (this.registerFormIn.get('zona_segura')?.invalid) {
-      this.showTooltip3 = true;
-    }
-  }
-  hideZonTooltip() {
-    this.showTooltip3 = false;
-  }
+
 
   showMotivoTooltip() {
     if (this.registerFormIn.get('motivo')?.invalid) {
@@ -245,19 +236,15 @@ export class PrestamoComponent {
       prestamo.dispositivo=dispositivoo;
       let personaa:Persona=new Persona();
       prestamo.persona=personaa;
-      let zona_seguraa:Zona_segura=new Zona_segura();
-      // prestamo.zona_segura=zona_seguraa;
       let usuarioo:Usuario=new Usuario();
       // prestamo.usuario=usuarioo;
 
       prestamo.dispositivo.idDispositivo=formValues.dispositivo;
       prestamo.persona.id_persona=formValues.beneficiario;
-      // prestamo.zona_segura.id_zona_segura=formValues.zona_segura;
       prestamo.fecha_finalizacion=formValues.fecha;
       prestamo.motivo_prestamo=formValues.motivo;
       // prestamo.usuario.id_usuario=this.idusu;
       prestamo.fecha_prestamo=fecha;
-      // prestamo.hora_prestamo=this.convertirHoraADouble(fecha);
       this.prestamoService.crearPrestamo(prestamo).subscribe({
         next:(userData)=>{
           console.log('Datos de prestamo recibidos:', userData);
@@ -318,14 +305,11 @@ export class PrestamoComponent {
     prestamo.dispositivo=dispositivoo;
     let personaa:Persona=new Persona();
     prestamo.persona=personaa;
-    let zona_seguraa:Zona_segura=new Zona_segura();
-    // prestamo.zona_segura=zona_seguraa;
     let usuarioo:Usuario=new Usuario();
     // prestamo.usuario=usuarioo;
 
     prestamo.dispositivo.idDispositivo=formValues.dispositivo;
     prestamo.persona.id_persona=formValues.beneficiario;
-    // prestamo.zona_segura.id_zona_segura=formValues.zona_segura;
     prestamo.fecha_finalizacion=formValues.fecha;
     prestamo.motivo_prestamo=formValues.motivo;
     prestamo.estado_devolucion=formValues.estado_devolucion;

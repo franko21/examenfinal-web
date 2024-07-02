@@ -23,6 +23,14 @@ import {
   CardBodyComponent,
   CardComponent,
   ThemeDirective,
+  ButtonCloseDirective,
+  ButtonDirective,
+  ModalBodyComponent,
+  ModalComponent,
+  ModalFooterComponent,
+  ModalHeaderComponent,
+  ModalTitleDirective,
+
 
 } from '@coreui/angular';
 import { NgStyle, NgTemplateOutlet } from '@angular/common';
@@ -49,7 +57,7 @@ import {LoginService} from "../../../views/pages/login/login.service";
   styleUrl:'./default-header.component.scss',
   providers:[ConfiguracionService,AlertaService,PrestamoService,LoginService],
   standalone: true,
-  imports: [ContainerComponent,ReactiveFormsModule,FormsModule,CommonModule,CardBodyComponent,CardComponent, HeaderTogglerDirective, SidebarToggleDirective, IconDirective, HeaderNavComponent, NavItemComponent, NavLinkDirective, RouterLink, RouterLinkActive, NgTemplateOutlet, BreadcrumbRouterComponent, ThemeDirective, DropdownComponent, DropdownToggleDirective, TextColorDirective, AvatarComponent, DropdownMenuDirective, DropdownHeaderDirective, DropdownItemDirective, BadgeComponent, DropdownDividerDirective, ProgressBarDirective, ProgressComponent, NgStyle,HttpClientModule]
+  imports: [ContainerComponent,ReactiveFormsModule,FormsModule,CommonModule,CardBodyComponent,CardComponent, HeaderTogglerDirective, SidebarToggleDirective, IconDirective, HeaderNavComponent, NavItemComponent, NavLinkDirective, RouterLink, RouterLinkActive, NgTemplateOutlet, BreadcrumbRouterComponent, ThemeDirective, DropdownComponent, DropdownToggleDirective, TextColorDirective, AvatarComponent, DropdownMenuDirective, DropdownHeaderDirective, DropdownItemDirective, BadgeComponent, DropdownDividerDirective, ProgressBarDirective, ProgressComponent, NgStyle,HttpClientModule,ButtonDirective, ModalComponent, ModalHeaderComponent, ModalTitleDirective, ThemeDirective, ButtonCloseDirective, ModalBodyComponent, ModalFooterComponent]
 })
 export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
 
@@ -62,6 +70,7 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
   public segundo: number=0;
   recop :number=0;
   value = 1;
+  public visible = false;
 
 
   prestamos: Prestamo[] = [];
@@ -298,5 +307,14 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
     this.loginService.logout();
     this.router.navigate(['/login']);
   }
+  toggleLiveDemo() {
+    this.visible = !this.visible;
+  }
 
+  handleLiveDemoChange(event: any) {
+    this.visible = event;
+  }
+
+  protected readonly environment = environment;
+  protected readonly sessionStorage = sessionStorage;
 }
