@@ -2,7 +2,7 @@ import { Component, NgZone, OnDestroy, ViewChild } from '@angular/core';
 import {GoogleMap, MapHeatmapLayer, MapMarker} from '@angular/google-maps';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { WebSocketPosicion } from 'src/app/service/WebSocketPosicion.service';
+import{WebSocketDispositivos} from 'src/app/service/WebSocketDispositivos.service';
 import { PosicionService } from 'src/app/service/posicion.service';
 import { Subscription } from 'rxjs';
 import { Posicion } from 'src/app/model/posicion.model';
@@ -25,7 +25,7 @@ export class UbicacionesComponent implements OnDestroy{
   posiciones: Posicion[] = [];
 
   constructor(
-    private webSocketPosicion: WebSocketPosicion,
+    private webSocketPosicion: WebSocketDispositivos,
     private posicionService: PosicionService,
     private zone: NgZone
   ) {}
@@ -42,7 +42,7 @@ export class UbicacionesComponent implements OnDestroy{
     console.log(this.posiciones.length);
     const ruta = 'https://th.bing.com/th/id/R.e6d5549d7d43ef8e34af49fed37e1196?rik=nb2KWBpNv895Bw&pid=ImgRaw&r=0';
     //suscribirse al WebSocket para recibir actualización posiciones en tiempo real:
-    this.posicionSubscription = this.webSocketPosicion.obtenerPosiciones().subscribe(
+    this.posicionSubscription = this.webSocketPosicion.obtenerDispositivos().subscribe(
       (posiciones: any[]) => {
         this.posiciones = posiciones;
         // Agregar marcadores de posiciones
