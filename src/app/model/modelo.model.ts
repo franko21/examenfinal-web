@@ -6,7 +6,4 @@ export class Modelo{
     nombre?:String;
     marca?:Marca;
     dispositivos?:Dispositivo[];
-    
-
-
 }

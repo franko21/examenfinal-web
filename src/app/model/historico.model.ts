@@ -1,7 +1,7 @@
 import { Dispositivo } from "./dispositivo.model";
 
 export class Historico {
-    id_historico?: number;
+    idHistorico?: number;
     latitud?: number;
     longitud?: number;
     fechaHora?: Date;

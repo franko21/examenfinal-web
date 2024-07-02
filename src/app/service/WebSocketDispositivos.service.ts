@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Client, IMessage  } from '@stomp/stompjs';
 import { Observable, Subject } from 'rxjs';
+import { environment } from '../../enviroments/environment';
+
 
 @Injectable({
   providedIn: 'root'
 })
 
-export class WebSocketPosicion {
+export class WebSocketDispositivos {
   private stompClient: Client;
   private posicionesSubject: Subject<any> = new Subject<any>();
   private connected: boolean = false;
@@ -17,9 +19,9 @@ export class WebSocketPosicion {
 
   public conectar(): void {
     this.stompClient = new Client({
-      brokerURL: "ws://localhost:8080/ws",
+      brokerURL: environment.websocketUrl+"ws",
       debug: (str) => {
-        console.log(str);
+        //console.log(str);
       },
       /*
       reconnectDelay: 5000, // Opcional: configurar el tiempo de reconexión
@@ -31,7 +33,7 @@ export class WebSocketPosicion {
     this.stompClient.onConnect = (frame) => {
       console.log('Conectado: ' + frame);
       this.connected = true;
-      this.stompClient.subscribe('/topic/posiciones', (message: IMessage) => {
+      this.stompClient.subscribe('/topic/dispositivos', (message: IMessage) => {
         this.posicionesSubject.next(JSON.parse(message.body));
       });
     };
@@ -45,15 +47,7 @@ export class WebSocketPosicion {
     this.stompClient.activate();
   }
 
-  public enviarPosicion(posicion: any): void {
-    if (this.connected) {
-      this.stompClient.publish({ destination: '/app/posicion', body: JSON.stringify(posicion) });
-    } else {
-      console.error('No hay conexión activa con el servidor STOMP.');
-    }
-  }
-
-  public obtenerPosiciones(): Observable<any> {
+  public obtenerDispositivos(): Observable<any> {
     return this.posicionesSubject.asObservable();
   }
 
@@ -62,5 +56,15 @@ export class WebSocketPosicion {
       this.stompClient.deactivate();
     }
   }
+
+  /*
+  public enviarPosicion(posicion: any): void {
+    if (this.connected) {
+      this.stompClient.publish({ destination: '/app/posicion', body: JSON.stringify(posicion) });
+    } else {
+      console.error('No hay conexión activa con el servidor STOMP.');
+    }
+  }
+  */
 }
 

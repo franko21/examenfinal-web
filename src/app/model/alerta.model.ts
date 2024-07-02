@@ -1,7 +1,8 @@
-import { Prestamo } from "./prestamo.model";
+import { Dispositivo } from "./dispositivo.model";
 
 export class Alerta {
-    fecha:Date;
-    descripcion:String;
-    prestamo:Prestamo;
+    id_alerta?: number;
+    fecha?:Date;
+    descripcion?:String;
+    dispositivo?:Dispositivo;
 }
