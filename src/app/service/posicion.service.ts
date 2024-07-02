@@ -27,7 +27,7 @@ export class PosicionService {
   }
 
   editar(posicion: Posicion): Observable<Posicion> {
-    const url = `${this.urlEndPoint}/${posicion.id_posicion}`;
+    const url = `${this.urlEndPoint}/${posicion.idPosicion}`;
     return this.http.put<Posicion>(url, posicion, { headers: this.httpHeaders });
   }
 

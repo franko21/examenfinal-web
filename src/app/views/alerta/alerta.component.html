@@ -4,7 +4,7 @@
         <table class="table table-bordered table-striped">
             <thead>
             <tr>
-                <th>Prestamo</th>
+                <th>Dispositivo</th>
                 <th>Descripcion</th>
                 <th>Fecha</th>
                 <th>Ver Detalles</th>
@@ -12,9 +12,9 @@
             </thead>
             <tbody>
             <tr *ngFor="let alert of alertas; let i = index">
-                <td>{{alert.prestamo.dispositivo.nombre}}-{{alert.prestamo.persona.nombre}} {{alert.prestamo.persona.apellido}}</td>
+                <td>{{alert.dispositivo?.nombre}}</td>
                 <td>{{alert.descripcion}}</td>
-                <td>{{ alert.fecha.toString().split("T")[0]}} {{ alert.fecha.toString().split("T")[1].split(".")[0]}}</td>
+                <td>{{ alert.fecha}}</td>
                 <td>
                 <button type="button" name="button"  class="btn btn-danger" (click)="mostrarDetalles(alert)">Detalles</button>
                 </td>
