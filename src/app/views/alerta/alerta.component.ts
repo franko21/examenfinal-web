@@ -17,7 +17,7 @@ import { Dispositivo } from 'src/app/model/dispositivo.model';
 })
 export class AlertaComponent {
   private dispositivosSuscripcion: Subscription;
-  dispisitivos: Dispositivo [] = [];
+  dispositivos: Dispositivo [] = [];
 
   filaEditada: number | null = null;
   alertas:Alerta[]=[];
@@ -35,34 +35,25 @@ export class AlertaComponent {
         this.alertas=aler;
       }
     )
-    //para recibir dispositivos actualiazdos y obtener sus alertas
+    // para recibir dispositivos actualizados y obtener sus alertas en tiempo real
     this.dispositivosSuscripcion = this.webSocket.obtenerDispositivos().subscribe(
       (dispositivos: any[]) => {
-        if(dispositivos.length > 0){
-          this.dispisitivos = dispositivos;
+        if (dispositivos) {
+          this.dispositivos = dispositivos;
           this.alertas = [];
-          for(dispositivo: this.dispositivos){
-            this.alertas.push(dispositivo);
+          for (let dispositivo of this.dispositivos) {
+            if(dispositivo.alertas){
+              for (let alerta of dispositivo.alertas) {
+                this.alertas.push(alerta);
+              }
+            }
           }
         }
-        this.posiciones = dispositivos;
-        // Agregar marcadores de posiciones
-        this.posiciones.forEach((pos, index) => {
-          const marker = new google.maps.Marker({
-            position: { lat: pos.latitud, lng: pos.longitud },
-            icon: {
-              url: ruta,
-                scaledSize: new google.maps.Size(30, 30),  // Escala del ícono
-              },
-            map: this.map.googleMap
-          });
-        });
       },
       error => {
-        console.error('Error al suscribirse a las posiciones:', error);
+        console.error('Error al suscribirse a los dispositivos:', error);
       }
     );
-
 
     console.log(this.alertas.at(0)?.descripcion);
   }
