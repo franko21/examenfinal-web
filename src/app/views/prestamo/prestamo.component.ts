@@ -257,7 +257,7 @@ export class PrestamoComponent {
       prestamo.motivo_prestamo=formValues.motivo;
       // prestamo.usuario.id_usuario=this.idusu;
       prestamo.fecha_prestamo=fecha;
-      prestamo.hora_prestamo=this.convertirHoraADouble(fecha);
+      // prestamo.hora_prestamo=this.convertirHoraADouble(fecha);
       this.prestamoService.crearPrestamo(prestamo).subscribe({
         next:(userData)=>{
           console.log('Datos de prestamo recibidos:', userData);

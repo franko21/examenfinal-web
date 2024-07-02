@@ -117,7 +117,7 @@
           <td>{{ prestamo.persona?.cedula }} - {{ prestamo.persona?.nombre }}</td>
           <td>{{ prestamo.dispositivo?.numSerie }} - {{ prestamo.dispositivo?.nombre }}</td>
           <td>
-            {{ prestamo.fecha_prestamo ? prestamo.fecha_prestamo.toString().split("T")[0] + ' ' + formatTime(prestamo.hora_prestamo) : 'NA' }}
+            {{ prestamo.fecha_prestamo ? prestamo.fecha_prestamo.toString().split("T")[0]  : 'NA' }}
           </td>
           <td>
             {{ prestamo.fecha_finalizacion ? prestamo.fecha_finalizacion.toString().split("T")[0]: 'NA' }}
