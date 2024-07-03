@@ -1,5 +1,6 @@
-// Estilos para el buscador de direcciones
+
 .search-container {
+    margin-bottom: 20px; 
     input[type="text"] {
       padding: 10px;
       width: 300px;
@@ -8,14 +9,12 @@
     }
   }
   
-  // Estilos para el contenedor del mapa
   #map-container {
     height: 600px;
     border: 1px solid #ccc;
     border-radius: 5px;
   }
   
-  // Estilos para el botón de guardar
   .button-container {
     margin-top: 10px;
     button {
@@ -31,4 +30,5 @@
       }
     }
   }
+  
   
