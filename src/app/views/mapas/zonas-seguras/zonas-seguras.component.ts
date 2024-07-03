@@ -24,6 +24,7 @@ export class ZonasSegurasComponent {
     private zonaService: Zona_seguraService,
     private zone: NgZone
   ) {}
+  marcadores: google.maps.Marker[] = []; 
   //VARIABLES PARA LOS MÉTODOS DE GOOGLE MAPS
   center: google.maps.LatLngLiteral = { lat: -2.879767894744873, lng: -78.97490692138672 };
   zoom = 12;
@@ -40,7 +41,6 @@ export class ZonasSegurasComponent {
   //MÉTODO PARA INICIALIZAR EL BUSCADOR DEL MAPA
   ngAfterViewInit(): void {
     this.zone.runOutsideAngular(() => {
-      console.log('vista cargado correctamente con sus child');
       this.InitCompletado();
     });
   }
@@ -53,8 +53,7 @@ export class ZonasSegurasComponent {
       const punto = {
         latitud: this.lastClickedPosition.lat,
         longitud: this.lastClickedPosition.lng
-      };
-      console.log( "LATITUD "+punto.latitud, +" /"+"lONGITUD"+punto.longitud);
+      };  
       this.listadoPuntos.push(punto);
       this.actualizarMarcadorEnMapa(position);
     }
@@ -64,27 +63,21 @@ export class ZonasSegurasComponent {
   actualizarMarcadorEnMapa(position: google.maps.LatLngLiteral) {
     //RUTA PARA COLOCAR UN MARKADOR PERSONALIZADO
     const ruta = 'https://th.bing.com/th/id/R.e6d5549d7d43ef8e34af49fed37e1196?rik=nb2KWBpNv895Bw&pid=ImgRaw&r=0';
-    //CÓDIGO PARA CREAER UN MARKADOR PERSONALIZADO
-    //this.marker = new google.maps.Marker({
-    //  position: position,
-    //  icon: {
-    //  url: ruta,
-    //    scaledSize: new google.maps.Size(30, 30),  // Escala del ícono
-    //  },
-    //  map: this.map?.googleMap || null
-    //});
-    this.marker = new google.maps.Marker({
-      position: position,
-      icon: {
-        path: google.maps.SymbolPath.CIRCLE,
-        scale: 10,
-        strokeColor: '#f00',
-        strokeWeight: 5,
-        fillColor: '#000A02',
-        fillOpacity: 1,
-      },
-      map: this.map?.googleMap || null,
-    });
+  
+  const marcador = new google.maps.Marker({
+    position: position,
+    icon: {
+      path: google.maps.SymbolPath.CIRCLE,
+      scale: 10,
+      strokeColor: '#f00',
+      strokeWeight: 5,
+      fillColor: '#000A02',
+      fillOpacity: 1,
+    },
+    map: this.map?.googleMap || null,
+  });
+  
+  this.marcadores.push(marcador); // Agregar el marcador al array
   }
 
 
@@ -153,10 +146,12 @@ export class ZonasSegurasComponent {
     const mapContainer = this.map.googleMap;
     if (mapContainer) {
       console.log("SE INICIO LA CREACIÓN DE");
+      // Crear los vértices del polígono a partir de los puntos
       const vertices = this.listadoPuntos.map(punto => ({
         lat: punto.latitud,
         lng: punto.longitud
       }));
+      // Crear el polígono
       const poligono = new google.maps.Polygon({
         paths: vertices,
         map: mapContainer,
@@ -164,7 +159,11 @@ export class ZonasSegurasComponent {
         fillColor: '#92afb0',
         strokeWeight: 4,
       });
-    }else{
+      // Borrar los marcadores del mapa
+      this.marcadores.forEach(marcador => marcador.setMap(null));
+      this.marcadores = []; // Vaciar el array de marcadores
+  
+    } else {
       console.log("NO SE PUDO INICIAR LA CREACIÓN DE");
     }
   }
@@ -210,21 +209,26 @@ export class ZonasSegurasComponent {
       if (this.autocomplete) {
         const place = this.autocomplete.getPlace();
         if (!place.geometry) {
-          // Handle invalid place
+          // Manejar lugar inválido
           this.input.nativeElement.placeholder = 'Ingrese una dirección válida';
         } else {
           const detailsElement = document.getElementById('details');
-        if (detailsElement) {
-          detailsElement.innerHTML = place.name || 'Dirección sin nombre';
-          if(place.geometry.location){
+          if (detailsElement) {
+            detailsElement.innerHTML = place.name || 'Dirección sin nombre';
+          }
+          if (place.geometry.location) {
             this.map.googleMap!.setCenter(place.geometry.location);
             this.map.googleMap!.setZoom(17);
             console.log(place.name);
+            
+            // Actualizar marcador en la nueva ubicación
+            this.actualizarMarcadorEnMapa({
+              lat: place.geometry.location.lat(),
+              lng: place.geometry.location.lng()
+            });
           }
-          
         }
       }
     }
-  }
 
 }
