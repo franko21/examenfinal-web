@@ -1,13 +1,14 @@
-import { Component, NgZone, OnDestroy, ViewChild } from '@angular/core';
+import { Component, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {GoogleMap, MapHeatmapLayer, MapMarker} from '@angular/google-maps';
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, provideHttpClient } from '@angular/common/http';
 import{WebSocketDispositivos} from 'src/app/service/WebSocketDispositivos.service';
-import { PosicionService } from 'src/app/service/posicion.service';
 import { Subscription } from 'rxjs';
+import { Zona_seguraService } from 'src/app/service/Zona_segura.service';
 import { Posicion } from 'src/app/model/posicion.model';
 import { HttpClient } from '@angular/common/http';
 import { Dispositivo } from 'src/app/model/dispositivo.model';
+import { Zona_segura } from 'src/app/model/zona_segura';
 
 @Component({
   selector: 'app-ubicaciones',
@@ -18,7 +19,9 @@ import { Dispositivo } from 'src/app/model/dispositivo.model';
   templateUrl: './ubicaciones.component.html',
   styleUrl: './ubicaciones.component.scss'
 })
-export class UbicacionesComponent{
+
+
+export class UbicacionesComponent implements OnInit, OnDestroy{
 
   private dispositivosSuscripcion:Subscription;
   dispositivos: Dispositivo [] = [];
@@ -27,13 +30,25 @@ export class UbicacionesComponent{
   zoom = 12;
   private posicionSubscription: Subscription;
   posiciones: Posicion[] = [];
+  zonasSeguras: Zona_segura[] = [];
+  private zonasSegurasSubscription: Subscription;
 
   constructor(
     private webSocketPosicion: WebSocketDispositivos,
     private zone: NgZone,
-    private http: HttpClient
+    private http: HttpClient,
+    private zonasSegurasService: Zona_seguraService
   ) {}
 
+  ngOnInit(): void {
+    this.listarZonasSeguras();
+  }
+
+  ngOnDestroy(): void {
+    if (this.zonasSegurasSubscription) {
+      this.zonasSegurasSubscription.unsubscribe();
+    }
+  }
 
   loadOtherPositionsMarkers() {
     // Obtener posiciones de otros dispositivos y agregar marcadores en el mapa
@@ -76,5 +91,30 @@ export class UbicacionesComponent{
     );
   }
 
+  onZonaSeguraChange(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const selectedZonaSeguraId = selectElement.value;
+    console.log('Zona segura seleccionada:', selectedZonaSeguraId);
+
+    // Aquí puedes agregar lógica adicional para manejar el cambio de zona segura,
+    // como actualizar la vista del mapa con nuevas posiciones u otros datos.
+  }
+
+
+  listarZonasSeguras() {
+    this.zonasSegurasSubscription = this.zonasSegurasService.listar().subscribe(
+      (zonas: Zona_segura[]) => {
+        this.zonasSeguras = zonas;
+      },
+      error => {
+        console.error('Error al listar zonas seguras:', error);
+      }
+    );
+  }
+
   
+}
+
+function boostrapApplication(App: any, arg1: { providers: any[]; }) {
+  throw new Error('Function not implemented.');
 }

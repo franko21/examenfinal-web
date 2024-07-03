@@ -1,10 +1,17 @@
-<p>ubicaciones works!</p>
+<div>
+  <label for="zona-segura-select">Seleccione una zona segura:</label>
+  <select id="zona-segura-select" (change)="onZonaSeguraChange($event)">
+    <option *ngFor="let zonaSegura of zonasSeguras" [value]="zonaSegura.id_zona_segura">
+      {{ zonaSegura.descripcion }}
+    </option>
+  </select>
+</div>
 <div id="map-container">
-    <google-map
-      height="600px"
-      width="100%"
-      [center]="center"
-      [zoom]="zoom"
-    >
-    </google-map>
-  </div>
+  <google-map
+    height="600px"
+    width="100%"
+    [center]="center"
+    [zoom]="zoom"
+  >
+  </google-map>
+</div>
