@@ -1,19 +1,5 @@
-<!--<c-header class="mb-4 d-print-none" position="sticky">-->
-<!--<c-modal id="liveDemoModal" [visible]="visible" (visibleChange)="handleLiveDemoChange($event)">-->
-<!--  <c-modal-header>-->
-<!--    <h5 cModalTitle>Información del usuario</h5>-->
-<!--    <button (click)="toggleLiveDemo()" cButtonClose></button>-->
-<!--  </c-modal-header>-->
-<!--  <c-modal-body>-->
-<!--    <p><strong>Cédula:</strong>{{sessionStorage.getItem('cedula')}}</p>-->
-<!--    <p><strong>Nombre:</strong>{{sessionStorage.getItem('nombre')}}</p>-->
-<!--    <p><strong>Apellido:</strong>{{sessionStorage.getItem('apellido')}}</p>-->
-<!--  </c-modal-body>-->
-<!--  <c-modal-footer>-->
-<!--    <button (click)="toggleLiveDemo()" cButton color="secondary">Cerrar</button>-->
-<!--  </c-modal-footer>-->
-<!--</c-modal>-->
-<!--<c-modal id="liveDemoModal" [visible]="visible" (visibleChange)="handleLiveDemoChange($event)">-->
+
+<c-modal id="liveDemoModal" [visible]="visible" (visibleChange)="handleLiveDemoChange($event)" class="modal-custom">
 <!--  <c-modal-header class="modal-header-custom">-->
 <!--    <svg cIcon class="icon-secretary me-2" name="cilUser" size="lg"></svg>-->
 <!--    <h5 cModalTitle>Información del usuario</h5>-->
@@ -21,7 +7,6 @@
 <!--  </c-modal-header>-->
 <!--  <c-modal-body>-->
 <!--    <div class="d-flex align-items-center">-->
-<!--&lt;!&ndash;      <img src="https://via.placeholder.com/100" alt="Secretary" class="rounded-circle me-3">&ndash;&gt;-->
 <!--      <img src="https://www.w3schools.com/howto/img_avatar.png" alt="Secretary" class="rounded-circle me-3">-->
 <!--      <div>-->
 <!--        <p><strong>Cédula:</strong> {{sessionStorage.getItem('cedula')}}</p>-->
@@ -33,27 +18,25 @@
 <!--  <c-modal-footer>-->
 <!--    <button (click)="toggleLiveDemo()" cButton color="secondary">Cerrar</button>-->
 <!--  </c-modal-footer>-->
-<!--</c-modal>-->
-<c-modal id="liveDemoModal" [visible]="visible" (visibleChange)="handleLiveDemoChange($event)" class="modal-custom">
-  <c-modal-header class="modal-header-custom">
-    <svg cIcon class="icon-secretary me-2" name="cilUser" size="lg"></svg>
-    <h5 cModalTitle>Información del usuario</h5>
-    <button (click)="toggleLiveDemo()" cButtonClose></button>
-  </c-modal-header>
-  <c-modal-body>
-    <div class="d-flex align-items-center">
-      <img src="https://www.w3schools.com/howto/img_avatar.png" alt="Secretary" class="rounded-circle me-3">
-      <div>
-        <p><strong>Cédula:</strong> {{sessionStorage.getItem('cedula')}}</p>
-        <p><strong>Nombre:</strong> {{sessionStorage.getItem('nombre')}}</p>
-        <p><strong>Apellido:</strong> {{sessionStorage.getItem('apellido')}}</p>
+  <div class="modal-dialog">
+    <div class="modal-content modal-md">
+      <div class="modal-header">
+        <h4 class="modal-title">Titulo</h4>
+        <button
+          #cerrarModal
+          id="cerrarModal"
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body">
       </div>
     </div>
-  </c-modal-body>
-  <c-modal-footer>
-    <button (click)="toggleLiveDemo()" cButton color="secondary">Cerrar</button>
-  </c-modal-footer>
+  </div>
 </c-modal>
+
+
 
 <ng-container>
   <c-container [fluid]="true" class="border-bottom px-4">
