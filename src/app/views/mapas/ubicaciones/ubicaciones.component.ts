@@ -6,6 +6,8 @@ import{WebSocketDispositivos} from 'src/app/service/WebSocketDispositivos.servic
 import { PosicionService } from 'src/app/service/posicion.service';
 import { Subscription } from 'rxjs';
 import { Posicion } from 'src/app/model/posicion.model';
+import { HttpClient } from '@angular/common/http';
+import { Dispositivo } from 'src/app/model/dispositivo.model';
 
 @Component({
   selector: 'app-ubicaciones',
@@ -16,8 +18,10 @@ import { Posicion } from 'src/app/model/posicion.model';
   templateUrl: './ubicaciones.component.html',
   styleUrl: './ubicaciones.component.scss'
 })
-export class UbicacionesComponent implements OnDestroy{
+export class UbicacionesComponent{
 
+  private dispositivosSuscripcion:Subscription;
+  dispositivos: Dispositivo [] = [];
   @ViewChild(GoogleMap, { static: false }) map: GoogleMap;
   center: google.maps.LatLngLiteral = { lat: -2.879767894744873, lng: -78.97490692138672 };
   zoom = 12;
@@ -26,15 +30,10 @@ export class UbicacionesComponent implements OnDestroy{
 
   constructor(
     private webSocketPosicion: WebSocketDispositivos,
-    private posicionService: PosicionService,
-    private zone: NgZone
+    private zone: NgZone,
+    private http: HttpClient
   ) {}
 
-  ngOnDestroy(): void {
-    if (this.posicionSubscription) {
-      this.posicionSubscription.unsubscribe();
-    }
-  }
 
   loadOtherPositionsMarkers() {
     // Obtener posiciones de otros dispositivos y agregar marcadores en el mapa
@@ -64,13 +63,15 @@ export class UbicacionesComponent implements OnDestroy{
   }
 
   listarposiciones() {
-    this.posicionService.listar().subscribe(
-      (posiciones: Posicion[]) => {
-        this.posiciones = posiciones;
-        console.log(this.posiciones.length);
+    this.dispositivosSuscripcion = this.webSocketPosicion.obtenerDispositivos().subscribe(
+      (dispositivos: any[]) => {
+        if (dispositivos) {
+          this.dispositivos = dispositivos;
+          
+        }
       },
       error => {
-        console.error('Error al listar posiciones:', error);
+        console.error('Error al suscribirse a los dispositivos:', error);
       }
     );
   }
