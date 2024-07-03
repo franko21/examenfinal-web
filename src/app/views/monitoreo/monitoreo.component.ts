@@ -1,11 +1,13 @@
 import { Component, ElementRef, HostListener, OnInit } from '@angular/core';
 import { WidgetsDropdownComponent } from '../widgets/widgets-dropdown/widgets-dropdown.component';
-import { ZonasSegurasComponent } from '../mapas/zonas-seguras/zonas-seguras.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ChartjsComponent } from '@coreui/angular-chartjs';
-import { RouterLink } from '@angular/router';
 import { IconDirective } from '@coreui/icons-angular';
+import {UbicacionesComponent} from '../mapas/ubicaciones/ubicaciones.component';
+import {ZonasSegurasComponent} from '../mapas/zonas-seguras/zonas-seguras.component';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { WebSocketDispositivos } from 'src/app/service/WebSocketDispositivos.service';
 import {
   RowComponent,
   ColComponent,
@@ -20,10 +22,16 @@ import {
   AccordionButtonDirective,
   AccordionComponent,
   AccordionItemComponent,
-  TemplateIdDirective
+  TemplateIdDirective,
+  TableDirective,
+  ProgressBarDirective,
+  ProgressComponent,
+  
+
 } from '@coreui/angular';
 import { Dispositivo } from 'src/app/model/dispositivo.model';
 import { DipositivoService } from 'src/app/service/dispositivo.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-monitoreo',
@@ -34,7 +42,6 @@ import { DipositivoService } from 'src/app/service/dispositivo.service';
     IconDirective,
     ChartjsComponent,
     CommonModule,
-    RouterLink,
     ZonasSegurasComponent,
     FormsModule,
     ReactiveFormsModule,
@@ -52,30 +59,25 @@ import { DipositivoService } from 'src/app/service/dispositivo.service';
     AccordionButtonDirective,
     AccordionComponent,
     AccordionItemComponent,
-
+    UbicacionesComponent,
+    NgxPaginationModule,
+    TableDirective,
+    ProgressBarDirective,
+    ProgressComponent,
+    
   ],
   providers:[DipositivoService],
   templateUrl: './monitoreo.component.html',
   styleUrls: ['./monitoreo.component.scss']
 })
-export class MonitoreoComponent implements OnInit {
+export class MonitoreoComponent {
   showTable: boolean = false;
   public dispositivo:Dispositivo=new Dispositivo();
   dispositivos: Dispositivo[] = [];
-  title = 'my-carousel-project';
-  cards = [
-    { title: 'Card 1', text: 'This is card 1.' },
-    { title: 'Card 2', text: 'This is card 2.' },
-    { title: 'Card 3', text: 'This is card 3.' },
-    { title: 'Card 4', text: 'This is card 4.' },
-    { title: 'Card 1', text: 'This is card 1.' },
-    { title: 'Card 2', text: 'This is card 2.' },
-    { title: 'Card 3', text: 'This is card 3.' },
-    { title: 'Card 4', text: 'This is card 4.' },
-    { title: 'Card 5', text: 'This is card 5.' }
-  ];
-
-  constructor(private el: ElementRef,private serdispo:DipositivoService) {}
+  selectedDispositivo: Dispositivo | null = null;
+  p: number = 1;
+  private dispositivosSuscripcion: Subscription;
+  constructor(private el: ElementRef,private serdispo:DipositivoService, private webSocket: WebSocketDispositivos) {}
 
   listardispo() {
     this.serdispo.listar().subscribe(
@@ -89,38 +91,32 @@ export class MonitoreoComponent implements OnInit {
     );
   }
 
-  ngOnInit(): void {
-    this.listardispo();  
+  
+  listardispo2(){
+    this.dispositivosSuscripcion = this.webSocket.obtenerDispositivos().subscribe(
+      (dispositivos: any[]) => {
+        if (dispositivos) {
+          this.dispositivos = dispositivos;
+        }
+      },
+      error => {
+        console.error('Error al suscribirse a los dispositivos:', error);
+      }
+    );
   }
+
+  ngOnInit(): void {
+    this.listardispo();
+    this.listardispo2();  
+  }
+
 
   // Método para alternar la vista de la tabla
   toggleView() {
     this.showTable = !this.showTable;
   }
-
-  // Listener para el evento de scroll en el carousel
-  @HostListener('wheel', ['$event'])
-  onWheelScroll(event: WheelEvent) {
-    const container = this.el.nativeElement.querySelector('.carousel-container');
-    if (!container.contains(event.target as Node)) {
-      return;
-    }
-  
-    event.preventDefault();
-    event.stopPropagation();
-  
-    const scrollLeft = container.scrollLeft;
-    const scrollFactor = 1.5;
-    const scrollAmount = event.deltaY * scrollFactor;
-  
-    container.scrollTo({
-      left: scrollLeft + scrollAmount,
-      behavior: 'smooth'
-    });
-  }
-
-  // Método para mostrar mensaje en la consola al hacer clic en el botón del dropdown
-  mensaje(): void {
-    console.log("Se está dando click al botón del dropdown.");
+  seleccionarDispositivo(dispositivo: Dispositivo): void {
+    this.selectedDispositivo = dispositivo;
+    console.log('Dispositivo seleccionado:', this.selectedDispositivo);
   }
 }

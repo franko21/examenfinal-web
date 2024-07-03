@@ -1,89 +1,136 @@
-.carousel-container {
+
+.map-container {
+  width: 60%; /* ancho */
+  height: 60px; /* alto*/
+}
+
+.map-container app-mapa {
   width: 100%;
-  overflow-x: scroll;
-  scroll-snap-type: x mandatory;
-  display: flex;
+  height: 100%;
+}
+.dashboard {
+  font-family: Arial, sans-serif;
+  //color: #fff;
+  //background-color: #333;
+  padding: 1px;
 }
 
-.carousel {
-  display: flex;
-  flex-wrap: nowrap;
-}
-
-.card {
-  flex: 0 0 auto;
-  margin: 10px;
-  width: 200px; /* Ancho ajustable según tu diseño */
-  border-radius: 14px; /* Bordes redondeados */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
-  overflow: hidden; /* Oculta el contenido que se desborda */
-  transition: transform 0.3s ease-in-out; /* Efecto de transición */
-  cursor: pointer; /* Cambia el cursor al pasar sobre la tarjeta */
-}
-
-.card:hover {
-  transform: translateY(-5px); /* Efecto de levantamiento al pasar el ratón */
-}
-
-.card-body {
-  padding: 16px;
-}
-
-.card-header {
+header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #263f50; /* Color de fondo del encabezado */
-  color: white; /* Color del texto */
-  padding: 10px; /* Espaciado interno */
-  border-top-left-radius: 15px; /* Bordes redondeados en la esquina superior izquierda */
-  border-top-right-radius: 15px; /* Bordes redondeados en la esquina superior derecha */
-  //border-radius: 10px; /* Bordes redondeados */
+  padding-bottom: 10px;
+  //border-bottom: 1px solid #444;
 }
 
-.card-title {
-  font-size: 1.2rem; /* Tamaño del título */
-  font-weight: bold; /* Texto en negrita */
-  margin: 0; /* Elimina el margen */
-}
-
-.card-text {
-  margin-top: -10px; /* Espacio superior para el texto */
-  color: #555; /* Color del texto secundario */
-}
-
-/* Estilos para el dropdown */
-.c-dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.c-dropdown-toggle {
-  background: none;
+.header-right button {
+  //background-color: #555;
+  //color: #fff;
   border: none;
-  color: inherit;
-  cursor: pointer;
-}
-
-.c-dropdown-menu {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background-color: #fff; /* Fondo del menú desplegable */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra */
-  border: 1px solid #ccc; /* Borde */
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  z-index: 1000; /* Asegura que esté sobre otros elementos */
-}
-
-.c-dropdown-item {
   padding: 10px 20px;
+  margin: 0 5px;
   cursor: pointer;
-  white-space: nowrap; /* Evita el desbordamiento de texto */
 }
 
-.c-dropdown-item:hover {
-  background-color: #f0f0f0; /* Color de fondo al pasar el ratón */
+.fontable{
+ font-size: 0.7em;
+  //color: #978f8f71;
+}
+.fontables{
+  font-size: 0.9em;
+   //color: #978f8f71;
+ }
+
+
+.stats {
+  display: flex;
+  justify-content: space-between;
+  //border-bottom: 1px solid #444;
+}
+
+.stat {
+  flex: 1; /* Ocupa el mismo espacio dentro del contenedor flex */
+  text-align: center;
+}
+
+.stat .value {
+  font-size: 1em;
+  display: block;
+}
+
+.stat .label {
+  font-size: 0.8em;
+  //color: #ccc;
+}
+
+.content {
+  display: flex;
+  margin-top: 20px;
+}
+
+.geo-performance {
+  flex: 2;
+  padding-right: 20px;
+}
+
+.map {
+  height: 800px;
+ // background-color: #222;
+}
+
+.right-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.details, .user-experience, .top-slow {
+  margin-bottom: 10px;
+}
+
+.detail, .experience {
+  //background-color: #444;
+  padding: 5px;
+  margin: 1px 0;
+  border-radius: 5px;
+}
+
+.detail .value, .experience .value {
+  font-size: 1.5em;
+  display: block;
+}
+
+.satisfaction {
+  display: flex;
+  justify-content: space-around;
+}
+
+.satisfied {
+  color: #2ecc71;
+}
+
+.tolerating {
+  color: #f39c12;
+}
+
+.frustrated {
+  color: #e74c3c;
+}
+
+.top-slow table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 5px;
+  text-align: left;
+  
+}
+
+
+.page-views {
+  margin-top: 20px;
+  padding-top: 20px;
+  //border-top: 1px solid #444;
 }

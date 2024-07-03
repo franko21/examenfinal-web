@@ -1,32 +1,135 @@
-<div class="carousel-container">
-  <div class="carousel">
-    <div class="card" *ngFor="let dispo of dispositivos">
-      <div class="card-body">
-        <div class="card-header">
-          <h5 class="card-title">{{ dispo.idDispositivo }} - {{ dispo.nombre }}</h5>
-          <!-- Dropdown integrado en el encabezado de la tarjeta -->
-          <ng-container *ngTemplateOutlet="ConfigDropdown"></ng-container>
-        </div>
-        <p class="card-text">{{ dispo.modelo?.nombre }} - {{ dispo.modelo?.marca?.nombre }}</p>
-        <p class="card-text">{{ dispo.categoria?.nombre }}</p>
-      </div>
+<div class="dashboard">
+
+  <section class="stats">
+    <div class="stat">
+      <span class="value">{{dispositivos.length}}</span> 
+      <span class="label">Dispositivos</span>
     </div>
+    <div class="stat">
+      <span class="value">{{dispositivos.length}}</span>
+      <span class="label">Prestados/min</span>
+    </div>
+    <div class="stat">
+      <span class="value">{{dispositivos.length}}</span>
+      <span class="label">Disponibles</span>
+    </div>
+    <div class="stat">
+      <span class="value">67</span>
+      <span class="label">Mobile</span>
+    </div>
+    <div class="stat">
+      <span class="value">3</span>
+      <span class="label">Tablet</span>
+    </div>
+  </section>
+
+  <div class="content">
+    <section class="geo-performance">
+       <div class="google-map">
+        <app-zonas-seguras/>
+       </div>  
+    </section>
+
+    <section class="right-section">
+      <section class="top-slow">
+        <h3>Listado de dispositivos</h3>
+        <table [hover]="true"
+        [responsive]="true"
+        [striped]="true"
+        align="middle"
+        cTable
+        class="mb-0 border">
+           <tr>
+            <th>Marca/Modelo</th>
+            <th>Categoria</th>
+            <th>Nombre</th>
+            <th>Estado</th>
+          </tr> 
+          <tbody>
+            <tr class="bg-body-tertiary text-center" *ngFor="let dispo of dispositivos | paginate: { itemsPerPage: 5, currentPage: p }; let i = index" (click)="seleccionarDispositivo(dispo)">
+              <td>
+                <div class="fontable">{{ dispo.modelo?.marca?.nombre }}</div>
+                <div class="fontable">
+                  <span>{{ dispo.modelo?.nombre }}</span>
+                </div>
+              </td>
+              <td>
+                <div  class="fontable">{{ dispo.categoria?.nombre }}</div>
+              </td>
+              <td>
+                <div  class="fontable">{{ dispo.nombre }}</div>
+              </td>
+              <td>
+                <div class="fontable" [ngStyle]="{ 'color': dispo.disponible ? 'green' : 'red', 'font-weight': dispo.disponible ? 'bold' : 'normal' }">
+                  {{ dispo.disponible ? 'Disponible' : 'Prestado' }}
+                </div>
+              </td>
+          </tbody>
+        </table>
+        <div class="d-flex justify-content-center mt-3">
+          <pagination-controls class="fontable" (pageChange)="p = $event"></pagination-controls>
+        </div>
+        <section class="details">
+          <div *ngIf="selectedDispositivo" class="fontables">
+            <h5  class="text-center" >Detalles del Dispositivo Seleccionado</h5>
+            <div class="container">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-2">
+                    <p class="mb-1"><strong>Nombre:</strong></p>
+                    <p class="mb-1">{{ selectedDispositivo.nombre }}</p>
+                  </div>
+                  <div class="mb-2">
+                    <p class="mb-1"><strong>Marca/Modelo:</strong></p>
+                    <p class="mb-1">{{ selectedDispositivo.modelo?.marca?.nombre }} / {{ selectedDispositivo.modelo?.nombre }}</p>
+                  </div>
+                  <div class="mb-2">
+                    <p class="mb-1"><strong>Categoría:</strong></p>
+                    <p class="mb-1">{{ selectedDispositivo.categoria?.nombre }}</p>
+                  </div>
+                  <div class="mb-2">
+                    <p class="mb-1"><strong># Serie:</strong></p>
+                    <p class="mb-1">{{ selectedDispositivo.numSerie }}</p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-2">
+                    <p class="mb-1"><strong>Mac/Ip:</strong></p>
+                    <p class="mb-1">{{ selectedDispositivo.ipMac }}</p>
+                  </div>
+                  <div class="mb-2">
+                    <p class="mb-1"><strong>Versión Android:</strong></p>
+                    <p class="mb-1">{{ selectedDispositivo.version }}</p>
+                  </div>
+                  <div class="mb-2">
+                    <p class="mb-1"><strong>Última comunicación:</strong></p>
+                    <p class="mb-1">{{ selectedDispositivo.estado?.fechActualizacion }}</p>
+                  </div>
+                  <div class="mb-2">
+                    <p class="mb-1"><strong>Estado:</strong></p>
+                    <p class="mb-1" [ngStyle]="{ 'color': selectedDispositivo.disponible ? 'green' : 'red', 'font-weight': selectedDispositivo.disponible ? 'normal' : 'bold' }">
+                      {{ selectedDispositivo.disponible ? 'Disponible' : 'Prestado' }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+              <div class="progress-group-header">
+                <svg cIcon class="icon icon-lg me-2" name="cilUserFemale"></svg>
+                <span>Bateria:</span>
+                <span class="ms-auto font-semibold">{{selectedDispositivo.estado?.nivelBateria}}%</span>
+              </div>
+              <div class="progress-group-bars">
+                <c-progress thin color="warning" value="selectedDispositivo.estado?.nivelBateria"  />
+              </div>
+            
+          </div>
+        </section>
+      </section>
+    </section>
   </div>
 </div>
-<app-zonas-seguras></app-zonas-seguras>
 
-
-<ng-template #ConfigDropdown>
-  <c-dropdown alignment="end" variant="nav-item" [autoClose]="true">
-    <button [caret]="false" cDropdownToggle aria-label="Open configuration picker" (click)="mensaje()">
-      <svg cIcon name="cilOptions" size="lg"></svg>
-    </button>
-      <ul cDropdownMenu style="width: 200px; padding: 5px;">
-        <li><a (click)="mensaje()" cDropdownItem>Accion1</a></li>
-        <li><a (click)="mensaje()" cDropdownItem>Accion2</a></li>
-      </ul>
-  </c-dropdown>
-</ng-template>
 
 
 
