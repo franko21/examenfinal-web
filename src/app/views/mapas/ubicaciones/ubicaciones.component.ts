@@ -124,39 +124,73 @@ export class UbicacionesComponent implements OnInit, OnDestroy{
     if (mapContainer) {
       this.zonasSegurasService.buscar(id).subscribe(
         (zona: Zona_segura) =>{
-          console.log(zona.puntos?.length);
           this.puntos = zona.puntos ?? [];
+          if(this.puntos?.length > 0){
+            console.log("SE EMPEZÓ A CREAR EL POLÍGONO");
+            // Convertir los puntos de la zona segura a
+            const vertices = this.puntos.map(punto => ({
+              lat: punto.latitud,
+              lng: punto.longitud
+            }));
+            // Ordenar los vértices del polígono
+            const vertices_parseados: google.maps.LatLng[] = convertirALatLng(vertices);
+            this.functionordenarVertices(vertices_parseados);
+            // Crear el polígono
+            const poligono = new google.maps.Polygon({
+              paths: vertices_parseados,
+              map: mapContainer,
+              strokeColor: '#759192',
+              fillColor: '#92afb0',
+              strokeWeight: 4,
+            });
+          }
         },
         (error ) =>{
           console.error('Error al buscar la zona segura', error);
         }
       );
       // Crear los vértices del polígono a partir de los puntos
-      if(this.puntos?.length > 0){
-        console.log("SE EMPEZÓ A CREAR EL POLÍGONO");
-        const vertices = this.puntos.map(punto => ({
-          lat: punto.latitud,
-          lng: punto.longitud
-        }));
-        // Crear el polígono
-        const poligono = new google.maps.Polygon({
-          paths: vertices,
-          map: mapContainer,
-          strokeColor: '#759192',
-          fillColor: '#92afb0',
-          strokeWeight: 4,
-        });
-      }
+      
       // Borrar los marcadores del mapa
       this.marcadores.forEach(marcador => marcador.setMap(null));
       this.marcadores = []; // Vaciar el array de marcadores
-  
     } else {
       console.log("NO SE PUDO INICIAR LA CREACIÓN DE");
     }
   }
   
+  //MÑETODO PARA ORDENAR LOS VÉRTICES DEL POLÍGONO
+  functionordenarVertices(vertices: google.maps.LatLng[]): google.maps.LatLng[] {
+    const centro = calcularCentroide(vertices);
+    return vertices.sort((a, b) => {
+      const anguloA = calcularAngulo(centro, a);
+      const anguloB = calcularAngulo(centro, b);  
+      return anguloA - anguloB;
+    });
+  }
+}
+
+function calcularCentroide(vertices: google.maps.LatLng[]): google.maps.LatLng {
+  let centroLat = 0, centroLng = 0;
   
+  vertices.forEach(vertex => {
+    centroLat += vertex.lat();
+    centroLng += vertex.lng();
+  });
+  
+  centroLat /= vertices.length;
+  centroLng /= vertices.length;
+  
+  return new google.maps.LatLng(centroLat, centroLng);
+}
+
+// Calcula el ángulo polar de un punto con respecto al centroide
+function calcularAngulo(center: google.maps.LatLng, point: google.maps.LatLng): number {
+  return Math.atan2(point.lat() - center.lat(), point.lng() - center.lng());
+}
+
+function convertirALatLng(vertices: google.maps.LatLngLiteral[]): google.maps.LatLng[] {
+  return vertices.map(punto => new google.maps.LatLng(punto.lat, punto.lng));
 }
 
 function boostrapApplication(App: any, arg1: { providers: any[]; }) {

@@ -42,6 +42,8 @@ export class ZonasSegurasComponent {
   ngAfterViewInit(): void {
     this.zone.runOutsideAngular(() => {
       this.InitCompletado();
+      //INICIAR LA CARGA DE ZONAS SEGURAS
+      
     });
   }
 
@@ -154,9 +156,11 @@ export class ZonasSegurasComponent {
         lat: punto.latitud,
         lng: punto.longitud
       }));
+      const vertices_parseados: google.maps.LatLng[] = convertirALatLng(vertices);
+      this.functionordenarVertices(vertices_parseados);
       // Crear el polígono
       const poligono = new google.maps.Polygon({
-        paths: vertices,
+        paths: vertices_parseados,
         map: mapContainer,
         strokeColor: '#759192',
         fillColor: '#92afb0',
@@ -213,6 +217,7 @@ export class ZonasSegurasComponent {
           this.CambiarLugar();
         });
       }
+
     }
 
     CambiarLugar(): void {
@@ -240,5 +245,36 @@ export class ZonasSegurasComponent {
         }
       }
     }
+//FUNCION PARA ORDENAR LOS VERTICES DEL POLIGONO
+functionordenarVertices(vertices: google.maps.LatLng[]): google.maps.LatLng[] {
+  const centro = calcularCentroide(vertices);
+  return vertices.sort((a, b) => {
+    const anguloA = calcularAngulo(centro, a);
+    const anguloB = calcularAngulo(centro, b);  
+    return anguloA - anguloB;
+  });
+}
 
+}
+//FUNCION PARA CALCULAR EL CENTROIDE
+function calcularCentroide(vertices: google.maps.LatLng[]): google.maps.LatLng {
+  let centroLat = 0, centroLng = 0;
+  
+  vertices.forEach(vertex => {
+    centroLat += vertex.lat();
+    centroLng += vertex.lng();
+  });
+  
+  centroLat /= vertices.length;
+  centroLng /= vertices.length;
+  
+  return new google.maps.LatLng(centroLat, centroLng);
+}
+//funcion para calcular el angulo
+function calcularAngulo(center: google.maps.LatLng, point: google.maps.LatLng): number {
+  return Math.atan2(point.lat() - center.lat(), point.lng() - center.lng());
+}
+//funcion para convertir a latitud y longitud
+function convertirALatLng(vertices: google.maps.LatLngLiteral[]): google.maps.LatLng[] {
+  return vertices.map(punto => new google.maps.LatLng(punto.lat, punto.lng));
 }
