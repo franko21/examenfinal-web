@@ -18,7 +18,13 @@ import {
   InputGroupTextDirective,
   FormControlDirective,
   ButtonDirective,
-  GutterDirective, FormFeedbackComponent
+  GutterDirective,
+  FormFeedbackComponent,
+  ToastBodyComponent,
+  ToastComponent,
+  ToastHeaderComponent,
+  ToasterComponent,
+  ProgressBarDirective, ProgressComponent, ProgressBarComponent
 } from '@coreui/angular';
 import {AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import { PersonaService } from 'src/app/service/persona.service';
@@ -37,7 +43,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
 @Component({
   selector: 'app-prestamo',
   standalone: true,
-  imports: [NgFor, HttpClientModule, NgIf, ContainerComponent, RowComponent, ColComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, IconDirective, FormControlDirective, ButtonDirective, ReactiveFormsModule, HttpClientModule, NgxPaginationModule, GutterDirective, FormFeedbackComponent, DatePipe],
+  imports: [NgFor, HttpClientModule, NgIf, ContainerComponent, RowComponent, ColComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, IconDirective, FormControlDirective, ButtonDirective, ReactiveFormsModule, HttpClientModule, NgxPaginationModule, GutterDirective, FormFeedbackComponent, DatePipe, ToasterComponent, ToastComponent, ToastHeaderComponent, ToastBodyComponent, ProgressBarDirective, ProgressComponent, ProgressBarComponent, ButtonDirective],
   providers:[PrestamoService,PersonaService,DipositivoService,UsuarioService,DatePipe],
   templateUrl: './prestamo.component.html',
   styleUrl: './prestamo.component.scss'
@@ -58,6 +64,39 @@ export class PrestamoComponent {
   hoy: Date = new Date();
   idusu:number;
   p: number = 1; // Página actual para la paginación
+
+  position = 'top-end';
+  visible = false;
+  percentage = 0;
+
+  position2 = 'top-end';
+  visible2 = false;
+  percentage2 = 0;
+
+  toggleToast() {
+    this.visible = !this.visible;
+  }
+
+  onVisibleChange($event: boolean) {
+    this.visible = $event;
+    this.percentage = !this.visible ? 0 : this.percentage;
+  }
+
+  onTimerChange($event: number) {
+    this.percentage = $event * 25;
+  }
+  toggleToast2() {
+    this.visible2 = !this.visible2;
+  }
+
+  onVisibleChange2($event: boolean) {
+    this.visible2 = $event;
+    this.percentage2 = !this.visible2 ? 0 : this.percentage2;
+  }
+
+  onTimerChange2($event: number) {
+    this.percentage2 = $event * 25;
+  }
 
   constructor(private datePipe:DatePipe,private usuarioService:UsuarioService, private dispoService:DipositivoService, private personaService:PersonaService,private prestamoService: PrestamoService,private router:Router,private fb:FormBuilder){
     this.registerForm = this.fb.group({
@@ -169,23 +208,25 @@ export class PrestamoComponent {
               this.prestamos = prestamo;
             }
           );
-          Swal.fire({
-            icon: 'success',
-            title: '¡Creacion de prestamo exitosa!',
-            text: 'EXITO',
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: 'OK'
-          })
+          // Swal.fire({
+          //   icon: 'success',
+          //   title: '¡Creacion de prestamo exitosa!',
+          //   text: 'EXITO',
+          //   confirmButtonColor: '#3085d6',
+          //   confirmButtonText: 'OK'
+          // })
+          this.toggleToast();
         },
         error:(errorData)=>{
           console.error('Error al crear prestamo:', errorData);
-          Swal.fire({
-            icon: 'error',
-            title: 'Error al crear prestamo',
-            text: 'Error al ingresar los datos.',
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: 'OK'
-          });
+          // Swal.fire({
+          //   icon: 'error',
+          //   title: 'Error al crear prestamo',
+          //   text: 'Error al ingresar los datos.',
+          //   confirmButtonColor: '#3085d6',
+          //   confirmButtonText: 'OK'
+          // });
+          this.toggleToast2();
         },
         complete:()=>{
           console.info("Creacion completa");
@@ -240,23 +281,25 @@ export class PrestamoComponent {
             this.prestamos = prestamo;
           }
         );
-        Swal.fire({
-          icon: 'success',
-          title: '¡Edicion de prestamo exitosa!',
-          text: 'EXITO',
-          confirmButtonColor: '#3085d6',
-          confirmButtonText: 'OK'
-      })
+      //   Swal.fire({
+      //     icon: 'success',
+      //     title: '¡Edicion de prestamo exitosa!',
+      //     text: 'EXITO',
+      //     confirmButtonColor: '#3085d6',
+      //     confirmButtonText: 'OK'
+      // })
+        this.toggleToast();
       },
       error:(errorData)=>{
         console.error('Error al editar prestamo:', errorData);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error al edita prestamo',
-          text: 'Error al ingresar los datos.',
-          confirmButtonColor: '#3085d6',
-          confirmButtonText: 'OK'
-      });
+      //   Swal.fire({
+      //     icon: 'error',
+      //     title: 'Error al edita prestamo',
+      //     text: 'Error al ingresar los datos.',
+      //     confirmButtonColor: '#3085d6',
+      //     confirmButtonText: 'OK'
+      // });
+        this.toggleToast2();
       },
       complete:()=>{
         console.info("Edicion completa");

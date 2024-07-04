@@ -1,7 +1,28 @@
 import { Component } from '@angular/core';
 import {NgIf, NgStyle} from '@angular/common';
 import { IconDirective } from '@coreui/icons-angular';
-import { ContainerComponent, RowComponent, ColComponent, CardGroupComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, FormControlDirective, ButtonDirective,ToasterService,ToastComponent } from '@coreui/angular';
+import {
+  ContainerComponent,
+  RowComponent,
+  ColComponent,
+  CardGroupComponent,
+  TextColorDirective,
+  CardComponent,
+  CardBodyComponent,
+  FormDirective,
+  InputGroupComponent,
+  InputGroupTextDirective,
+  FormControlDirective,
+  ButtonDirective,
+  ToasterService,
+  ToastComponent,
+  ToasterComponent,
+  ToastHeaderComponent,
+  ToastBodyComponent,
+  ProgressBarDirective,
+  ProgressComponent,
+  ProgressBarComponent
+} from '@coreui/angular';
 import {  Router } from '@angular/router';
 import {AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import { LoginRequest } from './LoginRequest';
@@ -9,6 +30,7 @@ import { LoginService } from './login.service';
 import { HttpClientModule } from '@angular/common/http';
 import Swal from "sweetalert2";
 import { authGuard } from 'src/app/auth.guard';
+import {ToastSampleIconComponent} from "../../notifications/toasters/toast-simple/toast-sample-icon.component";
 
 
 @Component({
@@ -16,10 +38,26 @@ import { authGuard } from 'src/app/auth.guard';
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
     standalone: true,
-  imports: [ContainerComponent, RowComponent, ColComponent, CardGroupComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, IconDirective, FormControlDirective, ButtonDirective, NgStyle, ReactiveFormsModule, HttpClientModule, NgIf],
+    imports: [ContainerComponent, RowComponent, ColComponent, CardGroupComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, IconDirective, FormControlDirective, ButtonDirective, NgStyle, ReactiveFormsModule, HttpClientModule, NgIf,ToasterComponent, ToastComponent, ToastHeaderComponent, ToastBodyComponent, ProgressBarDirective, ProgressComponent, ProgressBarComponent, ButtonDirective],
     providers: [LoginService]
 })
 export class LoginComponent {
+  position = 'middle-center';
+  visible = false;
+  percentage = 0;
+
+  toggleToast() {
+    this.visible = !this.visible;
+  }
+
+  onVisibleChange($event: boolean) {
+    this.visible = $event;
+    this.percentage = !this.visible ? 0 : this.percentage;
+  }
+
+  onTimerChange($event: number) {
+    this.percentage = $event * 25;
+  }
 
   loginForm: FormGroup;
   constructor(private router:Router,private fb:FormBuilder,private loginService:LoginService, private toasterService: ToasterService) {
@@ -51,15 +89,15 @@ export class LoginComponent {
           //     text: 'Error al ingresar los datos.',
           //     confirmButtonColor: '#3085d6',
           //     confirmButtonText: 'OK'
-
+          this.toggleToast();
       },
       complete: () => {
-          console.info("Inicio de sesión completo");
+        this.toggleToast();
+        console.info("Inicio de sesión completo");
           // Realiza acciones adicionales después del inicio de sesión, si es necesario
           this.loginForm.reset();
       }
-  });
-    console.log(loginRequest);}else{
+  });}else{
       this.markFormGroupTouched(this.loginForm);
 
     }

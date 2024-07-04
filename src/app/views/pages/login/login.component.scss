@@ -16,3 +16,40 @@
 .ng-touched.ng-invalid ~ .invalid-feedback {
   display: block;
 }
+.custom-toast {
+  background-color: #ffffff; /* Fondo blanco */
+  border: 1px solid #6a1b9a; /* Borde morado oscuro */
+  border-radius: 0.25rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.custom-toast-header {
+  background-color: #6a1b9a; /* Fondo morado oscuro */
+  color: #ffffff; /* Texto blanco */
+  font-weight: bold;
+  border-bottom: 1px solid #6a1b9a;
+  padding: 0.75rem;
+  border-top-left-radius: 0.25rem;
+  border-top-right-radius: 0.25rem;
+}
+
+.custom-toast-body {
+  padding: 1rem;
+}
+
+.custom-toast-message {
+  margin: 0;
+  color: #000000; /* Texto negro */
+}
+
+.custom-progress {
+  margin-top: 1rem;
+  height: 4px;
+  background-color: #f0f0f0; /* Fondo claro para la barra de progreso */
+}
+
+.custom-progress-bar {
+  background-color: #6a1b9a; /* Color de la barra de progreso morado oscuro */
+}
+
+

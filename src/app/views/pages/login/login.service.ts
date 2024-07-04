@@ -45,14 +45,14 @@ export class LoginService {
                 // console.log("Token de sesión almacenado:", userData.empleado.nombre);
                 this.currentUserLoginOn.next(true);
                 console.log(this.currentUserLoginOn.value);
-                Swal.fire({
-                    icon: 'success',
-                    title: '¡Inicio de sesión exitoso!',
-                    text: 'Bienvenido de nuevo ',
-                    confirmButtonColor: '#3085d6',
-                    confirmButtonText: 'OK'
-                }).then((result)=>{
-                    if(result.isConfirmed){
+                // Swal.fire({
+                //     icon: 'success',
+                //     title: '¡Inicio de sesión exitoso!',
+                //     text: 'Bienvenido de nuevo ',
+                //     confirmButtonColor: '#3085d6',
+                //     confirmButtonText: 'OK'
+                // }).then((result)=>{
+                //     if(result.isConfirmed){
                         environment.islogged=true;
                         environment.cedula=userData.usuario.persona.cedula;
                         environment.nombre=userData.usuario.persona.nombre;
@@ -61,20 +61,20 @@ export class LoginService {
                         environment.username=credentials.username;
                         // authGuard(this.route,this.state).valueOf.prototype.islogged=true;
                         this.router.navigate(['/monitoreo']);
-                    }
-                }
-
-                );
+                //     }
+                // }
+                //
+                // );
             } else {
                 console.log("Datos de usuario recibidos:", userData);
                 console.log(this.currentUserLoginOn.value);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error de inicio de sesión',
-                    text: 'Error al ingresar los datos.',
-                    confirmButtonColor: '#3085d6',
-                    confirmButtonText: 'OK'
-                });
+                // Swal.fire({
+                //     icon: 'error',
+                //     title: 'Error de inicio de sesión',
+                //     text: 'Error al ingresar los datos.',
+                //     confirmButtonColor: '#3085d6',
+                //     confirmButtonText: 'OK'
+                // });
                 console.error("Respuesta de inicio de sesión incompleta o sin token.");
             }
         }),

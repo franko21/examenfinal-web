@@ -1,5 +1,17 @@
 import { Component } from '@angular/core';
-import {ButtonDirective, FormControlDirective, InputGroupComponent, InputGroupTextDirective} from "@coreui/angular";
+import {
+  ButtonDirective,
+  FormControlDirective,
+  InputGroupComponent,
+  InputGroupTextDirective,
+  ProgressBarComponent,
+  ProgressBarDirective,
+  ProgressComponent,
+  ToastBodyComponent,
+  ToastComponent,
+  ToasterComponent,
+  ToastHeaderComponent
+} from "@coreui/angular";
 import {IconDirective} from "@coreui/icons-angular";
 import {DatePipe, NgForOf, NgIf} from "@angular/common";
 import {NgxPaginationModule} from "ngx-pagination";
@@ -27,7 +39,7 @@ import {RegisterRequest} from "../pages/login/RegisterRequest";
     NgForOf,
     NgIf,
     NgxPaginationModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,ToasterComponent, ToastComponent, ToastHeaderComponent, ToastBodyComponent, ProgressBarDirective, ProgressComponent, ProgressBarComponent, ButtonDirective
   ],
   providers:[PersonaService,RolService,DatePipe],
   templateUrl: './clientes.component.html',
@@ -45,14 +57,38 @@ export class ClientesComponent {
   filaEditada: number | null = null;
   mostrarFormularioIngreso = false;
   mostrarFormularioEditar = false;
-  showTooltip: boolean = false;
-  showTooltip2: boolean = false;
-  showTooltip3: boolean = false;
-  showTooltip4: boolean = false;
-  showTooltip5: boolean = false;
-  showTooltip6: boolean = false;
-  showTooltip7: boolean = false;
-  showTooltip8: boolean = false;
+  position = 'top-end';
+  visible = false;
+  percentage = 0;
+
+  position2 = 'top-end';
+  visible2 = false;
+  percentage2 = 0;
+
+  toggleToast() {
+    this.visible = !this.visible;
+  }
+
+  onVisibleChange($event: boolean) {
+    this.visible = $event;
+    this.percentage = !this.visible ? 0 : this.percentage;
+  }
+
+  onTimerChange($event: number) {
+    this.percentage = $event * 25;
+  }
+  toggleToast2() {
+    this.visible2 = !this.visible2;
+  }
+
+  onVisibleChange2($event: boolean) {
+    this.visible2 = $event;
+    this.percentage2 = !this.visible2 ? 0 : this.percentage2;
+  }
+
+  onTimerChange2($event: number) {
+    this.percentage2 = $event * 25;
+  }
   constructor(private datePipe:DatePipe, private rolService:RolService, private personaService:PersonaService,private fb:FormBuilder) {
     this.registerFormIn = this.fb.group({
       cedula: ['',[Validators.required, Validators.pattern('^[0-9]*$')]],
@@ -128,23 +164,25 @@ export class ClientesComponent {
             this.personas = persona;
           }
         );
-        Swal.fire({
-          icon: 'success',
-          title: '¡Edicion de persona exitosa!',
-          text: 'EXITO',
-          confirmButtonColor: '#3085d6',
-          confirmButtonText: 'OK'
-        })
+        // Swal.fire({
+        //   icon: 'success',
+        //   title: '¡Edicion de persona exitosa!',
+        //   text: 'EXITO',
+        //   confirmButtonColor: '#3085d6',
+        //   confirmButtonText: 'OK'
+        // })
+        this.toggleToast();
       },
       error:(errorData)=>{
         console.error('Error al editar persona:', errorData);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error al editar persona',
-          text: 'Error al ingresar los datos.',
-          confirmButtonColor: '#3085d6',
-          confirmButtonText: 'OK'
-        });
+        // Swal.fire({
+        //   icon: 'error',
+        //   title: 'Error al editar persona',
+        //   text: 'Error al ingresar los datos.',
+        //   confirmButtonColor: '#3085d6',
+        //   confirmButtonText: 'OK'
+        // });
+        this.toggleToast2();
       },
       complete:()=>{
         console.info("Edicion completa");
@@ -188,21 +226,23 @@ export class ClientesComponent {
           console.error('Error al ingresar Persona:', errorData);
           // // Muestra una notificación de error con SweetAlert2
           if (this.existsP) {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error al ingresar Persona',
-              text: 'Cedula ya ingresada.',
-              confirmButtonColor: '#3085d6',
-              confirmButtonText: 'OK'
-            });
+            // Swal.fire({
+            //   icon: 'error',
+            //   title: 'Error al ingresar Persona',
+            //   text: 'Cedula ya ingresada.',
+            //   confirmButtonColor: '#3085d6',
+            //   confirmButtonText: 'OK'
+            // });
+            this.toggleToast2();
           } else {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error al ingresar Persona',
-              text: 'Error al ingresar los datos.',
-              confirmButtonColor: '#3085d6',
-              confirmButtonText: 'OK'
-            });
+            // Swal.fire({
+            //   icon: 'error',
+            //   title: 'Error al ingresar Persona',
+            //   text: 'Error al ingresar los datos.',
+            //   confirmButtonColor: '#3085d6',
+            //   confirmButtonText: 'OK'
+            // });
+            this.toggleToast2();
           }
 
         },
@@ -217,13 +257,14 @@ export class ClientesComponent {
               this.personas = persona;
             }
           );
-          Swal.fire({
-            icon: 'success',
-            title: '¡Creacion de Persona exitosa!',
-            text: 'Success',
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: 'OK'
-          })
+          // Swal.fire({
+          //   icon: 'success',
+          //   title: '¡Creacion de Persona exitosa!',
+          //   text: 'Success',
+          //   confirmButtonColor: '#3085d6',
+          //   confirmButtonText: 'OK'
+          // })
+          this.toggleToast();
         }
       });
     }else{
@@ -294,79 +335,6 @@ export class ClientesComponent {
         this.markFormGroupTouched(control);
       }
     });
-  }
-
-  showCedulaTooltip() {
-    if (this.registerFormIn.get('cedula')?.invalid) {
-      this.showTooltip = true;
-    }
-  }
-  hideCedulaTooltip() {
-    this.showTooltip = false;
-  }
-  showCedula2Tooltip() {
-    if (this.registerForm.get('cedula')?.invalid) {
-      this.showTooltip5  = true;
-    }
-  }
-  hideCedula2Tooltip() {
-    this.showTooltip5 = false;
-  }
-  showNombreTooltip() {
-    if (this.registerFormIn.get('nombre')?.invalid) {
-      this.showTooltip2 = true;
-    }
-  }
-  hideNombreTooltip() {
-    this.showTooltip2 = false;
-  }
-
-  showNombre2Tooltip() {
-    if (this.registerForm.get('nombre')?.invalid) {
-      this.showTooltip6 = true;
-    }
-  }
-  hideNombre2Tooltip() {
-    this.showTooltip6 = false;
-  }
-
-
-  showApellidoTooltip() {
-    if (this.registerFormIn.get('apellido')?.invalid) {
-      this.showTooltip3 = true;
-    }
-  }
-
-  hideApellidoTooltip() {
-    this.showTooltip3 = false;
-  }
-
-  showApellido2Tooltip() {
-    if (this.registerForm.get('apellido')?.invalid) {
-      this.showTooltip7 = true;
-    }
-  }
-
-  hideApellido2Tooltip() {
-    this.showTooltip7 = false;
-  }
-  showRolTooltip() {
-    if (this.registerFormIn.get('rol')?.invalid) {
-      this.showTooltip4 = true;
-    }
-  }
-
-  hideRolTooltip() {
-    this.showTooltip4 = false;
-  }
-  showRol2Tooltip() {
-    if (this.registerForm.get('rol')?.invalid) {
-      this.showTooltip8 = true;
-    }
-  }
-
-  hideRol2Tooltip() {
-    this.showTooltip8 = false;
   }
 
 }
