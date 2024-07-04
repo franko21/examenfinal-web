@@ -59,7 +59,8 @@ import Swal from 'sweetalert2';
   styleUrl: './dispositivo.component.scss'
 })
 export class DispositivoComponent implements OnInit {
-   public dispositivo:Dispositivo=new Dispositivo();
+   public dispositivo:Dispositivo =new Dispositivo();
+   public dispositivoSeleccionado:Dispositivo | null =new Dispositivo();
    public categoriaselet: Categoria | null = new Categoria();
    public modeloselet: Modelo | null = new Modelo();
    public categoriamod: Categoria = new Categoria();
@@ -67,11 +68,11 @@ export class DispositivoComponent implements OnInit {
    public marcaselect: Marca | null = new Marca();
    public titulo: string = "Dispositivo";
    dispositivos: Dispositivo[] = [];
+   dispositivosfiltro: Dispositivo[] = [];
    marcas:Marca[]=[];
    modelos:Modelo[]=[];
    modelosfiltro:Modelo[]=[];
    categorias:Categoria[]=[];
-   dispositivoSeleccionado: string ='';
    Seleccionado: string ='';
    p: number = 1;
    showTable: boolean = true;
@@ -81,6 +82,9 @@ export class DispositivoComponent implements OnInit {
    browserDefaultsValidated: boolean = false;
    showTooltip3: boolean = false;
    modelosOriginales: any[];
+   nombredispo:String=""
+   disponible: boolean;
+   id_marca:number;
 
 
   toggleView() {
@@ -103,17 +107,34 @@ export class DispositivoComponent implements OnInit {
     this.listardispo();
     this.listarmode();
     this.listarcategorias();
-    this.listarmarcas();   
+    this.listarmarcas(); 
   }
   listardispo() {
     this.serdispo.listar().subscribe(
       dispositivos => {
-        this.dispositivos = dispositivos;   
+        this.dispositivos = dispositivos;  
+         this.filtradispovinculado();
+         console.log("aqui prestamos")
+         console.log(this.dispositivos[0].prestamos)
+
+         
       },
       error => {
         console.error('Error al listar dispositivos:', error);
       }
     );
+  }
+
+  filtradispovinculado() {
+    console.log("dispositivos org antes del filtro:");
+    console.log(this.dispositivos);
+    if (this.dispositivos) {
+      this.dispositivosfiltro = this.dispositivos.filter(dispositivo => dispositivo.vinculado ==false);
+      console.log("dispositivos despues del filtro:");
+    console.log(this.dispositivosfiltro);
+    } else {
+
+    }
   }
   onSubmit1(form: NgForm): void {
     if (form.valid) {
@@ -121,6 +142,10 @@ export class DispositivoComponent implements OnInit {
     } else {
       // Mostrar errores
     }
+  }
+
+  seleccion(){
+  console.log(this.dispositivoSeleccionado)
   }
 
   filtrarModelosPorMarca() {
@@ -137,6 +162,19 @@ export class DispositivoComponent implements OnInit {
     }
   }
   
+  filtrarModelosPorMarcaid() {
+    console.log("Modelos org antes del filtro:");
+    console.log(this.modelos);
+    if (this.marcaselect && this.marcaselect.nombre) {
+      this.modelosfiltro = this.modelos.filter(modelo => modelo.marca?.nombre === this.marcaselect?.nombre);
+      console.log("Nombre de marca");
+      console.log(this.marcaselect.nombre);
+      console.log("Modelosfiltro despues del filtro:");
+    console.log(this.modelosfiltro);
+    } else {
+
+    }
+  }
  modelonull(){
   this.modeloselet=null;
  }
@@ -162,6 +200,7 @@ export class DispositivoComponent implements OnInit {
     );
   }
 
+
   listarcategorias() {
     this.sercateg.listar().subscribe(
       categorias => {
@@ -177,7 +216,8 @@ export class DispositivoComponent implements OnInit {
     this.asignacatmar() 
     console.log(this.categoriaselet);
     console.log(this.modeloselet);
-    console.log(this.marcaselect)
+    console.log(this.marcaselect);
+    console.log(this.dispositivo);
     if (this.validateForm()) {
       //////////
     this.serdispo.crear(this.dispositivo).subscribe(
@@ -231,17 +271,20 @@ export class DispositivoComponent implements OnInit {
 
 
   asignacatmar() {
-    if (this.dispositivo && this.categoriaselet&&this.modeloselet) {
+    if (this.dispositivo && this.categoriaselet&&this.modeloselet&&this.dispositivoSeleccionado) {
       if(this.titulo=="Ingresar dispostivo"){
+      this.dispositivo=this.dispositivoSeleccionado; 
       this.dispositivo.categoria = this.categoriaselet;
       this.dispositivo.modelo = this.modeloselet;
+      this.dispositivo.nombre=this.nombredispo;
+      this.dispositivo.disponible=this.disponible;
+      this.dispositivo.vinculado=true;
+
       }else{
-        this.dispositivo.categoria = this.categoriamod;
-        this.dispositivo.modelo = this.modelomod;
+      this.dispositivo.categoria = this.categoriamod;
+      this.dispositivo.modelo = this.modelomod;
+
       }
-
-     
-
       
     }
     console.log(this.categoriaselet);
@@ -250,8 +293,9 @@ export class DispositivoComponent implements OnInit {
   }
   asigparaedit() {
     if (this.dispositivo) {
-      if (this.dispositivo.categoria) {
+      if (this.dispositivo.categoria&&this.dispositivo.modelo?.marca?.id_marca) {
         this.categoriamod = this.dispositivo.categoria;
+        this.id_marca=this.dispositivo.modelo?.marca?.id_marca
       }
       if (this.dispositivo.modelo) {
         this.modelomod = this.dispositivo.modelo;
@@ -303,6 +347,8 @@ export class DispositivoComponent implements OnInit {
   this.modelomod=new Modelo();
   this.categoriamod=new Categoria();
   this.modelosfiltro= [];
+  this.nombredispo="";
+  this.id_marca=0;
   
   }
   cancelar(): void{
@@ -321,6 +367,7 @@ export class DispositivoComponent implements OnInit {
     this.categoriaselet = null;
     this.modeloselet=null;
     this.marcaselect=null;
+    this.dispositivoSeleccionado=null;
     this.toggleView();
     this.toggleViewc();
     this.titulo="Ingresar dispostivo"

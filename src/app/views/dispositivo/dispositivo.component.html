@@ -125,17 +125,21 @@
               <span cInputGroupText>
                 <svg cIcon name="cilUser"></svg>
               </span>
-              <input id="numero_serie" class="form-control" type="text" placeholder="Número de Serie" [(ngModel)]="dispositivo.numSerie" name="numero_serie" required/>
+              <select name="numero_serie" id="numero_serie" class="form-control" [(ngModel)]="dispositivoSeleccionado" required>
+                <option value="null" disabled selected>Seleccione el numero de serie</option>
+                <option *ngFor="let dispo of dispositivosfiltro" [ngValue]="dispo">
+                  {{ dispo.numSerie }}
+                </option>
+              </select>
               <div *ngIf="myForm.controls['numero_serie']?.invalid && myForm.controls['numero_serie']?.touched" class="invalid-feedback">
                 El número de serie es obligatorio.
               </div>
             </c-input-group>
-          
             <c-input-group class="mb-3">
               <span cInputGroupText>
                 <svg cIcon name="cilUser"></svg>
               </span>
-              <input id="nombre" class="form-control" type="text" placeholder="Nombre" [(ngModel)]="dispositivo.nombre" name="nombre" required/>
+              <input id="nombre" class="form-control" type="text" placeholder="Nombre" [(ngModel)]="nombredispo" name="nombre" required/>
               <div *ngIf="myForm.controls['nombre']?.invalid && myForm.controls['nombre']?.touched" class="invalid-feedback">
                 El nombre es obligatorio.
               </div>
@@ -143,7 +147,7 @@
           
             <c-input-group class="mb-3">
               <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" id="disponible" [(ngModel)]="dispositivo.disponible" name="disponible">
+                <input class="form-check-input" type="checkbox" id="disponible" [(ngModel)]="disponible" name="disponible">
                 <label class="form-check-label" for="disponible">Disponible</label>
               </div>
             </c-input-group>
@@ -177,9 +181,9 @@
             <span cInputGroupText>
               <svg cIcon name="cilItalic"></svg>
             </span>
-            <select class="form-control" name="Marcas" id="Marcas">
+            <select class="form-control" name="Marcas" id="Marcas" [(ngModel)]="id_marca">
               <option value="null" disabled selected>Seleccione la Marca</option>
-              <option *ngFor="let marca of marcas"  >
+              <option *ngFor="let marca of marcas" [ngValue]="marca.id_marca" >
                 {{ marca.nombre }}
               </option>
             </select>
@@ -195,12 +199,6 @@
               </option>
             </select>
             
-          </c-input-group> 
-          <c-input-group class="mb-3">
-            <span cInputGroupText>
-              <svg cIcon name="cilUser"></svg>
-            </span>
-            <input id="numero_serie" class="form-control" type="text"  placeholder="Numero de Serie" [(ngModel)]="dispositivo.numSerie" name="numero_serie" />
           </c-input-group> 
           <c-input-group class="mb-3">
             <span cInputGroupText>
