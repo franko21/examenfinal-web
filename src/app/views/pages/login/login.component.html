@@ -12,7 +12,10 @@
                   <span cInputGroupText>
                     <svg cIcon name="cilUser"></svg>
                   </span>
-                  <input formControlName="username" autoComplete="username" cFormControl placeholder="Usuario" />
+                  <input formControlName="username" autoComplete="username" cFormControl placeholder="Usuario" required/>
+                  <div *ngIf="loginForm.controls['username']?.invalid && loginForm.controls['username']?.touched" class="invalid-feedback">
+                    Ingrese su usuario.
+                  </div>
                 </c-input-group>
                 <c-input-group class="mb-4">
                   <span cInputGroupText>
@@ -24,7 +27,11 @@
                     cFormControl
                     placeholder="Clave"
                     type="password"
+                    required
                   />
+                  <div *ngIf="loginForm.controls['password']?.invalid && loginForm.controls['password']?.touched" class="invalid-feedback">
+                    Ingrese su clave.
+                  </div>
                 </c-input-group>
                 <c-row>
                   <c-col xs="6">

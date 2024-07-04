@@ -11,61 +11,45 @@
           <span cInputGroupText>
             <svg cIcon name="cilUser"></svg>
           </span>
-          <input formControlName="cedula" cFormControl placeholder="Cedula"
-                 data-bs-toggle="tooltip" data-bs-placement="top-center" title=" "
-                 [class.is-invalid]="registerFormIn.get('cedula')?.invalid && (registerFormIn.get('cedula')?.touched || registerFormIn.get('cedula')?.dirty)"
-                 (mouseenter)="showCedulaTooltip()" (mouseleave)="hideCedulaTooltip()"
+          <input formControlName="cedula" cFormControl placeholder="Cedula" required
           />
-          <div *ngIf="showTooltip" class="tooltip-container position-absolute top-0 end-0 p-2 bg-white rounded border border-danger text-danger">
-            <div class="arrow"></div>
-            <span>Debe escribir una cedula valida.</span>
+          <div *ngIf="registerFormIn.controls['cedula']?.invalid && registerFormIn.controls['cedula']?.touched" class="invalid-feedback">
+            La Cedula es obligatoria.
           </div>
         </c-input-group>
         <c-input-group class="mb-3">
           <span cInputGroupText>
             <svg cIcon name="cilUser"></svg>
           </span>
-          <input formControlName="nombre" cFormControl placeholder="Nombre"
-                 data-bs-toggle="tooltip" data-bs-placement="top-center" title=" "
-                 [class.is-invalid]="registerFormIn.get('nombre')?.invalid && (registerFormIn.get('nombre')?.touched || registerFormIn.get('nombre')?.dirty)"
-                 (mouseenter)="showNombreTooltip()" (mouseleave)="hideNombreTooltip()"
+          <input formControlName="nombre" cFormControl placeholder="Nombre" required
           />
-          <div *ngIf="showTooltip2" class="tooltip-container position-absolute top-0 end-0 p-2 bg-white rounded border border-danger text-danger">
-            <div class="arrow"></div>
-            <span>Ingrese un nombre.</span>
+          <div *ngIf="registerFormIn.controls['nombre']?.invalid && registerFormIn.controls['nombre']?.touched" class="invalid-feedback">
+            El Nombre es obligatorio.
           </div>
         </c-input-group>
         <c-input-group class="mb-3">
           <span cInputGroupText>
             <svg cIcon name="cilUser"></svg>
           </span>
-          <input formControlName="apellido" cFormControl placeholder="Apellido"
-                 data-bs-toggle="tooltip" data-bs-placement="top-center" title=" "
-                 [class.is-invalid]="registerFormIn.get('apellido')?.invalid && (registerFormIn.get('apellido')?.touched || registerFormIn.get('apellido')?.dirty)"
-                 (mouseenter)="showApellidoTooltip()" (mouseleave)="hideApellidoTooltip()"
+          <input formControlName="apellido" cFormControl placeholder="Apellido" required
           />
-          <div *ngIf="showTooltip3" class="tooltip-container position-absolute top-0 end-0 p-2 bg-white rounded border border-danger text-danger">
-            <div class="arrow"></div>
-            <span>Ingrese un apellido.</span>
+          <div *ngIf="registerFormIn.controls['apellido']?.invalid && registerFormIn.controls['apellido']?.touched" class="invalid-feedback">
+            El Apellido es obligatorio.
           </div>
         </c-input-group>
         <c-input-group class="mb-3">
           <span cInputGroupText>
             <svg cIcon name="cilCreditCard"></svg>
           </span>
-          <select class="form-select" formControlName="rol" cFormControl
-                  data-bs-toggle="tooltip" data-bs-placement="top-center" title=" "
-                  [class.is-invalid]="registerFormIn.get('rol')?.invalid && (registerFormIn.get('rol')?.touched || registerFormIn.get('rol')?.dirty)"
-                  (mouseenter)="showRolTooltip()" (mouseleave)="hideRolTooltip()"
+          <select class="form-select" formControlName="rol" cFormControl required
           >
             <option value="" disabled selected>Seleccione un Rol</option>
             <option *ngFor="let rol of roles" [value]="rol.id_rol">
               {{ rol.rol }}
             </option>
           </select>
-          <div *ngIf="showTooltip4" class="tooltip-container position-absolute top-0 end-0 p-2 bg-white rounded border border-danger text-danger">
-            <div class="arrow"></div>
-            <span>Ingrese un rol.</span>
+          <div *ngIf="registerFormIn.controls['rol']?.invalid && registerFormIn.controls['rol']?.touched" class="invalid-feedback">
+            El Rol es obligatorio.
           </div>
         </c-input-group>
         <div class="d-grid">
@@ -118,61 +102,45 @@
           <span cInputGroupText>
             <svg cIcon name="cilUser"></svg>
           </span>
-              <input formControlName="cedula" cFormControl placeholder="Cedula"
-                     data-bs-toggle="tooltip" data-bs-placement="top-center" title=" "
-                     [class.is-invalid]="registerForm.get('cedula')?.invalid && (registerForm.get('cedula')?.touched || registerForm.get('cedula')?.dirty)"
-                     (mouseenter)="showCedula2Tooltip()" (mouseleave)="hideCedula2Tooltip()"
+              <input formControlName="cedula" cFormControl placeholder="Cedula" required
               />
-              <div *ngIf="showTooltip5" class="tooltip-container position-absolute top-0 end-0 p-2 bg-white rounded border border-danger text-danger">
-                <div class="arrow"></div>
-                <span>Debe escribir una cedula valida.</span>
+              <div *ngIf="registerForm.controls['cedula']?.invalid && registerForm.controls['cedula']?.touched" class="invalid-feedback">
+                La Cedula es obligatoria.
               </div>
             </c-input-group>
             <c-input-group class="mb-3">
           <span cInputGroupText>
             <svg cIcon name="cilUser"></svg>
           </span>
-              <input formControlName="nombre" cFormControl placeholder="Nombre"
-                     data-bs-toggle="tooltip" data-bs-placement="top-center" title=" "
-                     [class.is-invalid]="registerForm.get('nombre')?.invalid && (registerForm.get('nombre')?.touched || registerForm.get('nombre')?.dirty)"
-                     (mouseenter)="showNombre2Tooltip()" (mouseleave)="hideNombre2Tooltip()"
+              <input formControlName="nombre" cFormControl placeholder="Nombre" required
               />
-              <div *ngIf="showTooltip6" class="tooltip-container position-absolute top-0 end-0 p-2 bg-white rounded border border-danger text-danger">
-                <div class="arrow"></div>
-                <span>Ingrese un nombre.</span>
+              <div *ngIf="registerForm.controls['nombre']?.invalid && registerForm.controls['nombre']?.touched" class="invalid-feedback">
+                El Nombre es obligatorio.
               </div>
             </c-input-group>
             <c-input-group class="mb-3">
           <span cInputGroupText>
             <svg cIcon name="cilUser"></svg>
           </span>
-              <input formControlName="apellido" cFormControl placeholder="Apellido"
-                     data-bs-toggle="tooltip" data-bs-placement="top-center" title=" "
-                     [class.is-invalid]="registerForm.get('apellido')?.invalid && (registerForm.get('apellido')?.touched || registerForm.get('apellido')?.dirty)"
-                     (mouseenter)="showApellido2Tooltip()" (mouseleave)="hideApellido2Tooltip()"
+              <input formControlName="apellido" cFormControl placeholder="Apellido" required
               />
-              <div *ngIf="showTooltip7" class="tooltip-container position-absolute top-0 end-0 p-2 bg-white rounded border border-danger text-danger">
-                <div class="arrow"></div>
-                <span>Ingrese un apellido.</span>
+              <div *ngIf="registerForm.controls['apellido']?.invalid && registerForm.controls['apellido']?.touched" class="invalid-feedback">
+                El Apellido es obligatorio.
               </div>
             </c-input-group>
             <c-input-group class="mb-3">
           <span cInputGroupText>
             <svg cIcon name="cilCreditCard"></svg>
           </span>
-              <select class="form-select" formControlName="rol" cFormControl
-                      data-bs-toggle="tooltip" data-bs-placement="top-center" title=" "
-                      [class.is-invalid]="registerForm.get('rol')?.invalid && (registerForm.get('rol')?.touched || registerForm.get('rol')?.dirty)"
-                      (mouseenter)="showRol2Tooltip()" (mouseleave)="hideRol2Tooltip()"
+              <select class="form-select" formControlName="rol" cFormControl required
               >
                 <option value="" disabled selected>Seleccione un Rol</option>
                 <option *ngFor="let rol of roles" [value]="rol.id_rol">
                   {{ rol.rol }}
                 </option>
               </select>
-              <div *ngIf="showTooltip8" class="tooltip-container position-absolute top-0 end-0 p-2 bg-white rounded border border-danger text-danger">
-                <div class="arrow"></div>
-                <span>Ingrese un rol.</span>
+              <div *ngIf="registerForm.controls['rol']?.invalid && registerForm.controls['rol']?.touched" class="invalid-feedback">
+                El Rol es obligatorio.
               </div>
             </c-input-group>
             <div class="d-grid">

@@ -148,6 +148,8 @@ export class ClientesComponent {
       },
       complete:()=>{
         console.info("Edicion completa");
+        this.filaEditada = null;
+        this.mostrarFormularioEditar=false;
       }
     })
     }else{
@@ -209,6 +211,7 @@ export class ClientesComponent {
           // Realiza acciones adicionales después de crear la persona, si es necesario
           // this.registerForm.reset();
           this.existsP = false;
+          this.ingresarPersona();
           this.personaService.getPersonas().subscribe(
             persona => {
               this.personas = persona;

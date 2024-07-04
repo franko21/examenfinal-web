@@ -55,20 +55,10 @@ export class PrestamoComponent {
   registerForm: FormGroup;
   registerFormIn: FormGroup;
   usuario:Usuario;
-  showTooltip: boolean = false;
-  showTooltip2: boolean = false;
-  showTooltip3: boolean = false;
-  showTooltip4: boolean = false;
-  showTooltip5: boolean = false;
-  showTooltip6: boolean = false;
-  showTooltip7: boolean = false;
-  showTooltip8: boolean = false;
-  showTooltip9: boolean = false;
-  showTooltip10: boolean = false;
-  today: string;
   hoy: Date = new Date();
   idusu:number;
   p: number = 1; // Página actual para la paginación
+
   constructor(private datePipe:DatePipe,private usuarioService:UsuarioService, private dispoService:DipositivoService, private personaService:PersonaService,private prestamoService: PrestamoService,private router:Router,private fb:FormBuilder){
     this.registerForm = this.fb.group({
       beneficiario: ['', Validators.required],
@@ -148,81 +138,7 @@ export class PrestamoComponent {
   formatDate(date: Date): string {
     return this.datePipe.transform(date, 'yyyy-MM-dd') || '';
   }
-  showBeneficiarioTooltip() {
-    if (this.registerFormIn.get('beneficiario')?.invalid) {
-      this.showTooltip = true;
-    }
-  }
-  showFechaTooltip() {
-    this.showTooltip4 = true;
-  }
 
-  hideFechaTooltip() {
-    this.showTooltip4 = false;
-  }
-  hideBeneficiarioTooltip() {
-    this.showTooltip = false;
-  }
-  showDisTooltip() {
-    if (this.registerFormIn.get('dispositivo')?.invalid) {
-      this.showTooltip2 = true;
-    }
-  }
-
-  hideDisTooltip() {
-    this.showTooltip2 = false;
-  }
-
-
-  showMotivoTooltip() {
-    if (this.registerFormIn.get('motivo')?.invalid) {
-      this.showTooltip5 = true;
-    }
-  }
-  hideMotivoTooltip() {
-    this.showTooltip5 = false;
-  }
-  showBenTooltip() {
-    if (this.registerForm.get('beneficiario')?.invalid) {
-      this.showTooltip6 = true;
-    }
-  }
-  hideBenTooltip() {
-    this.showTooltip6 = false;
-  }
-
-  showDis2Tooltip() {
-    if (this.registerForm.get('dispositivo')?.invalid) {
-      this.showTooltip7 = true;
-    }
-  }
-  hideDis2Tooltip() {
-    this.showTooltip7 = false;
-  }
-  showFecha2Tooltip() {
-    if (this.registerForm.get('fecha')?.invalid) {
-      this.showTooltip8 = true;
-    }
-  }
-  hideFecha2Tooltip() {
-    this.showTooltip8 = false;
-  }
-  showMotivo2Tooltip() {
-    if (this.registerForm.get('motivo')?.invalid) {
-      this.showTooltip9 = true;
-    }
-  }
-  hideMotivo2Tooltip() {
-    this.showTooltip9 = false;
-  }
-  showEstTooltip() {
-    if (this.registerForm.get('estado_devolucion')?.invalid) {
-      this.showTooltip10 = true;
-    }
-  }
-  hideEstTooltip() {
-    this.showTooltip10 = false;
-  }
 
 
   onSubmit2(){
@@ -273,6 +189,7 @@ export class PrestamoComponent {
         },
         complete:()=>{
           console.info("Creacion completa");
+          this.ingresarPrestamo();
         }
       })
     }else{
@@ -343,6 +260,8 @@ export class PrestamoComponent {
       },
       complete:()=>{
         console.info("Edicion completa");
+        this.filaEditada = null;
+        this.mostrarFormularioEditar=false;
       }
     })}else{
       this.markFormGroupTouched(this.registerForm);
@@ -351,6 +270,7 @@ export class PrestamoComponent {
   cancelarEdicion() {
     this.filaEditada = null;
     this.mostrarFormularioEditar=false;
+
   }
   eliminarPrestamo(id: any): void {
     const swalWithBootstrapButtons = Swal.mixin({

@@ -5,3 +5,14 @@
   border-radius: 10px;
   box-shadow: 0 10px 14px rgba(0, 0, 0, 0.1);
 }
+.ng-touched.ng-invalid {
+  border-color: #dc3545; /* color rojo para indicar error */
+}
+
+.invalid-feedback {
+  display: none;
+}
+
+.ng-touched.ng-invalid ~ .invalid-feedback {
+  display: block;
+}

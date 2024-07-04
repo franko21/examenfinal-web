@@ -12,17 +12,14 @@
 #guardar-persona:hover {
   background-color: #249542;
 }
-.tooltip-container {
-  position: absolute; /* Asegura que el tooltip no afecte al flujo normal de la página */
-  transform: translateX(-120%);
+.ng-touched.ng-invalid {
+  border-color: #dc3545; /* color rojo para indicar error */
 }
 
-.tooltip-container .arrow {
-  position: absolute;
-  top: 100%; /* Posiciona la flecha del tooltip */
-  right: 20px;
-  border-width: 0.5rem;
-  border-style: solid;
-  border-color: transparent;
-  border-top-color: #dc3545; /* Color del borde del tooltip */
+.invalid-feedback {
+  display: none;
+}
+
+.ng-touched.ng-invalid ~ .invalid-feedback {
+  display: block;
 }

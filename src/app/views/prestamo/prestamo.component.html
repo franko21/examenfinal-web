@@ -11,70 +11,39 @@
           <span cInputGroupText>
             <svg cIcon name="cilCreditCard"></svg>
           </span>
-          <select class="form-select" formControlName="beneficiario" cFormControl required
-                  data-bs-toggle="tooltip" data-bs-placement="top-center" title=" "
-                  [class.is-invalid]="registerFormIn.get('beneficiario')?.invalid && (registerFormIn.get('beneficiario')?.touched || registerFormIn.get('beneficiario')?.dirty)"
-                  (mouseenter)="showBeneficiarioTooltip()" (mouseleave)="hideBeneficiarioTooltip()"
-           >
+          <select class="form-select" formControlName="beneficiario" cFormControl required>
             <option value="" disabled selected>Seleccione un Beneficiario</option>
             <option *ngFor="let persona of personas" [value]="persona.id_persona">
               {{ persona.nombre }} {{ persona.apellido }}
             </option>
           </select>
-          <div *ngIf="showTooltip" class="tooltip-container position-absolute top-0 end-0 p-2 bg-white rounded border border-danger text-danger">
-            <div class="arrow"></div>
-            <span>Debe elegir un beneficiario.</span>
+          <div *ngIf="registerFormIn.controls['beneficiario']?.invalid && registerFormIn.controls['beneficiario']?.touched" class="invalid-feedback">
+            El Beneficiario es obligatorio.
           </div>
         </c-input-group>
         <c-input-group class="mb-3">
           <span cInputGroupText>
             <svg cIcon name="cilItalic"></svg>
           </span>
-          <select class="form-select" formControlName="dispositivo" cFormControl required
-                  data-bs-toggle="tooltip" data-bs-placement="top-center" title=" "
-                  [class.is-invalid]="registerFormIn.get('dispositivo')?.invalid && (registerFormIn.get('dispositivo')?.touched || registerFormIn.get('dispositivo')?.dirty)"
-                  (mouseenter)="showDisTooltip()" (mouseleave)="hideDisTooltip()"
-          >
+          <select class="form-select" formControlName="dispositivo" cFormControl required>
             <option value="" disabled selected>Seleccione un Dispositivo</option>
             <option *ngFor="let dispo of dispositivos" [value]="dispo.idDispositivo">
               {{ dispo.nombre }}-{{ dispo.modelo?.marca?.nombre }}
             </option>
           </select>
-          <div *ngIf="showTooltip2" class="tooltip-container position-absolute top-0 end-0 p-2 bg-white rounded border border-danger text-danger">
-            <div class="arrow"></div>
-            <span>Debe elegir un dispositivo.</span>
+          <div *ngIf="registerFormIn.controls['dispositivo']?.invalid && registerFormIn.controls['dispositivo']?.touched" class="invalid-feedback">
+            El Dispositivo es obligatorio.
           </div>
         </c-input-group>
-<!--        <c-input-group class="mb-3">-->
-<!--          <span cInputGroupText>-->
-<!--            <svg cIcon name="cilItalic"></svg>-->
-<!--          </span>-->
-<!--          <select class="form-select" formControlName="zona_segura" cFormControl required-->
-<!--                  data-bs-toggle="tooltip" data-bs-placement="top-center" title=" "-->
-<!--                  [class.is-invalid]="registerFormIn.get('zona_segura')?.invalid && (registerFormIn.get('zona_segura')?.touched || registerFormIn.get('zona_segura')?.dirty)"-->
-<!--                  (mouseenter)="showZonTooltip()" (mouseleave)="hideZonTooltip()"-->
-<!--          >-->
-<!--            <option value="" disabled selected>Seleccione una Zona Segura</option>-->
-<!--            <option *ngFor="let zona of zonaS" [value]="zona.id_zona_segura">-->
-<!--              {{ zona.id_zona_segura }} - {{ zona.descripcion }}-->
-<!--            </option>-->
-<!--          </select>-->
-<!--          <div *ngIf="showTooltip3" class="tooltip-container position-absolute top-0 end-0 p-2 bg-white rounded border border-danger text-danger">-->
-<!--            <div class="arrow"></div>-->
-<!--            <span>Debe elegir una zona segura.</span>-->
-<!--          </div>-->
-<!--        </c-input-group>-->
         <c-input-group class="mb-3">
           <span cInputGroupText>
             <svg cIcon name="cilItalic"></svg>
           </span>
           <input formControlName="fecha" type="date" cFormControl placeholder="Fecha Devolucion" required
-                 min="{{ hoy | date: 'yyyy-MM-dd' }}"[class.is-invalid]="registerFormIn.get('fecha')?.invalid && (registerFormIn.get('fecha')?.touched || registerFormIn.get('fecha')?.dirty)"
-                 (mouseenter)="showFechaTooltip()" (mouseleave)="hideFechaTooltip()"
+                 min="{{ hoy | date: 'yyyy-MM-dd' }}"
           />
-          <div *ngIf="showTooltip4" class="tooltip-container position-absolute top-0 end-0 p-2 bg-white rounded border border-danger text-danger">
-            <div class="arrow"></div>
-            <span>Ingrese una fecha válida.</span>
+          <div *ngIf="registerFormIn.controls['fecha']?.invalid && registerFormIn.controls['fecha']?.touched" class="invalid-feedback">
+            El Fecha es obligatoria.
           </div>
         </c-input-group>
         <c-input-group class="mb-3">
@@ -82,12 +51,9 @@
             <svg cIcon name="cilUser"></svg>
           </span>
           <input formControlName="motivo" cFormControl placeholder="Motivo" required
-                 [class.is-invalid]="registerFormIn.get('motivo')?.invalid && (registerFormIn.get('motivo')?.touched || registerFormIn.get('motivo')?.dirty)"
-                 (mouseenter)="showMotivoTooltip()" (mouseleave)="hideMotivoTooltip()"
           />
-          <div *ngIf="showTooltip5" class="tooltip-container position-absolute top-0 end-0 p-2 bg-white rounded border border-danger text-danger">
-            <div class="arrow"></div>
-            <span>Ingrese un motivo válido.</span>
+          <div *ngIf="registerFormIn.controls['motivo']?.invalid && registerFormIn.controls['motivo']?.touched" class="invalid-feedback">
+            El Motivo es obligatorio.
           </div>
         </c-input-group>
         <div class="d-grid">
@@ -152,67 +118,40 @@
                   <svg cIcon name="cilCreditCard"></svg>
                 </span>
               <select class="form-select" formControlName="beneficiario" required
-                      data-bs-toggle="tooltip" data-bs-placement="top-center" title=" "
-                      [class.is-invalid]="registerForm.get('beneficiario')?.invalid && (registerForm.get('beneficiario')?.touched || registerForm.get('beneficiario')?.dirty)"
-                      (mouseenter)="showBenTooltip()" (mouseleave)="hideBenTooltip()"
               >
                 <option value="" disabled selected>Seleccione un Beneficiario</option>
                 <option *ngFor="let persona of personas" [value]="persona.id_persona">
                   {{ persona.nombre }} {{ persona.apellido }}
                 </option>
               </select>
-              <div *ngIf="showTooltip6" class="tooltip-container position-absolute top-0 end-0 p-2 bg-white rounded border border-danger text-danger">
-                <div class="arrow"></div>
-                <span>Debe elegir un beneficiario.</span>
+              <div *ngIf="registerForm.controls['beneficiario']?.invalid && registerFormIn.controls['beneficiario']?.touched" class="invalid-feedback">
+                El Beneficiario es obligatorio.
               </div>
-              <!-- <input formControlName="beneficiario" cFormControl placeholder="Beneficiario" /> -->
             </c-input-group>
             <c-input-group class="mb-3">
                 <span cInputGroupText>
                   <svg cIcon name="cilItalic"></svg>
                 </span>
               <select class="form-select" formControlName="dispositivo" required
-                      data-bs-toggle="tooltip" data-bs-placement="top-center" title=" "
-                      [class.is-invalid]="registerForm.get('dispositivo')?.invalid && (registerForm.get('dispositivo')?.touched || registerForm.get('dispositivo')?.dirty)"
-                      (mouseenter)="showDis2Tooltip()" (mouseleave)="hideDis2Tooltip()"
               >
                 <option value="" disabled selected>Seleccione un Dispositivo</option>
                 <option *ngFor="let dispo of dispositivos" [value]="dispo.idDispositivo">
                   {{ dispo.nombre }}-{{ dispo.modelo?.marca?.nombre }}
                 </option>
               </select>
-              <div *ngIf="showTooltip7" class="tooltip-container position-absolute top-0 end-0 p-2 bg-white rounded border border-danger text-danger">
-                <div class="arrow"></div>
-                <span>Debe elegir un dispositivo.</span>
+              <div *ngIf="registerForm.controls['dispositivo']?.invalid && registerFormIn.controls['dispositivo']?.touched" class="invalid-feedback">
+                El Dispositivo es obligatorio.
               </div>
-              <!-- <input formControlName="dispositivo" cFormControl placeholder="Dispositivo" /> -->
             </c-input-group>
-<!--            <c-input-group class="mb-3">-->
-<!--                <span cInputGroupText>-->
-<!--                  <svg cIcon name="cilItalic"></svg>-->
-<!--                </span>-->
-<!--              <select class="form-select" formControlName="zona_segura" cFormControl-->
-<!--                      data-bs-toggle="tooltip" data-bs-placement="top-center" title=" "-->
-<!--                      [class.is-invalid]="registerForm.get('zona_segura')?.invalid && (registerForm.get('zona_segura')?.touched || registerForm.get('zona_segura')?.dirty)"-->
-<!--                      (mouseenter)="showDis2Tooltip()" (mouseleave)="hideDis2Tooltip()"-->
-<!--              >-->
-<!--                <option value="" disabled selected>Seleccione una Zona Segura</option>-->
-<!--                <option *ngFor="let zona of zonaS" [value]="zona.id_zona_segura">-->
-<!--                  {{ zona.id_zona_segura }} - {{ zona.descripcion }}-->
-<!--                </option>-->
-<!--              </select>-->
-<!--            </c-input-group>-->
             <c-input-group class="mb-3">
                 <span cInputGroupText>
                   <svg cIcon name="cilItalic"></svg>
                 </span>
               <input formControlName="fecha" type="date"  cFormControl placeholder="Fecha" required
-                     min="{{ hoy | date: 'yyyy-MM-dd' }}"[class.is-invalid]="registerForm.get('fecha')?.invalid && (registerForm.get('fecha')?.touched || registerForm.get('fecha')?.dirty)"
-                     (mouseenter)="showFecha2Tooltip()" (mouseleave)="hideFecha2Tooltip()"
+                     min="{{ hoy | date: 'yyyy-MM-dd' }}"
               />
-              <div *ngIf="showTooltip8" class="tooltip-container position-absolute top-0 end-0 p-2 bg-white rounded border border-danger text-danger">
-                <div class="arrow"></div>
-                <span>Ingrese una fecha válida.</span>
+              <div *ngIf="registerForm.controls['fecha']?.invalid && registerFormIn.controls['fecha']?.touched" class="invalid-feedback">
+                La Fecha es obligatoria.
               </div>
             </c-input-group>
             <c-input-group class="mb-3">
@@ -220,12 +159,9 @@
                   <svg cIcon name="cilUser"></svg>
                 </span>
               <input formControlName="motivo" cFormControl placeholder="Motivo" required
-                     [class.is-invalid]="registerForm.get('motivo')?.invalid && (registerForm.get('motivo')?.touched || registerForm.get('motivo')?.dirty)"
-                     (mouseenter)="showMotivo2Tooltip()" (mouseleave)="hideMotivo2Tooltip()"
               />
-              <div *ngIf="showTooltip9" class="tooltip-container position-absolute top-0 end-0 p-2 bg-white rounded border border-danger text-danger">
-                <div class="arrow"></div>
-                <span>Ingrese un motivo válido.</span>
+              <div *ngIf="registerForm.controls['motivo']?.invalid && registerFormIn.controls['motivo']?.touched" class="invalid-feedback">
+                El Motivo es obligatorio.
               </div>
             </c-input-group>
             <c-input-group class="mb-3">
@@ -233,9 +169,6 @@
                   <svg cIcon name="cilUser"></svg>
                 </span>
               <select class="form-select" formControlName="estado_devolucion" required
-                      data-bs-toggle="tooltip" data-bs-placement="top-center" title=" "
-                      [class.is-invalid]="registerForm.get('estado_devolucion')?.invalid && (registerForm.get('estado_devolucion')?.touched || registerForm.get('estado_devolucion')?.dirty)"
-                      (mouseenter)="showEstTooltip()" (mouseleave)="hideEstTooltip()"
               >
                 <option value="" disabled selected>Seleccione Estado Devolución</option>
                 <option value="Pendiente">Pendiente</option>
@@ -243,21 +176,22 @@
                 <option value="Perdido">Perdido</option>
                 <option value="Dañado">Dañado</option>
               </select>
-              <div *ngIf="showTooltip10" class="tooltip-container position-absolute top-0 end-0 p-2 bg-white rounded border border-danger text-danger">
-                <div class="arrow"></div>
-                <span>Ingrese un estado de devolucion.</span>
+              <div *ngIf="registerForm.controls['estado_devolucion']?.invalid && registerFormIn.controls['estado_devolucion']?.touched" class="invalid-feedback">
+                El Estado de Devolucion es obligatorio.
               </div>
             </c-input-group>
             <c-input-group class="mb-3">
                 <span cInputGroupText>
                   <svg cIcon name="cilUser"></svg>
                 </span>
-              <select class="form-select" formControlName="finalizado">
+              <select class="form-select" formControlName="finalizado" cFormControl required>
                 <option value="" disabled selected>Seleccione si Finalizado</option>
                 <option [value]="true">Sí</option>
                 <option [value]="false">No</option>
               </select>
-              <!-- <input formControlName="finalizado" cFormControl placeholder="Finalizado" /> -->
+              <div *ngIf="registerForm.controls['finalizado']?.invalid && registerFormIn.controls['finalizado']?.touched" class="invalid-feedback">
+                Indique si esta finalizado el prestamo.
+              </div>
             </c-input-group>
             <div class="d-grid">
               <button cButton color="success" type="submit">Guardar Cambios</button>
