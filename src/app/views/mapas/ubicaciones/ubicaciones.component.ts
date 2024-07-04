@@ -35,6 +35,7 @@ export class UbicacionesComponent implements OnInit, OnDestroy{
   zonasSeguras: Zona_segura[] = [];
   private zonasSegurasSubscription: Subscription;
   private puntos: any[]=[];
+  private arrayPoligonos:google.maps.Polygon[]=[];
 
   constructor(
     private webSocketPosicion: WebSocketDispositivos,
@@ -126,7 +127,6 @@ export class UbicacionesComponent implements OnInit, OnDestroy{
         (zona: Zona_segura) =>{
           this.puntos = zona.puntos ?? [];
           if(this.puntos?.length > 0){
-            console.log("SE EMPEZÓ A CREAR EL POLÍGONO");
             // Convertir los puntos de la zona segura a
             const vertices = this.puntos.map(punto => ({
               lat: punto.latitud,
@@ -136,13 +136,22 @@ export class UbicacionesComponent implements OnInit, OnDestroy{
             const vertices_parseados: google.maps.LatLng[] = convertirALatLng(vertices);
             this.functionordenarVertices(vertices_parseados);
             // Crear el polígono
-            const poligono = new google.maps.Polygon({
-              paths: vertices_parseados,
-              map: mapContainer,
-              strokeColor: '#759192',
-              fillColor: '#92afb0',
-              strokeWeight: 4,
+            if(this.arrayPoligonos.length > 0){
+              this.arrayPoligonos.forEach(overlay => {
+                if (overlay instanceof google.maps.Polygon) {
+                    overlay.setMap(null); // Elimina el polígono del mapa
+                }
             });
+            this.arrayPoligonos = [];
+            }
+              const poligono = new google.maps.Polygon({
+                paths: vertices_parseados,
+                map: mapContainer,
+                strokeColor: '#0F3B04',
+                fillColor: '#4DE943',
+                strokeWeight: 4,
+              });
+              this.arrayPoligonos.push(poligono);
           }
         },
         (error ) =>{
@@ -150,7 +159,6 @@ export class UbicacionesComponent implements OnInit, OnDestroy{
         }
       );
       // Crear los vértices del polígono a partir de los puntos
-      
       // Borrar los marcadores del mapa
       this.marcadores.forEach(marcador => marcador.setMap(null));
       this.marcadores = []; // Vaciar el array de marcadores

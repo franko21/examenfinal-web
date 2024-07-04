@@ -28,7 +28,7 @@ export class ZonasSegurasComponent{
   marcadores: google.maps.Marker[] = []; 
   //VARIABLES PARA LOS MÉTODOS DE GOOGLE MAPS
   center: google.maps.LatLngLiteral = { lat: -2.879767894744873, lng: -78.97490692138672 };
-  zoom = 12;
+  zoom = 13;
   marker: google.maps.Marker | null = null;
   @ViewChild(GoogleMap, { static: false }) map: GoogleMap;
   lastClickedPosition: google.maps.LatLngLiteral | null = null;
