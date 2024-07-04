@@ -117,8 +117,11 @@ export class ZonasSegurasComponent {
               console.log(data.id_zona_segura);
               this.listadoPuntos.forEach(punto => {
                 punto.zona_segura = data;
+                data.puntos?.push(punto);
               });
-              this.IngresarPuntos();
+              if(data.id_zona_segura){
+                this.IngresarPuntos(data.id_zona_segura);
+              }
               Swal.fire({
                 icon: 'success',
                 title: 'Zona segura ingresada correctamente',
@@ -168,12 +171,19 @@ export class ZonasSegurasComponent {
     }
   }
 
-  IngresarPuntos() {
+  IngresarPuntos(id_zona:number) {
     let puntosIngresadosCorrectamente = true;
     let contadorPuntosIngresados = 0;
       this.listadoPuntos.forEach(punto => {
         this.puntoService.crear(punto).subscribe({
           next: (data) => {
+            this.zonaService.buscar(id_zona).subscribe({
+              next: (datazona) => {
+                datazona.puntos?.push(data);
+                this.zonaService.editar(datazona);
+              }
+            }
+            );
             contadorPuntosIngresados++;
             if (contadorPuntosIngresados === this.listadoPuntos.length && puntosIngresadosCorrectamente) {
               console.log('Todos los puntos fueron ingresados correctamente en la base de datos');

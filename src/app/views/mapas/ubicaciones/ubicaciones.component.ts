@@ -23,6 +23,8 @@ import { Zona_segura } from 'src/app/model/zona_segura';
 
 export class UbicacionesComponent implements OnInit, OnDestroy{
 
+  marcadores: google.maps.Marker[] = []; 
+  listadoPuntos: any[] = [];
   private dispositivosSuscripcion:Subscription;
   dispositivos: Dispositivo [] = [];
   @ViewChild(GoogleMap, { static: false }) map: GoogleMap;
@@ -32,6 +34,7 @@ export class UbicacionesComponent implements OnInit, OnDestroy{
   posiciones: Posicion[] = [];
   zonasSeguras: Zona_segura[] = [];
   private zonasSegurasSubscription: Subscription;
+  private puntos: any[]=[];
 
   constructor(
     private webSocketPosicion: WebSocketDispositivos,
@@ -93,9 +96,13 @@ export class UbicacionesComponent implements OnInit, OnDestroy{
 
   onZonaSeguraChange(event: Event) {
     const selectElement = event.target as HTMLSelectElement;
-    const selectedZonaSeguraId = selectElement.value;
-    console.log('Zona segura seleccionada:', selectedZonaSeguraId);
-
+    const selectedZonaSeguraIdStr = selectElement.value;
+    console.log('Zona segura seleccionada:', selectedZonaSeguraIdStr);
+  
+    // Convertir el ID de string a number
+    const selectedZonaSeguraId = parseInt(selectedZonaSeguraIdStr, 10);
+    console.log(selectedZonaSeguraIdStr);
+    this.crearPoligono(selectedZonaSeguraId);
     // Aquí puedes agregar lógica adicional para manejar el cambio de zona segura,
     // como actualizar la vista del mapa con nuevas posiciones u otros datos.
   }
@@ -112,6 +119,43 @@ export class UbicacionesComponent implements OnInit, OnDestroy{
     );
   }
 
+  crearPoligono(id:number) {
+    const mapContainer = this.map.googleMap;
+    if (mapContainer) {
+      this.zonasSegurasService.buscar(id).subscribe(
+        (zona: Zona_segura) =>{
+          console.log(zona.puntos?.length);
+          this.puntos = zona.puntos ?? [];
+        },
+        (error ) =>{
+          console.error('Error al buscar la zona segura', error);
+        }
+      );
+      // Crear los vértices del polígono a partir de los puntos
+      if(this.puntos?.length > 0){
+        console.log("SE EMPEZÓ A CREAR EL POLÍGONO");
+        const vertices = this.puntos.map(punto => ({
+          lat: punto.latitud,
+          lng: punto.longitud
+        }));
+        // Crear el polígono
+        const poligono = new google.maps.Polygon({
+          paths: vertices,
+          map: mapContainer,
+          strokeColor: '#759192',
+          fillColor: '#92afb0',
+          strokeWeight: 4,
+        });
+      }
+      // Borrar los marcadores del mapa
+      this.marcadores.forEach(marcador => marcador.setMap(null));
+      this.marcadores = []; // Vaciar el array de marcadores
+  
+    } else {
+      console.log("NO SE PUDO INICIAR LA CREACIÓN DE");
+    }
+  }
+  
   
 }
 
