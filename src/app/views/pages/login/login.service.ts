@@ -60,7 +60,7 @@ export class LoginService {
                         console.log(environment.nombre);
                         environment.username=credentials.username;
                         // authGuard(this.route,this.state).valueOf.prototype.islogged=true;
-                        this.router.navigate(['/dashboard']);
+                        this.router.navigate(['/monitoreo']);
                     }
                 }
 
