@@ -6,13 +6,13 @@
           <c-card class="p-4">
             <c-card-body>
               <form [formGroup]="loginForm" (ngSubmit)="login()">
-                <h1>Login</h1>
-                <p class="text-body-secondary">Sign In to your account</p>
+                <h1>Iniciar Sesion</h1>
+                <p class="text-body-secondary">Inicia sesion en tu cuenta</p>
                 <c-input-group class="mb-3">
                   <span cInputGroupText>
                     <svg cIcon name="cilUser"></svg>
                   </span>
-                  <input formControlName="username" autoComplete="username" cFormControl placeholder="Username" />
+                  <input formControlName="username" autoComplete="username" cFormControl placeholder="Usuario" />
                 </c-input-group>
                 <c-input-group class="mb-4">
                   <span cInputGroupText>
@@ -22,39 +22,34 @@
                     formControlName="password"
                     autoComplete="current-password"
                     cFormControl
-                    placeholder="Password"
+                    placeholder="Clave"
                     type="password"
                   />
                 </c-input-group>
                 <c-row>
                   <c-col xs="6">
                     <button cButton class="px-4" color="primary" type="submit">
-                      Login
+                      Entrar
                     </button>
                   </c-col>
                   <c-col class="text-right" xs="6">
-                    <button cButton class="px-0" color="link">
-                      Forgot password?
-                    </button>
+                    <button cButton class="px-0" color="link">¿Olvidaste tu contraseña?</button>
                   </c-col>
                 </c-row>
               </form>
-              
+
             </c-card-body>
           </c-card>
-          <c-card [ngStyle]="{'minWidth.%': 44}" class="text-white bg-primary py-5">
+          <c-card [ngStyle]="{'minWidth.%': 46}" class="text-white bg-primary py-5">
             <c-card-body class="text-center">
               <div>
-                <h2>Sign up</h2>
-                <p>
-                  Sistema de monitoreo de Dispositivos Android
-                </p>
-                <p>
-                  "JEDANK"
-                </p>
-                <button [active]="true" cButton class="mt-3" color="primary" (click)="register()">
-                  Register Now!
-                </button>
+                <img src="../../../assets/images/jedanklogofondoo.jpg" class="jedank-logo" width="315px" height="auto" alt="My Logo">
+
+                    <h4>                  "Tu Mundo, Siempre Localizable"
+                    </h4>
+<!--                <button [active]="true" cButton class="mt-3" color="primary" (click)="register()">-->
+<!--                  Register Now!-->
+<!--                </button>-->
               </div>
             </c-card-body>
           </c-card>
