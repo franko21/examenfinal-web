@@ -1,4 +1,4 @@
-import { Component, ElementRef, NgZone, ViewChild } from '@angular/core';
+import { Component, ElementRef, NgZone, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Zona_segura } from "src/app/model/zona_segura";
 import {GoogleMap, MapHeatmapLayer, MapMarker} from '@angular/google-maps';
@@ -17,13 +17,14 @@ import { Zona_seguraService } from 'src/app/service/Zona_segura.service';
   templateUrl: './zonas-seguras.component.html',
   styleUrl: './zonas-seguras.component.scss'
 })
-export class ZonasSegurasComponent {
+export class ZonasSegurasComponent{
   //CONSTRUCTOR PARA LOS SERVICIOS
   constructor(
     private puntoService: PuntoService,
     private zonaService: Zona_seguraService,
     private zone: NgZone
   ) {}
+  
   marcadores: google.maps.Marker[] = []; 
   //VARIABLES PARA LOS MÉTODOS DE GOOGLE MAPS
   center: google.maps.LatLngLiteral = { lat: -2.879767894744873, lng: -78.97490692138672 };
@@ -42,7 +43,7 @@ export class ZonasSegurasComponent {
   ngAfterViewInit(): void {
     this.zone.runOutsideAngular(() => {
       this.InitCompletado();
-      //INICIAR LA CARGA DE ZONAS SEGURAS
+      this.Cargar_Zonas();
       
     });
   }
@@ -82,6 +83,46 @@ export class ZonasSegurasComponent {
   this.marcadores.push(marcador); // Agregar el marcador al array
   }
 
+  Cargar_Zonas(){
+    //INICIAR LA CARGA DE ZONAS SEGURAS
+    const mapContainer = this.map.googleMap;
+    if(!mapContainer){
+      console.log("NO SE PUDO INICIAR LA CARGA DE ZONAS SEGURAS");
+    }else{
+      this.zonaService.listar().subscribe({
+        next: (data) => {
+          console.log(data);
+          data.forEach((zona: Zona_segura) => {
+            if (zona.puntos && zona.puntos.length > 0) {
+              const vertices = zona.puntos
+              .filter(punto => punto.latitud !== undefined && punto.longitud !== undefined)
+              .map(punto => ({
+              lat: punto.latitud!,
+              lng: punto.longitud!
+              }));
+          
+              // Convierte los vértices a `google.maps.LatLng`
+              const vertices_parseados: google.maps.LatLng[] = convertirALatLng(vertices);
+              this.functionordenarVertices(vertices_parseados);
+              // Crear el polígono
+              const poligono = new google.maps.Polygon({
+                paths: vertices_parseados,
+                map: mapContainer,
+                strokeColor: '#759192',
+                fillColor: '#92afb0',
+                strokeWeight: 4,
+              });
+            } else {
+              console.warn('Zona sin puntos o puntos no definidos:', zona);
+            }
+          });
+        },
+        error: (err) => {
+          console.error(err);
+        }
+      });
+    }
+  }
 
   ingresarZona() {
     // Validación para que una zona tenga mínimo 3 puntos
@@ -248,12 +289,15 @@ export class ZonasSegurasComponent {
 //FUNCION PARA ORDENAR LOS VERTICES DEL POLIGONO
 functionordenarVertices(vertices: google.maps.LatLng[]): google.maps.LatLng[] {
   const centro = calcularCentroide(vertices);
+  
   return vertices.sort((a, b) => {
     const anguloA = calcularAngulo(centro, a);
     const anguloB = calcularAngulo(centro, b);  
     return anguloA - anguloB;
   });
 }
+
+
 
 }
 //FUNCION PARA CALCULAR EL CENTROIDE
@@ -269,6 +313,7 @@ function calcularCentroide(vertices: google.maps.LatLng[]): google.maps.LatLng {
   centroLng /= vertices.length;
   
   return new google.maps.LatLng(centroLat, centroLng);
+
 }
 //funcion para calcular el angulo
 function calcularAngulo(center: google.maps.LatLng, point: google.maps.LatLng): number {
@@ -278,3 +323,5 @@ function calcularAngulo(center: google.maps.LatLng, point: google.maps.LatLng): 
 function convertirALatLng(vertices: google.maps.LatLngLiteral[]): google.maps.LatLng[] {
   return vertices.map(punto => new google.maps.LatLng(punto.lat, punto.lng));
 }
+
+

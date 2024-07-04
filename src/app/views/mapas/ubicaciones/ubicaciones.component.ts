@@ -29,7 +29,7 @@ export class UbicacionesComponent implements OnInit, OnDestroy{
   dispositivos: Dispositivo [] = [];
   @ViewChild(GoogleMap, { static: false }) map: GoogleMap;
   center: google.maps.LatLngLiteral = { lat: -2.879767894744873, lng: -78.97490692138672 };
-  zoom = 12;
+  zoom = 13;
   private posicionSubscription: Subscription;
   posiciones: Posicion[] = [];
   zonasSeguras: Zona_segura[] = [];
@@ -162,25 +162,28 @@ export class UbicacionesComponent implements OnInit, OnDestroy{
   //MÑETODO PARA ORDENAR LOS VÉRTICES DEL POLÍGONO
   functionordenarVertices(vertices: google.maps.LatLng[]): google.maps.LatLng[] {
     const centro = calcularCentroide(vertices);
+    this.CentrarMapa(centro.lat(), centro.lng());
     return vertices.sort((a, b) => {
       const anguloA = calcularAngulo(centro, a);
       const anguloB = calcularAngulo(centro, b);  
       return anguloA - anguloB;
     });
   }
+
+  CentrarMapa(lati:number, longi:number){
+    this.center = { lat: lati, lng: longi };
+    this.zoom = 18;
+  }
 }
 
 function calcularCentroide(vertices: google.maps.LatLng[]): google.maps.LatLng {
   let centroLat = 0, centroLng = 0;
-  
   vertices.forEach(vertex => {
     centroLat += vertex.lat();
     centroLng += vertex.lng();
   });
-  
   centroLat /= vertices.length;
   centroLng /= vertices.length;
-  
   return new google.maps.LatLng(centroLat, centroLng);
 }
 
@@ -196,3 +199,5 @@ function convertirALatLng(vertices: google.maps.LatLngLiteral[]): google.maps.La
 function boostrapApplication(App: any, arg1: { providers: any[]; }) {
   throw new Error('Function not implemented.');
 }
+
+
