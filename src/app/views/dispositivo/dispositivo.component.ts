@@ -14,7 +14,12 @@ import {
   ProgressComponent,
   RowComponent,
   TableDirective,
-  FormFeedbackComponent
+  FormFeedbackComponent,
+  ToastBodyComponent,
+  ToastComponent,
+  ToastHeaderComponent,
+  ToasterComponent,
+  ProgressBarDirective, ProgressBarComponent
 } from '@coreui/angular';
 
 import { IconDirective } from '@coreui/icons-angular';
@@ -28,7 +33,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { Marca } from 'src/app/model/marca.model';
 import { Modelo } from 'src/app/model/modelo.model';
 import { Categoria } from 'src/app/model/categoria.model';
-import { HttpClientModule } from '@angular/common/http'; 
+import { HttpClientModule } from '@angular/common/http';
 import { NgModel } from '@angular/forms';
 import Swal from 'sweetalert2';
 @Component({
@@ -52,7 +57,12 @@ import Swal from 'sweetalert2';
     ButtonDirective,
     FormsModule,
     ReactiveFormsModule,
-    FormFeedbackComponent
+    FormFeedbackComponent,
+    ToastBodyComponent,
+    ToastComponent,
+    ToastHeaderComponent,
+    ToasterComponent,
+    ToasterComponent, ToastComponent, ToastHeaderComponent, ToastBodyComponent, ProgressBarDirective, ProgressComponent, ProgressBarComponent, ButtonDirective
   ],
   providers:[DipositivoService,ModeloService,MarcaService,CategoriaService],
   templateUrl: './dispositivo.component.html',
@@ -85,7 +95,55 @@ export class DispositivoComponent implements OnInit {
    nombredispo:String=""
    disponible: boolean;
    id_marca:number;
+  searchText: string = '';
 
+  position = 'top-end';
+  visible = false;
+  percentage = 0;
+
+  position2 = 'top-end';
+  visible2 = false;
+  percentage2 = 0;
+
+  filteredDispositivos() {
+    if (!this.searchText) {
+      return this.dispositivos;
+    }
+
+    return this.dispositivos.filter(dispositivo => {
+      return (
+        dispositivo?.nombre?.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        dispositivo.numSerie?.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        dispositivo.categoria?.nombre?.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        dispositivo.modelo?.nombre?.toLowerCase().includes(this.searchText.toLowerCase())||
+        dispositivo.modelo?.marca?.nombre?.toLowerCase().includes(this.searchText.toLowerCase())
+      );
+    });
+  }
+  toggleToast() {
+    this.visible = !this.visible;
+  }
+
+  onVisibleChange($event: boolean) {
+    this.visible = $event;
+    this.percentage = !this.visible ? 0 : this.percentage;
+  }
+
+  onTimerChange($event: number) {
+    this.percentage = $event * 25;
+  }
+  toggleToast2() {
+    this.visible2 = !this.visible2;
+  }
+
+  onVisibleChange2($event: boolean) {
+    this.visible2 = $event;
+    this.percentage2 = !this.visible2 ? 0 : this.percentage2;
+  }
+
+  onTimerChange2($event: number) {
+    this.percentage2 = $event * 25;
+  }
 
   toggleView() {
     this.showTable = !this.showTable;
@@ -94,12 +152,12 @@ export class DispositivoComponent implements OnInit {
   toggleViewm() {
     this.showTablem = !this.showTablem;
      this.titulo="Dispositivo"
-  
+
   }
   toggleViewc() {
     this.showTablec = !this.showTablec;
      this.titulo="Dispositivo"
-   
+
   }
   constructor(private serdispo:DipositivoService , private sermarca:MarcaService, private sermodelo:ModeloService, private sercateg:CategoriaService ,private router: Router,fb:FormBuilder){
   }
@@ -107,17 +165,17 @@ export class DispositivoComponent implements OnInit {
     this.listardispo();
     this.listarmode();
     this.listarcategorias();
-    this.listarmarcas(); 
+    this.listarmarcas();
   }
   listardispo() {
     this.serdispo.listar().subscribe(
       dispositivos => {
-        this.dispositivos = dispositivos;  
+        this.dispositivos = dispositivos;
          this.filtradispovinculado();
          console.log("aqui prestamos")
          console.log(this.dispositivos[0].prestamos)
 
-         
+
       },
       error => {
         console.error('Error al listar dispositivos:', error);
@@ -161,7 +219,7 @@ export class DispositivoComponent implements OnInit {
 
     }
   }
-  
+
   filtrarModelosPorMarcaid() {
     console.log("Modelos org antes del filtro:");
     console.log(this.modelos);
@@ -213,7 +271,7 @@ export class DispositivoComponent implements OnInit {
   }
 
   crearDispositivo() {
-    this.asignacatmar() 
+    this.asignacatmar()
     console.log(this.categoriaselet);
     console.log(this.modeloselet);
     console.log(this.marcaselect);
@@ -221,24 +279,26 @@ export class DispositivoComponent implements OnInit {
     if (this.validateForm()) {
       //////////
     this.serdispo.crear(this.dispositivo).subscribe(
-      () => { 
+      () => {
         if(this.titulo=="Ingresar dispostivo"){
-          Swal.fire({
-            icon: 'success',
-            title: '¡Dispositivo creado con éxito!',
-            text: 'EXITO',
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: 'OK'
-          });
+          // Swal.fire({
+          //   icon: 'success',
+          //   title: '¡Dispositivo creado con éxito!',
+          //   text: 'EXITO',
+          //   confirmButtonColor: '#3085d6',
+          //   confirmButtonText: 'OK'
+          // });
+          this.toggleToast();
         }else{
           console.log(this.dispositivo);
-          Swal.fire({
-            icon: 'success',
-            title: '¡Dispositivo Editado con éxito!',
-            text: 'EXITO',
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: 'OK'
-          });
+          // Swal.fire({
+          //   icon: 'success',
+          //   title: '¡Dispositivo Editado con éxito!',
+          //   text: 'EXITO',
+          //   confirmButtonColor: '#3085d6',
+          //   confirmButtonText: 'OK'
+          // });
+          this.toggleToast();
         }
         this.toggleView();
         this.showTablem=true;
@@ -248,17 +308,18 @@ export class DispositivoComponent implements OnInit {
       },
       error => {
         console.error('Error al crear dispositivo:', error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Hubo un problema al crear el dispositivo. Inténtalo de nuevo más tarde.',
-          confirmButtonColor: '#d33',
-          confirmButtonText: 'OK'
-        });
+        // Swal.fire({
+        //   icon: 'error',
+        //   title: 'Error',
+        //   text: 'Hubo un problema al crear el dispositivo. Inténtalo de nuevo más tarde.',
+        //   confirmButtonColor: '#d33',
+        //   confirmButtonText: 'OK'
+        // });
+        this.toggleToast2();
       }
-    );  
+    );
     }
-    
+
   }
 
   editardispo(dispo: Dispositivo) {
@@ -273,7 +334,7 @@ export class DispositivoComponent implements OnInit {
   asignacatmar() {
     if (this.dispositivo && this.categoriaselet&&this.modeloselet&&this.dispositivoSeleccionado) {
       if(this.titulo=="Ingresar dispostivo"){
-      this.dispositivo=this.dispositivoSeleccionado; 
+      this.dispositivo=this.dispositivoSeleccionado;
       this.dispositivo.categoria = this.categoriaselet;
       this.dispositivo.modelo = this.modeloselet;
       this.dispositivo.nombre=this.nombredispo;
@@ -285,7 +346,7 @@ export class DispositivoComponent implements OnInit {
       this.dispositivo.modelo = this.modelomod;
 
       }
-      
+
     }
     console.log(this.categoriaselet);
     console.log(this.modeloselet);
@@ -349,7 +410,7 @@ export class DispositivoComponent implements OnInit {
   this.modelosfiltro= [];
   this.nombredispo="";
   this.id_marca=0;
-  
+
   }
   cancelar(): void{
   this.toggleView();
@@ -362,7 +423,7 @@ export class DispositivoComponent implements OnInit {
     this.toggleView();
     this.vaciarcampos();
     }
-  
+
   btncrear(): void{
     this.categoriaselet = null;
     this.modeloselet=null;

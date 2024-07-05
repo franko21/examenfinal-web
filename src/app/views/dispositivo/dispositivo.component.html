@@ -1,3 +1,33 @@
+<c-toaster [placement]="position" class="p-3" position="fixed" style="position: fixed; top: 20px; right: 20px; z-index: 1050;">
+  <c-toast
+    (timer)="onTimerChange($event)"
+    (visibleChange)="onVisibleChange($event)"
+    [visible]="visible"
+    class="success-toast">
+    <c-toast-header class="success-toast-header">
+      <svg cIcon name="cilCheck" class="icon-success"></svg> <!-- Icono de éxito -->
+      <h5 class="success-heading">Dispositivo Gurdado con exito</h5>
+    </c-toast-header>
+    <c-toast-body class="success-toast-body">
+      <p class="success-toast-message">Ingreso de datos correcto</p>
+    </c-toast-body>
+  </c-toast>
+</c-toaster>
+<c-toaster [placement]="position2" class="p-3" position="fixed" style="position: fixed; top: 20px; right: 20px; z-index: 1050;">
+  <c-toast
+    (timer)="onTimerChange2($event)"
+    (visibleChange)="onVisibleChange2($event)"
+    [visible]="visible2"
+    class="danger-toast">
+    <c-toast-header class="danger-toast-header">
+      <svg cIcon name="cilReportSlash" class="icon-danger"></svg> <!-- Icono de error -->
+      <h5 class="error-heading">   Error al guardar dispositivo</h5>
+    </c-toast-header>
+    <c-toast-body class="danger-toast-body">
+      <p class="danger-toast-message">Error al ingresar los datos</p>
+    </c-toast-body>
+  </c-toast>
+</c-toaster>
 <c-row>
   <c-col xs>
     <c-card class="mb-4">
@@ -10,10 +40,14 @@
         <div class="button-container">
           <button type="button" class="btn btn-outline-info bi bi-plus-circle" *ngIf="showTable" (click)="btncrear()">Agregar dispositivo</button>
         </div><br>
-  
+
 
         <!-- Tabla de dispositivos -->
         <div *ngIf="showTable">
+          <div class="search-container">
+            <input type="text" placeholder="Buscar..." [(ngModel)]="searchText" class="form-control search-input" />
+            <svg class="search-icon" cIcon name="cilMagnifyingGlass"></svg>
+          </div>
           <table
             [hover]="true"
             [responsive]="true"
@@ -35,7 +69,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr class="bg-body-tertiary text-center" *ngFor="let dispo of dispositivos | paginate: { itemsPerPage: 5, currentPage: p }; let i = index">
+              <tr class="bg-body-tertiary text-center" *ngFor="let dispo of filteredDispositivos() | paginate: { itemsPerPage: 5, currentPage: p }; let i = index">
                 <td>
                   <div>{{ dispo.idDispositivo }}</div>
                 </td>
@@ -90,7 +124,7 @@
                 La Categoria es obligatoria.
               </div>
             </c-input-group>
-          
+
             <c-input-group class="mb-3">
               <span cInputGroupText>
                 <svg cIcon name="cilItalic"></svg>
@@ -105,7 +139,7 @@
                 La Marca es obligatoria.
               </div>
             </c-input-group>
-          
+
             <c-input-group class="mb-3">
               <span cInputGroupText>
                 <svg cIcon name="cilItalic"></svg>
@@ -120,7 +154,7 @@
                 El Modelo es obligatorio.
               </div>
             </c-input-group>
-          
+
             <c-input-group class="mb-3">
               <span cInputGroupText>
                 <svg cIcon name="cilUser"></svg>
@@ -144,14 +178,14 @@
                 El nombre es obligatorio.
               </div>
             </c-input-group>
-          
+
             <c-input-group class="mb-3">
               <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="disponible" [(ngModel)]="disponible" name="disponible">
                 <label class="form-check-label" for="disponible">Disponible</label>
               </div>
             </c-input-group>
-          
+
             <div class="d-grid">
               <button cButton color="success" type="submit" [disabled]="myForm.invalid">Guardar Cambios</button>
             </div>
@@ -160,7 +194,7 @@
               <button cButton color="secondary" type="button" (click)="cancelar()">Cancelar</button>
             </div>
           </form>
-            <!-- AQUI ACABAN LOS FORMULARIOS DE INGRESO Y MODIFICACION SEGUN CORRESPONDA--> 
+            <!-- AQUI ACABAN LOS FORMULARIOS DE INGRESO Y MODIFICACION SEGUN CORRESPONDA-->
         </div>
 
         <!-- AQUI INICIAN LOS FORMULARIOS  DE MODIFICACION -->
@@ -198,29 +232,29 @@
                 {{ modelo.nombre }}
               </option>
             </select>
-            
-          </c-input-group> 
+
+          </c-input-group>
           <c-input-group class="mb-3">
             <span cInputGroupText>
               <svg cIcon name="cilUser"></svg>
             </span>
             <input id="nombre" class="form-control" type="text"  placeholder="Nombre" [(ngModel)]="dispositivo.nombre" name="nombre" />
-          </c-input-group>  
-          <c-input-group class="mb-3">   
+          </c-input-group>
+          <c-input-group class="mb-3">
             <div class="form-check form-switch">
               <input class="form-check-input" type="checkbox" id="disponible" [(ngModel)]="dispositivo.disponible" name="disponible">
               <label class="form-check-label" for="disponible">Disponible</label>
             </div>
-          </c-input-group> 
+          </c-input-group>
           <div class="d-grid">
             <button cButton color="success" type="submit"(click)="crearDispositivo()">Guardar Cambios</button>
           </div><br>
           <div class="d-grid">
             <button cButton color="secondary" type="button"(click)="cancelar()" >Cancelar</button>
           </div>
-          
+
         </form>
-            <!-- AQUI ACABAN LOS FORMULARIOS DE MODIFICACION --> 
+            <!-- AQUI ACABAN LOS FORMULARIOS DE MODIFICACION -->
         </div>
       </c-card-body>
     </c-card>
