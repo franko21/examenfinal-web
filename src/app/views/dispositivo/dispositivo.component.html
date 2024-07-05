@@ -139,12 +139,26 @@
               <span cInputGroupText>
                 <svg cIcon name="cilUser"></svg>
               </span>
+              <select name="zona" id="zona" class="form-control" [(ngModel)]="zonaSeleccionado" required>
+                <option value="null" disabled selected>Seleccione la zona</option>
+                <option *ngFor="let zona of zonaseg" [ngValue]="zona">
+                  {{ zona.descripcion }}
+                </option>
+              </select>
+              <div *ngIf="myForm.controls['zona']?.invalid && myForm.controls['zona']?.touched" class="invalid-feedback">
+                Seleccionar Zona es obligatorio.
+              </div>
+            </c-input-group>
+        
+            <c-input-group class="mb-3">
+              <span cInputGroupText>
+                <svg cIcon name="cilUser"></svg>
+              </span>
               <input id="nombre" class="form-control" type="text" placeholder="Nombre" [(ngModel)]="nombredispo" name="nombre" required/>
               <div *ngIf="myForm.controls['nombre']?.invalid && myForm.controls['nombre']?.touched" class="invalid-feedback">
                 El nombre es obligatorio.
               </div>
-            </c-input-group>
-          
+            </c-input-group>              
             <c-input-group class="mb-3">
               <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="disponible" [(ngModel)]="disponible" name="disponible">
@@ -181,7 +195,7 @@
             <span cInputGroupText>
               <svg cIcon name="cilItalic"></svg>
             </span>
-            <select class="form-control" name="Marcas" id="Marcas" [(ngModel)]="id_marca">
+            <select class="form-control" name="Marcas" id="Marcas" [(ngModel)]="id_marca" (change)="filtrarModelosPorMarcaid()">
               <option value="null" disabled selected>Seleccione la Marca</option>
               <option *ngFor="let marca of marcas" [ngValue]="marca.id_marca" >
                 {{ marca.nombre }}
@@ -194,12 +208,23 @@
             </span>
             <select name="Modelo" id="Modelo" class="form-control" [(ngModel)]="modelomod.id_modelo">
               <option  [ngValue]="null" disabled selected>Seleccione el Modelo</option>
-              <option *ngFor="let modelo of modelos" [ngValue]="modelo.id_modelo">
+              <option *ngFor="let modelo of modelosfiltro" [ngValue]="modelo.id_modelo">
                 {{ modelo.nombre }}
               </option>
             </select>
             
           </c-input-group> 
+          <c-input-group class="mb-3">
+            <span cInputGroupText>
+              <svg cIcon name="cilItalic"></svg>
+            </span>
+            <select name="zona" id="zona" class="form-control" [(ngModel)]="zonamod.id_zona_segura">
+              <option Value="null" disabled selected>Seleccione la Zona</option>
+              <option *ngFor="let zona of zonaseg" [ngValue]="zona.id_zona_segura">
+                {{ zona.descripcion }}
+              </option>
+            </select>
+          </c-input-group>
           <c-input-group class="mb-3">
             <span cInputGroupText>
               <svg cIcon name="cilUser"></svg>
@@ -226,4 +251,3 @@
     </c-card>
   </c-col>
 </c-row>
-

@@ -31,6 +31,8 @@ import { Categoria } from 'src/app/model/categoria.model';
 import { HttpClientModule } from '@angular/common/http'; 
 import { NgModel } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { Zona_segura } from 'src/app/model/zona_segura';
+import { Zona_seguraService } from 'src/app/service/Zona_segura.service';
 @Component({
   selector: 'app-dispositivo',
   standalone: true,
@@ -61,10 +63,12 @@ import Swal from 'sweetalert2';
 export class DispositivoComponent implements OnInit {
    public dispositivo:Dispositivo =new Dispositivo();
    public dispositivoSeleccionado:Dispositivo | null =new Dispositivo();
+   public zonaSeleccionado:Zona_segura | null =new Zona_segura();
    public categoriaselet: Categoria | null = new Categoria();
    public modeloselet: Modelo | null = new Modelo();
    public categoriamod: Categoria = new Categoria();
    public modelomod: Modelo = new Modelo();
+   public zonamod: Zona_segura = new Zona_segura();
    public marcaselect: Marca | null = new Marca();
    public titulo: string = "Dispositivo";
    dispositivos: Dispositivo[] = [];
@@ -73,6 +77,7 @@ export class DispositivoComponent implements OnInit {
    modelos:Modelo[]=[];
    modelosfiltro:Modelo[]=[];
    categorias:Categoria[]=[];
+   zonaseg:Zona_segura[]=[];
    Seleccionado: string ='';
    p: number = 1;
    showTable: boolean = true;
@@ -101,13 +106,14 @@ export class DispositivoComponent implements OnInit {
      this.titulo="Dispositivo"
    
   }
-  constructor(private serdispo:DipositivoService , private sermarca:MarcaService, private sermodelo:ModeloService, private sercateg:CategoriaService ,private router: Router,fb:FormBuilder){
+  constructor(private serdispo:DipositivoService , private sermarca:MarcaService, private sermodelo:ModeloService, private sercateg:CategoriaService ,private router: Router,fb:FormBuilder,private serzona:Zona_seguraService){
   }
   ngOnInit(): void {
     this.listardispo();
     this.listarmode();
     this.listarcategorias();
     this.listarmarcas(); 
+    this.listarZonas();
   }
   listardispo() {
     this.serdispo.listar().subscribe(
@@ -165,14 +171,28 @@ export class DispositivoComponent implements OnInit {
   filtrarModelosPorMarcaid() {
     console.log("Modelos org antes del filtro:");
     console.log(this.modelos);
-    if (this.marcaselect && this.marcaselect.nombre) {
-      this.modelosfiltro = this.modelos.filter(modelo => modelo.marca?.nombre === this.marcaselect?.nombre);
-      console.log("Nombre de marca");
-      console.log(this.marcaselect.nombre);
+    if (this.id_marca ) {
+      this.modelosfiltro = this.modelos.filter(modelo => modelo.marca?.id_marca === this.id_marca);
+      console.log("Id de marca");
+      console.log(this.id_marca);
       console.log("Modelosfiltro despues del filtro:");
     console.log(this.modelosfiltro);
     } else {
+  
+    }
+  }
 
+  filtrarModelosPorMarcaidini() {
+    console.log("Modelos org antes del filtro:");
+    console.log(this.modelos);
+    if (this.id_marca ) {
+      this.modelosfiltro = this.modelos.filter(modelo => modelo.marca?.id_marca === this.id_marca);
+      console.log("Id de marca");
+      console.log(this.id_marca);
+      console.log("Modelosfiltro despues del filtro:");
+    console.log(this.modelosfiltro);
+    } else {
+  
     }
   }
  modelonull(){
@@ -208,6 +228,16 @@ export class DispositivoComponent implements OnInit {
       },
       error => {
         console.error('Error al listar categorías:', error);
+      }
+    );
+  }
+  listarZonas() {
+    this.serzona.listar().subscribe(
+      zonas => {
+        this.zonaseg = zonas;
+      },
+      error => {
+        console.error('Error al listar zonas:', error);
       }
     );
   }
@@ -248,6 +278,8 @@ export class DispositivoComponent implements OnInit {
       },
       error => {
         console.error('Error al crear dispositivo:', error);
+        console.log("aqui va el objeto")
+        console.log(this.dispositivo)
         Swal.fire({
           icon: 'error',
           title: 'Error',
@@ -263,6 +295,7 @@ export class DispositivoComponent implements OnInit {
 
   editardispo(dispo: Dispositivo) {
     this.dispositivo = structuredClone(dispo); // Utilizar structuredClone para una copia profunda
+    this.modelosfiltro=this.modelos
     this.asigparaedit();
     this.showTablem = false;
     this.toggleView();
@@ -271,11 +304,12 @@ export class DispositivoComponent implements OnInit {
 
 
   asignacatmar() {
-    if (this.dispositivo && this.categoriaselet&&this.modeloselet&&this.dispositivoSeleccionado) {
+    if (this.dispositivo && this.categoriaselet&&this.modeloselet&&this.dispositivoSeleccionado&&this.zonaSeleccionado) {
       if(this.titulo=="Ingresar dispostivo"){
       this.dispositivo=this.dispositivoSeleccionado; 
       this.dispositivo.categoria = this.categoriaselet;
       this.dispositivo.modelo = this.modeloselet;
+      this.dispositivo.zona_segura=this.zonaSeleccionado;
       this.dispositivo.nombre=this.nombredispo;
       this.dispositivo.disponible=this.disponible;
       this.dispositivo.vinculado=true;
@@ -283,6 +317,7 @@ export class DispositivoComponent implements OnInit {
       }else{
       this.dispositivo.categoria = this.categoriamod;
       this.dispositivo.modelo = this.modelomod;
+      this.dispositivo.zona_segura= this.zonamod;
 
       }
       
@@ -293,8 +328,9 @@ export class DispositivoComponent implements OnInit {
   }
   asigparaedit() {
     if (this.dispositivo) {
-      if (this.dispositivo.categoria&&this.dispositivo.modelo?.marca?.id_marca) {
+      if (this.dispositivo.categoria&&this.dispositivo.modelo?.marca?.id_marca&&this.dispositivo.zona_segura) {
         this.categoriamod = this.dispositivo.categoria;
+        this.zonamod=this.dispositivo.zona_segura;
         this.id_marca=this.dispositivo.modelo?.marca?.id_marca
       }
       if (this.dispositivo.modelo) {
@@ -368,6 +404,7 @@ export class DispositivoComponent implements OnInit {
     this.modeloselet=null;
     this.marcaselect=null;
     this.dispositivoSeleccionado=null;
+    this.zonaSeleccionado=null;
     this.toggleView();
     this.toggleViewc();
     this.titulo="Ingresar dispostivo"
