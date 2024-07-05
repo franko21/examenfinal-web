@@ -9,6 +9,7 @@ import { Posicion } from 'src/app/model/posicion.model';
 import { HttpClient } from '@angular/common/http';
 import { Dispositivo } from 'src/app/model/dispositivo.model';
 import { Zona_segura } from 'src/app/model/zona_segura';
+import { PosicionService } from 'src/app/service/posicion.service';
 
 @Component({
   selector: 'app-ubicaciones',
@@ -23,6 +24,7 @@ import { Zona_segura } from 'src/app/model/zona_segura';
 
 export class UbicacionesComponent implements OnInit, OnDestroy{
 
+
   marcadores: google.maps.Marker[] = []; 
   listadoPuntos: any[] = [];
   private dispositivosSuscripcion:Subscription;
@@ -36,12 +38,14 @@ export class UbicacionesComponent implements OnInit, OnDestroy{
   private zonasSegurasSubscription: Subscription;
   private puntos: any[]=[];
   private arrayPoligonos:google.maps.Polygon[]=[];
+  mostrar_dispositivos: boolean = false;
 
   constructor(
     private webSocketPosicion: WebSocketDispositivos,
     private zone: NgZone,
     private http: HttpClient,
-    private zonasSegurasService: Zona_seguraService
+    private zonasSegurasService: Zona_seguraService,
+    private posicionesService:PosicionService
   ) {}
 
   ngOnInit(): void {
@@ -99,10 +103,11 @@ export class UbicacionesComponent implements OnInit, OnDestroy{
     const selectElement = event.target as HTMLSelectElement;
     const selectedZonaSeguraIdStr = selectElement.value;
     console.log('Zona segura seleccionada:', selectedZonaSeguraIdStr);
-  
+    
     // Convertir el ID de string a number
     const selectedZonaSeguraId = parseInt(selectedZonaSeguraIdStr, 10);
     console.log(selectedZonaSeguraIdStr);
+    this.mostrar_dispositivos = true;
     this.crearPoligono(selectedZonaSeguraId);
     // Aquí puedes agregar lógica adicional para manejar el cambio de zona segura,
     // como actualizar la vista del mapa con nuevas posiciones u otros datos.
@@ -119,6 +124,27 @@ export class UbicacionesComponent implements OnInit, OnDestroy{
       }
     );
   }
+// CÓDIGO PARA MOSTRAR LOS DISPOSITIVOS EN EL MAPA
+  mostrarDispositivos() {
+    console.log('Se empezó a cargar los dispositivos');
+    this.posicionesService.listar().subscribe(
+      (posiciones: Posicion[]) => {
+        this.posiciones = posiciones;
+        console.log('Posiciones:', this.posiciones);
+        // Agregar marcadores de posiciones
+        this.posiciones.forEach((pos, index) => {
+          const marker = new google.maps.Marker({
+            position: { lat: pos.latitud, lng: pos.longitud },
+            map: this.map.googleMap
+          });
+          this.marcadores.push(marker);
+        });
+      },
+      error => {
+        console.error('Error al listar posiciones:', error);
+      }
+    );
+    }
 
   crearPoligono(id:number) {
     const mapContainer = this.map.googleMap;
@@ -183,7 +209,7 @@ export class UbicacionesComponent implements OnInit, OnDestroy{
     this.zoom = 18;
   }
 }
-
+//OBTENER EL CENTRO DE LA ZONA SEGURA
 function calcularCentroide(vertices: google.maps.LatLng[]): google.maps.LatLng {
   let centroLat = 0, centroLng = 0;
   vertices.forEach(vertex => {
