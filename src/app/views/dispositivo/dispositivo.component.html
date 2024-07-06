@@ -183,7 +183,7 @@
 
         <!-- AQUI INICIAN LOS FORMULARIOS  DE MODIFICACION -->
         <div *ngIf="!showTablem">
-          <form >
+          <form  #myForm="ngForm" (ngSubmit)="crearDispositivo()">
           <c-input-group class="mb-3">
             <span cInputGroupText>
               <svg cIcon name="cilItalic"></svg>
@@ -233,7 +233,10 @@
             <span cInputGroupText>
               <svg cIcon name="cilUser"></svg>
             </span>
-            <input id="nombre" class="form-control" type="text"  placeholder="Nombre" [(ngModel)]="dispositivo.nombre" name="nombre" />
+            <input id="nombre" class="form-control" type="text" placeholder="Nombre" [(ngModel)]="dispositivo.nombre" name="nombre" required/>
+            <div *ngIf="myForm.controls['nombre']?.invalid && myForm.controls['nombre']?.touched" class="invalid-feedback">
+              El nombre es obligatorio.
+            </div>
           </c-input-group>
           <c-input-group class="mb-3">
             <div class="form-check form-switch">
@@ -242,7 +245,7 @@
             </div>
           </c-input-group>
           <div class="d-grid">
-            <button cButton color="success" type="submit"(click)="crearDispositivo()">Guardar Cambios</button>
+            <button cButton color="success" type="submit" [disabled]="myForm.invalid">Guardar Cambios</button>
           </div><br>
           <div class="d-grid">
             <button cButton color="secondary" type="button"(click)="cancelar()" >Cancelar</button>
