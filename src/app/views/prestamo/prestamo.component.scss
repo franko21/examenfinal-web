@@ -98,7 +98,8 @@
 
 .danger-toast-message {
   margin: 0;
-  color: #212631; /* Texto gris oscuro */
+  color: #6b7785; /* Texto gris oscuro */
+  font-size: 18px;
 }
 
 .danger-progress {
@@ -118,4 +119,26 @@
 
 .error-heading {
   margin: 0; /* Ajusta el margen del h4 para evitar espacios innecesarios */
+}
+
+
+
+
+
+.search-container {
+  position: relative;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+}
+
+.search-icon {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.search-input {
+  padding-left: 40px;
 }

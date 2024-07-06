@@ -26,7 +26,7 @@ import {
   ToasterComponent,
   ProgressBarDirective, ProgressComponent, ProgressBarComponent
 } from '@coreui/angular';
-import {AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import { PersonaService } from 'src/app/service/persona.service';
 import { DipositivoService } from 'src/app/service/dispositivo.service';
 import { Persona } from 'src/app/model/persona.model';
@@ -43,7 +43,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
 @Component({
   selector: 'app-prestamo',
   standalone: true,
-  imports: [NgFor, HttpClientModule, NgIf, ContainerComponent, RowComponent, ColComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, IconDirective, FormControlDirective, ButtonDirective, ReactiveFormsModule, HttpClientModule, NgxPaginationModule, GutterDirective, FormFeedbackComponent, DatePipe, ToasterComponent, ToastComponent, ToastHeaderComponent, ToastBodyComponent, ProgressBarDirective, ProgressComponent, ProgressBarComponent, ButtonDirective],
+  imports: [NgFor, HttpClientModule, NgIf, ContainerComponent, RowComponent, ColComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, IconDirective, FormControlDirective, ButtonDirective, ReactiveFormsModule, HttpClientModule, NgxPaginationModule, GutterDirective, FormFeedbackComponent, DatePipe, ToasterComponent, ToastComponent, ToastHeaderComponent, ToastBodyComponent, ProgressBarDirective, ProgressComponent, ProgressBarComponent, ButtonDirective, FormsModule],
   providers:[PrestamoService,PersonaService,DipositivoService,UsuarioService,DatePipe],
   templateUrl: './prestamo.component.html',
   styleUrl: './prestamo.component.scss'
@@ -64,6 +64,8 @@ export class PrestamoComponent {
   hoy: Date = new Date();
   idusu:number;
   p: number = 1; // Página actual para la paginación
+  searchText: string = '';
+
 
   position = 'top-end';
   visible = false;
@@ -73,6 +75,23 @@ export class PrestamoComponent {
   visible2 = false;
   percentage2 = 0;
 
+  filteredPrestamos() {
+    if (!this.searchText) {
+      return this.prestamos;
+    }
+
+    return this.prestamos.filter(prestamo => {
+      return (
+        prestamo.dispositivo.modelo?.nombre?.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        prestamo.dispositivo.nombre?.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        prestamo.dispositivo.numSerie?.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        prestamo.dispositivo.modelo?.marca?.nombre?.toLowerCase().includes(this.searchText.toLowerCase())||
+        prestamo.persona.nombre.toLowerCase().includes(this.searchText.toLowerCase())||
+        prestamo.persona.apellido.toLowerCase().includes(this.searchText.toLowerCase())||
+        prestamo.persona.cedula.toLowerCase().includes(this.searchText.toLowerCase())
+      );
+    });
+  }
   toggleToast() {
     this.visible = !this.visible;
   }

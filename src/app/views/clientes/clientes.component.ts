@@ -15,7 +15,7 @@ import {
 import {IconDirective} from "@coreui/icons-angular";
 import {DatePipe, NgForOf, NgIf} from "@angular/common";
 import {NgxPaginationModule} from "ngx-pagination";
-import {AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {PersonaService} from "../../service/persona.service";
 import {RolService} from "../../service/rol.service";
 import {Rol} from "../../model/rol.model";
@@ -39,7 +39,7 @@ import {RegisterRequest} from "../pages/login/RegisterRequest";
     NgForOf,
     NgIf,
     NgxPaginationModule,
-    ReactiveFormsModule,ToasterComponent, ToastComponent, ToastHeaderComponent, ToastBodyComponent, ProgressBarDirective, ProgressComponent, ProgressBarComponent, ButtonDirective
+    ReactiveFormsModule, ToasterComponent, ToastComponent, ToastHeaderComponent, ToastBodyComponent, ProgressBarDirective, ProgressComponent, ProgressBarComponent, ButtonDirective, FormsModule
   ],
   providers:[PersonaService,RolService,DatePipe],
   templateUrl: './clientes.component.html',
@@ -60,10 +60,26 @@ export class ClientesComponent {
   position = 'top-end';
   visible = false;
   percentage = 0;
+  searchText: string = '';
 
   position2 = 'top-end';
   visible2 = false;
   percentage2 = 0;
+
+  filteredPersonas() {
+    if (!this.searchText) {
+      return this.personas;
+    }
+
+    return this.personas.filter(persona => {
+      return (
+        persona.cedula.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        persona.nombre.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        persona.apellido.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        persona.rol.rol.toLowerCase().includes(this.searchText.toLowerCase())
+      );
+    });
+  }
 
   toggleToast() {
     this.visible = !this.visible;

@@ -6,7 +6,7 @@
     class="success-toast">
     <c-toast-header class="success-toast-header">
       <svg cIcon name="cilCheck" class="icon-success"></svg> <!-- Icono de éxito -->
-      <h4 class="success-heading">Creacion de Prestamo exitoso</h4>
+      <h5 class="success-heading">Creacion de Prestamo exitoso</h5>
     </c-toast-header>
     <c-toast-body class="success-toast-body">
       <p class="success-toast-message">Prestamo creado con exito</p>
@@ -21,7 +21,7 @@
     class="danger-toast">
     <c-toast-header class="danger-toast-header">
       <svg cIcon name="cilReportSlash" class="icon-danger"></svg> <!-- Icono de error -->
-      <h4 class="error-heading">   Error al crear prestamo</h4>
+      <h5 class="error-heading">   Error al crear prestamo</h5>
     </c-toast-header>
     <c-toast-body class="danger-toast-body">
       <p class="danger-toast-message">Error al ingresar los datos</p>
@@ -95,6 +95,10 @@
       </form>
     </div>
     <div *ngIf="!mostrarFormularioIngreso &&!mostrarFormularioEditar">
+      <div class="search-container">
+        <input type="text" placeholder="Buscar..." [(ngModel)]="searchText" class="form-control search-input" />
+        <svg class="search-icon" cIcon name="cilMagnifyingGlass"></svg>
+      </div>
       <table class="table table-bordered table-striped" >
         <thead>
         <tr>
@@ -109,7 +113,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let prestamo of prestamos  | paginate: { itemsPerPage: 5, currentPage: p }; let i = index">
+        <tr *ngFor="let prestamo of filteredPrestamos()  | paginate: { itemsPerPage: 5, currentPage: p }; let i = index">
           <td><div>{{ prestamo.persona?.nombre}} {{ prestamo.persona?.apellido }}  </div>
              <div class="small text-body-secondary text-nowrap">
                <span>{{ prestamo.persona?.cedula }} </span></div>
