@@ -143,6 +143,20 @@
               <span cInputGroupText>
                 <svg cIcon name="cilUser"></svg>
               </span>
+              <select name="zona" id="zona" class="form-control" [(ngModel)]="zonaSeleccionado" required>
+                <option value="null" disabled selected>Seleccione la zona</option>
+                <option *ngFor="let zona of zonaseg" [ngValue]="zona">
+                  {{ zona.descripcion }}
+                </option>
+              </select>
+              <div *ngIf="myForm.controls['zona']?.invalid && myForm.controls['zona']?.touched" class="invalid-feedback">
+                Seleccionar Zona es obligatorio.
+              </div>
+            </c-input-group>
+            <c-input-group class="mb-3">
+              <span cInputGroupText>
+                <svg cIcon name="cilUser"></svg>
+              </span>
               <input id="nombre" class="form-control" type="text" placeholder="Nombre" [(ngModel)]="nombredispo" name="nombre" required/>
               <div *ngIf="myForm.controls['nombre']?.invalid && myForm.controls['nombre']?.touched" class="invalid-feedback">
                 El nombre es obligatorio.
@@ -203,6 +217,17 @@
               </option>
             </select>
 
+          </c-input-group>
+          <c-input-group class="mb-3">
+            <span cInputGroupText>
+              <svg cIcon name="cilItalic"></svg>
+            </span>
+            <select name="zona" id="zona" class="form-control" [(ngModel)]="zonamod.id_zona_segura">
+              <option Value="null" disabled selected>Seleccione la Zona</option>
+              <option *ngFor="let zona of zonaseg" [ngValue]="zona.id_zona_segura">
+                {{ zona.descripcion }}
+              </option>
+            </select>
           </c-input-group>
           <c-input-group class="mb-3">
             <span cInputGroupText>

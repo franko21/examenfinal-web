@@ -462,6 +462,7 @@ export class DispositivoComponent implements OnInit {
     this.modeloselet=null;
     this.marcaselect=null;
     this.dispositivoSeleccionado=null;
+    this.zonaSeleccionado=null;
     this.toggleView();
     this.toggleViewc();
     this.titulo="Ingresar dispostivo"
