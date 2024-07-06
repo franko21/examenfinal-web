@@ -1,10 +1,13 @@
-<div>
+<div id="contenedor-cabecera">
   <label for="zona-segura-select">Seleccione una zona segura:</label>
   <select id="zona-segura-select" (change)="onZonaSeguraChange($event)">
     <option *ngFor="let zonaSegura of zonasSeguras" [value]="zonaSegura.id_zona_segura">
       {{ zonaSegura.descripcion }}
     </option>
   </select>
+  <button class="boton-derecha" (click)="mostrarDispositivos()">
+    Mostrar Dispositivos
+  </button>
 </div>
 <div id="map-container">
   <google-map
@@ -15,7 +18,3 @@
   >
   </google-map>
 </div>
-<!-- Añadir el botón con *ngIf -->
-<button *ngIf="mostrar_dispositivos" class="boton-derecha" (click)="mostrarDispositivos()">
-  Mostrar Dispositivos
-</button>

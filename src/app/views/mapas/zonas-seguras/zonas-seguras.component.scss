@@ -30,5 +30,23 @@
       }
     }
   }
+
+  .search-container {
+    position: relative;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .search-icon {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+  
+  #autocomplete {
+    padding-left: 40px;
+  }
   
   
