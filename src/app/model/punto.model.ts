@@ -4,5 +4,5 @@ export class Punto{
     id_punto?:number;
     latitud?:number;
     longitud?:number;
-    zona_segura?:Zona_segura;
+    zonaSegura?:Zona_segura;
 }

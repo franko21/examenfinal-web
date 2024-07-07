@@ -17,7 +17,7 @@ export class Dispositivo {
     vinculado?: boolean;
     categoria?:Categoria;
     modelo?:Modelo;
-    zona_segura?:Zona_segura;
+    zonaSegura?:Zona_segura;
     estado?:Estado;
     posicion?:Posicion;
     historicos?:Historico[];

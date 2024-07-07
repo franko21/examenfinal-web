@@ -163,13 +163,13 @@ export class ZonasSegurasComponent{
           zona.descripcion = zoneName;
           this.zonaService.crear(zona).subscribe({
             next: (data) => {
-              console.log(data.id_zona_segura);
+              console.log(data.idZonaSegura);
               this.listadoPuntos.forEach(punto => {
                 punto.zona_segura = data;
                 data.puntos?.push(punto);
               });
-              if(data.id_zona_segura){
-                this.IngresarPuntos(data.id_zona_segura);
+              if(data.idZonaSegura){
+                this.IngresarPuntos(data.idZonaSegura);
               }
               Swal.fire({
                 icon: 'success',
