@@ -83,6 +83,7 @@ export class DispositivoComponent implements OnInit {
    public titulo: string = "Dispositivo";
    dispositivos: Dispositivo[] = [];
    dispositivosfiltro: Dispositivo[] = [];
+   dispovincu: Dispositivo[] = [];
    marcas:Marca[]=[];
    modelos:Modelo[]=[];
    modelosfiltro:Modelo[]=[];
@@ -112,10 +113,10 @@ export class DispositivoComponent implements OnInit {
 
   filteredDispositivos() {
     if (!this.searchText) {
-      return this.dispositivos;
+      return this.dispovincu;
     }
 
-    return this.dispositivos.filter(dispositivo => {
+    return this.dispovincu.filter(dispositivo => {
       return (
         dispositivo?.nombre?.toLowerCase().includes(this.searchText.toLowerCase()) ||
         dispositivo.numSerie?.toLowerCase().includes(this.searchText.toLowerCase()) ||
@@ -178,6 +179,7 @@ export class DispositivoComponent implements OnInit {
       dispositivos => {
         this.dispositivos = dispositivos;
          this.filtradispovinculado();
+         this.filtradispovinculadotrue();
          console.log("aqui prestamos")
          console.log(this.dispositivos[0].prestamos)
 
@@ -189,11 +191,24 @@ export class DispositivoComponent implements OnInit {
     );
   }
 
+
   filtradispovinculado() {
     console.log("dispositivos org antes del filtro:");
     console.log(this.dispositivos);
     if (this.dispositivos) {
       this.dispositivosfiltro = this.dispositivos.filter(dispositivo => dispositivo.vinculado ==false);
+      console.log("dispositivos despues del filtro:");
+    console.log(this.dispositivosfiltro);
+    } else {
+
+    }
+  }
+
+  filtradispovinculadotrue() {
+    console.log("dispositivos org antes del filtro:");
+    console.log(this.dispositivos);
+    if (this.dispositivos) {
+      this.dispovincu = this.dispositivos.filter(dispositivo => dispositivo.vinculado ==true);
       console.log("dispositivos despues del filtro:");
     console.log(this.dispositivosfiltro);
     } else {
@@ -311,13 +326,13 @@ export class DispositivoComponent implements OnInit {
     this.serdispo.crear(this.dispositivo).subscribe(
       () => {
         if(this.titulo=="Ingresar dispostivo"){
-          // Swal.fire({
-          //   icon: 'success',
-          //   title: '¡Dispositivo creado con éxito!',
-          //   text: 'EXITO',
-          //   confirmButtonColor: '#3085d6',
-          //   confirmButtonText: 'OK'
-          // });
+           Swal.fire({
+             icon: 'success',
+            title: '¡Dispositivo creado con éxito!',
+            text: 'EXITO',
+            confirmButtonColor: '#3085d6',
+             confirmButtonText: 'OK'
+           });
           this.toggleToast();
         }else{
           console.log(this.dispositivo);
@@ -338,13 +353,13 @@ export class DispositivoComponent implements OnInit {
       },
       error => {
         console.error('Error al crear dispositivo:', error);
-        // Swal.fire({
-        //   icon: 'error',
-        //   title: 'Error',
-        //   text: 'Hubo un problema al crear el dispositivo. Inténtalo de nuevo más tarde.',
-        //   confirmButtonColor: '#d33',
-        //   confirmButtonText: 'OK'
-        // });
+         Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Hubo un problema al crear el dispositivo. Inténtalo de nuevo más tarde.',
+          confirmButtonColor: '#d33',
+          confirmButtonText: 'OK'
+        });
         this.toggleToast2();
       }
     );
@@ -462,6 +477,7 @@ export class DispositivoComponent implements OnInit {
     this.modeloselet=null;
     this.marcaselect=null;
     this.dispositivoSeleccionado=null;
+    this.zonaSeleccionado=null;
     this.toggleView();
     this.toggleViewc();
     this.titulo="Ingresar dispostivo"
