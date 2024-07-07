@@ -24,7 +24,7 @@ export class DipositivoService{
         return this.http.get<Dispositivo>(`${this.urlEndPoint}/${id}`);
       }
 
-      buscarpordispositivo(idZonaSegura: number): Observable<Dispositivo[]>{
+      buscarporzonasegura(idZonaSegura: number): Observable<Dispositivo[]>{
         return this.http.get<Dispositivo[]>(`${this.urlEndPoint+'PorZonaSegura'}/${idZonaSegura}`);
       }
       
