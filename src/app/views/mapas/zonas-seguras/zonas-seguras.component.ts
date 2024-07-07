@@ -26,9 +26,13 @@ export class ZonasSegurasComponent{
   ) {}
   
   marcadores: google.maps.Marker[] = []; 
+  selectedPolygon: google.maps.Polygon | null = null;
+  private arrayPoligonos:google.maps.Polygon[]=[];
   //VARIABLES PARA LOS MÉTODOS DE GOOGLE MAPS
   center: google.maps.LatLngLiteral = { lat: -2.879767894744873, lng: -78.97490692138672 };
   zoom = 13;
+  showOptions = false;
+  clickPosition = { x: 0, y: 0 };
   marker: google.maps.Marker | null = null;
   @ViewChild(GoogleMap, { static: false }) map: GoogleMap;
   lastClickedPosition: google.maps.LatLngLiteral | null = null;
@@ -44,7 +48,7 @@ export class ZonasSegurasComponent{
     this.zone.runOutsideAngular(() => {
       this.InitCompletado();
       this.Cargar_Zonas();
-      
+      this.loadPolygons();
     });
   }
 
@@ -99,7 +103,7 @@ export class ZonasSegurasComponent{
               .map(punto => ({
               lat: punto.latitud!,
               lng: punto.longitud!
-              }));
+              }));  
           
               // Convierte los vértices a `google.maps.LatLng`
               const vertices_parseados: google.maps.LatLng[] = convertirALatLng(vertices);
@@ -112,6 +116,7 @@ export class ZonasSegurasComponent{
                 fillColor: '#92afb0',
                 strokeWeight: 4,
               });
+              this.arrayPoligonos.push(poligono);
             } else {
               console.warn('Zona sin puntos o puntos no definidos:', zona);
             }
@@ -295,9 +300,43 @@ functionordenarVertices(vertices: google.maps.LatLng[]): google.maps.LatLng[] {
     const anguloB = calcularAngulo(centro, b);  
     return anguloA - anguloB;
   });
+
+
 }
 
+editPolygon() {
+    if (this.selectedPolygon) {
+      // Implementa la lógica para editar el polígono
+    }
+  }
 
+  deletePolygon() {
+    if (this.selectedPolygon) {
+      this.selectedPolygon.setMap(null);
+      this.arrayPoligonos = this.arrayPoligonos.filter(p => p !== this.selectedPolygon);
+      this.selectedPolygon = null;
+      this.showOptions = false;
+    }
+  }
+  //MÉTODO PARA MANEJAR EL EVENTO DE CLIC EN UN POLÍGONO
+  loadPolygons() {
+    // Cargar polígonos y agregar eventos de clic
+    this.arrayPoligonos.forEach(polygon => {
+      polygon.addListener('click', (event: google.maps.MapMouseEvent) => {
+        this.handlePolygonClick(event, polygon);
+      });
+    });
+  }
+  //MÉTODO PARA MANEJAR EL EVENTO DE CLIC EN UN POLÍGONO
+  handlePolygonClick(event: google.maps.MapMouseEvent, polygon: google.maps.Polygon) {
+    const mouseEvent = event.domEvent as MouseEvent;
+    this.showOptions = true;
+    this.selectedPolygon = polygon;
+    this.clickPosition = {
+      x: mouseEvent.clientX,
+      y: mouseEvent.clientY
+    };
+  }
 
 }
 //FUNCION PARA CALCULAR EL CENTROIDE

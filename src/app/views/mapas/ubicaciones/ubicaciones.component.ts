@@ -32,6 +32,9 @@ export class UbicacionesComponent implements OnInit, OnDestroy{
   @ViewChild(GoogleMap, { static: false }) map: GoogleMap;
   center: google.maps.LatLngLiteral = { lat: -2.879767894744873, lng: -78.97490692138672 };
   zoom = 13;
+  clickPosition
+   = { x: 0, y: 0 };
+  showOptions = false;
   private posicionSubscription: Subscription;
   posiciones: Posicion[] = [];
   zonasSeguras: Zona_segura[] = [];
@@ -126,25 +129,37 @@ export class UbicacionesComponent implements OnInit, OnDestroy{
   }
 // CÓDIGO PARA MOSTRAR LOS DISPOSITIVOS EN EL MAPA
   mostrarDispositivos() {
-    console.log('Se empezó a cargar los dispositivos');
+    const mapContainer = this.map.googleMap;
     this.posicionesService.listar().subscribe(
       (posiciones: Posicion[]) => {
         this.posiciones = posiciones;
         console.log('Posiciones:', this.posiciones);
         // Agregar marcadores de posiciones
         this.posiciones.forEach((pos, index) => {
-          const marker = new google.maps.Marker({
-            position: { lat: pos.latitud, lng: pos.longitud },
-            map: this.map.googleMap
+          const punto = {
+            lat: pos.latitud,
+            lng: pos.longitud
+          };  
+          const marcador = new google.maps.Marker({
+            position: punto,
+            icon: {
+              path: google.maps.SymbolPath.CIRCLE,
+              scale: 10,
+              strokeColor: '#f00',
+              strokeWeight: 5,
+              fillColor: '#000A02',
+              fillOpacity: 1,
+            },
+            map:mapContainer,
           });
-          this.marcadores.push(marker);
+          this.marcadores.push(marcador);
         });
       },
       error => {
         console.error('Error al listar posiciones:', error);
       }
     );
-    }
+  }
 
   crearPoligono(id:number) {
     const mapContainer = this.map.googleMap;
@@ -208,6 +223,8 @@ export class UbicacionesComponent implements OnInit, OnDestroy{
     this.center = { lat: lati, lng: longi };
     this.zoom = 18;
   }
+
+  
 }
 //OBTENER EL CENTRO DE LA ZONA SEGURA
 function calcularCentroide(vertices: google.maps.LatLng[]): google.maps.LatLng {
