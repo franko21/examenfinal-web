@@ -35,3 +35,39 @@ $primary-color: #007bff; // Color primario, puedes ajustarlo según tus preferen
   display: flex;
   
 }
+
+#final_mapa {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.lado_izquierdo {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.lado_derecho {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.botones {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-left: 10px; /* Espacio entre los botones */
+}
+
+.botones:hover {
+  background-color: #0056b3;
+}
+

@@ -48,7 +48,6 @@ export class ZonasSegurasComponent{
     this.zone.runOutsideAngular(() => {
       this.InitCompletado();
       this.Cargar_Zonas();
-      this.loadPolygons();
     });
   }
 
@@ -63,6 +62,7 @@ export class ZonasSegurasComponent{
       };  
       this.listadoPuntos.push(punto);
       this.actualizarMarcadorEnMapa(position);
+      
     }
   }
 
@@ -95,7 +95,6 @@ export class ZonasSegurasComponent{
     }else{
       this.zonaService.listar().subscribe({
         next: (data) => {
-          console.log(data);
           data.forEach((zona: Zona_segura) => {
             if (zona.puntos && zona.puntos.length > 0) {
               const vertices = zona.puntos
@@ -116,6 +115,8 @@ export class ZonasSegurasComponent{
                 fillColor: '#92afb0',
                 strokeWeight: 4,
               });
+              poligono.addListener('click', (event: google.maps.MapMouseEvent) => this.handlePolygonClick(event, poligono));
+              console.log("SE HA AÑADIDO EL CLICK AL POLIGONO");
               this.arrayPoligonos.push(poligono);
             } else {
               console.warn('Zona sin puntos o puntos no definidos:', zona);
@@ -318,25 +319,18 @@ editPolygon() {
       this.showOptions = false;
     }
   }
-  //MÉTODO PARA MANEJAR EL EVENTO DE CLIC EN UN POLÍGONO
-  loadPolygons() {
-    // Cargar polígonos y agregar eventos de clic
-    this.arrayPoligonos.forEach(polygon => {
-      polygon.addListener('click', (event: google.maps.MapMouseEvent) => {
-        this.handlePolygonClick(event, polygon);
-      });
-    });
-  }
-  //MÉTODO PARA MANEJAR EL EVENTO DE CLIC EN UN POLÍGONO
+
   handlePolygonClick(event: google.maps.MapMouseEvent, polygon: google.maps.Polygon) {
-    const mouseEvent = event.domEvent as MouseEvent;
-    this.showOptions = true;
-    this.selectedPolygon = polygon;
-    this.clickPosition = {
-      x: mouseEvent.clientX,
-      y: mouseEvent.clientY
-    };
+    if (event.domEvent && event.domEvent instanceof MouseEvent) {
+      const { clientX, clientY } = event.domEvent;
+      this.clickPosition = { x: clientX, y: clientY };
+      this.showOptions = true;
+      this.selectedPolygon = polygon;
+    }
   }
+  
+  //MÉTODO PARA MANEJAR EL EVENTO DE CLIC EN UN POLÍGONO
+  
 
 }
 //FUNCION PARA CALCULAR EL CENTROIDE

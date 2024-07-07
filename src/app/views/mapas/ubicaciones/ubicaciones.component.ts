@@ -10,6 +10,8 @@ import { HttpClient } from '@angular/common/http';
 import { Dispositivo } from 'src/app/model/dispositivo.model';
 import { Zona_segura } from 'src/app/model/zona_segura';
 import { PosicionService } from 'src/app/service/posicion.service';
+import Swal from 'sweetalert2';
+import { PuntoService } from 'src/app/service/Punto.service';
 
 @Component({
   selector: 'app-ubicaciones',
@@ -24,6 +26,10 @@ import { PosicionService } from 'src/app/service/posicion.service';
 
 export class UbicacionesComponent implements OnInit, OnDestroy{
 
+editPolygon() {
+throw new Error('Method not implemented.');
+}
+
 
   marcadores: google.maps.Marker[] = []; 
   listadoPuntos: any[] = [];
@@ -35,6 +41,7 @@ export class UbicacionesComponent implements OnInit, OnDestroy{
   clickPosition
    = { x: 0, y: 0 };
   showOptions = false;
+  id_zona:number;
   private posicionSubscription: Subscription;
   posiciones: Posicion[] = [];
   zonasSeguras: Zona_segura[] = [];
@@ -48,7 +55,8 @@ export class UbicacionesComponent implements OnInit, OnDestroy{
     private zone: NgZone,
     private http: HttpClient,
     private zonasSegurasService: Zona_seguraService,
-    private posicionesService:PosicionService
+    private posicionesService:PosicionService,
+    private puntoService: PuntoService,
   ) {}
 
   ngOnInit(): void {
@@ -106,9 +114,12 @@ export class UbicacionesComponent implements OnInit, OnDestroy{
     const selectElement = event.target as HTMLSelectElement;
     const selectedZonaSeguraIdStr = selectElement.value;
     console.log('Zona segura seleccionada:', selectedZonaSeguraIdStr);
+    this.showOptions = true;
+
     
     // Convertir el ID de string a number
     const selectedZonaSeguraId = parseInt(selectedZonaSeguraIdStr, 10);
+    this.id_zona = selectedZonaSeguraId;
     console.log(selectedZonaSeguraIdStr);
     this.mostrar_dispositivos = true;
     this.crearPoligono(selectedZonaSeguraId);
@@ -159,6 +170,54 @@ export class UbicacionesComponent implements OnInit, OnDestroy{
         console.error('Error al listar posiciones:', error);
       }
     );
+  }
+
+  deletePolygon() {
+    var zona_eliminar:Zona_segura;
+    Swal.fire({
+      icon: 'warning',
+      title: '¿Estás seguro?',
+      text: '¿Realmente deseas eliminar esta zona segura?',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      var validar_dispositivos:Boolean = false;
+      if (result.isConfirmed) {
+        // Aquí llamas a la función para eliminar la zona segura
+        this.zonasSegurasService.buscar(this.id_zona).subscribe(
+          (zona: Zona_segura) =>{
+            if(zona.puntos && zona.puntos.length > 0){
+              if(zona.dispositivos?.length === 0){
+                zona.puntos.forEach((punto, index) => {
+                  if(punto.id_punto){
+                    console.log('Punto a eliminar:', punto);
+                    this.puntoService.eliminar(punto.id_punto).subscribe(
+                      () => {
+                        console.log('Punto eliminado:', punto);
+                      },
+                      error => {
+                        console.error('Error al eliminar el punto:', error);
+                      }
+                    );
+                  }  
+                });
+                this.zonasSegurasService.eliminar(this.id_zona).subscribe(
+                  () => {
+                    Swal.fire('Zona segura eliminada', '', 'success');
+                  },
+                );
+              }else{
+                console.log('No se puede eliminar la zona segura: ', zona.dispositivos?.length);
+                Swal.fire('No se puede eliminar la zona segura', 'La zona segura tiene dispositivos asociados', 'error');
+              }
+            }  
+          }
+        );
+      } 
+    });
   }
 
   crearPoligono(id:number) {
