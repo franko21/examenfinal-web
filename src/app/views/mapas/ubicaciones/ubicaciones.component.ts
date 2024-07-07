@@ -12,6 +12,7 @@ import { Zona_segura } from 'src/app/model/zona_segura';
 import { PosicionService } from 'src/app/service/posicion.service';
 import Swal from 'sweetalert2';
 import { PuntoService } from 'src/app/service/Punto.service';
+import { DipositivoService } from 'src/app/service/dispositivo.service';
 
 @Component({
   selector: 'app-ubicaciones',
@@ -52,6 +53,7 @@ throw new Error('Method not implemented.');
 
   constructor(
     private webSocketPosicion: WebSocketDispositivos,
+    private Dispositivoservice: DipositivoService,
     private zone: NgZone,
     private http: HttpClient,
     private zonasSegurasService: Zona_seguraService,
@@ -185,12 +187,23 @@ throw new Error('Method not implemented.');
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       var validar_dispositivos:Boolean = false;
+      var listadispositivos:Dispositivo[] = [];
       if (result.isConfirmed) {
         // Aquí llamas a la función para eliminar la zona segura
         this.zonasSegurasService.buscar(this.id_zona).subscribe(
           (zona: Zona_segura) =>{
+            this.Dispositivoservice.buscarporzonasegura(this.id_zona).subscribe(
+              (dispositivos: Dispositivo[]) => {
+                listadispositivos = dispositivos;
+                console.log('Dispositivos:', listadispositivos);
+              },
+              error => {
+                console.error('Error al listar dispositivos:', error);
+              }
+            );
+            console.log('DISPOSITIVOS', listadispositivos.length);
             if(zona.puntos && zona.puntos.length > 0){
-              if(zona.dispositivos?.length === 0){
+              if(listadispositivos.length === 0){
                 zona.puntos.forEach((punto, index) => {
                   if(punto.id_punto){
                     console.log('Punto a eliminar:', punto);
@@ -217,6 +230,11 @@ throw new Error('Method not implemented.');
           }
         );
       } 
+      this.arrayPoligonos.forEach(overlay => {
+        if (overlay instanceof google.maps.Polygon) {
+            overlay.setMap(null); // Elimina el polígono del mapa
+        }
+    });
     });
   }
 
