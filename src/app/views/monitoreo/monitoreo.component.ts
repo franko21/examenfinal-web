@@ -1,13 +1,15 @@
-import { Component, ElementRef, HostListener, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
 import { WidgetsDropdownComponent } from '../widgets/widgets-dropdown/widgets-dropdown.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ChartjsComponent } from '@coreui/angular-chartjs';
 import { IconDirective } from '@coreui/icons-angular';
-import {UbicacionesComponent} from '../mapas/ubicaciones/ubicaciones.component';
-import {ZonasSegurasComponent} from '../mapas/zonas-seguras/zonas-seguras.component';
+import { UbicacionesComponent } from '../mapas/ubicaciones/ubicaciones.component';
+import { ZonasSegurasComponent } from '../mapas/zonas-seguras/zonas-seguras.component';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { WebSocketDispositivos } from 'src/app/service/WebSocketDispositivos.service';
+import { EstadoService } from 'src/app/service/estado.service';
+
 import {
   RowComponent,
   ColComponent,
@@ -28,10 +30,12 @@ import {
   ProgressComponent,
   
 
+
 } from '@coreui/angular';
 import { Dispositivo } from 'src/app/model/dispositivo.model';
 import { DipositivoService } from 'src/app/service/dispositivo.service';
 import { Subscription } from 'rxjs';
+import { Estado } from 'src/app/model/estado.model';
 
 @Component({
   selector: 'app-monitoreo',
@@ -64,59 +68,65 @@ import { Subscription } from 'rxjs';
     TableDirective,
     ProgressBarDirective,
     ProgressComponent,
-    
+
   ],
-  providers:[DipositivoService],
+  providers: [DipositivoService],
   templateUrl: './monitoreo.component.html',
   styleUrls: ['./monitoreo.component.scss']
 })
-export class MonitoreoComponent {
-  showTable: boolean = false;
-  public dispositivo:Dispositivo=new Dispositivo();
-  dispositivos: Dispositivo[] = [];
-  selectedDispositivo: Dispositivo | null = null;
-  p: number = 1;
-  private dispositivosSuscripcion: Subscription;
-  constructor(private el: ElementRef,private serdispo:DipositivoService, private webSocket: WebSocketDispositivos) {}
+export class MonitoreoComponent implements OnInit, OnDestroy {
+  estadosSubscription: Subscription;
+  estados: Estado[] = [];
+  mostrarEstado: boolean = true; // Variable para controlar qué sección mostrar
 
-  listardispo() {
-    this.serdispo.listar().subscribe(
-      dispositivos => {
-        this.dispositivos = dispositivos; 
-        console.log(this.dispositivos);  
-      },
-      error => {
-        console.error('Error al listar dispositivos:', error);
-      }
-    );
+  tab: string = 'estado';
+  toggleTab(tabName: string): void {
+    this.tab = tabName;
   }
 
-  
-  listardispo2(){
-    this.dispositivosSuscripcion = this.webSocket.obtenerDispositivos().subscribe(
-      (dispositivos: any[]) => {
-        if (dispositivos) {
-          this.dispositivos = dispositivos;
-        }
+  showTable: boolean = false;
+  public dispositivo: Dispositivo = new Dispositivo();
+  dispositivos: Dispositivo[] = [];
+  selectedEstado: Estado | null = null;
+  p: number = 1;
+  constructor(
+    private webSocketService: WebSocketDispositivos,
+    private el: ElementRef,
+    private service: EstadoService) { }
+
+  listarEstados() {
+    this.service.listar().subscribe(
+      estados => {
+        this.estados = estados;
       },
       error => {
-        console.error('Error al suscribirse a los dispositivos:', error);
+        console.error('Error al listar estados:', error);
       }
     );
   }
 
   ngOnInit(): void {
-    this.listardispo();
-    this.listardispo2();  
+    this.listarEstados();
+    this.estadosSubscription = this.webSocketService.obtenerEstados()
+      .subscribe((estados: any[]) => {
+        this.estados = estados;
+      }); 
   }
 
+  ngOnDestroy(): void {
+    if (this.estadosSubscription) {
+      this.estadosSubscription.unsubscribe();
+    }
+  }
 
   // Método para alternar la vista de la tabla
   toggleView() {
     this.showTable = !this.showTable;
   }
-  seleccionarDispositivo(dispositivo: Dispositivo): void {
-    this.selectedDispositivo = dispositivo;
-    console.log('Dispositivo seleccionado:', this.selectedDispositivo);
+
+  seleccionarDispositivo(estado: Estado): void {
+    this.selectedEstado = estado;
+        this.mostrarEstado = !this.mostrarEstado; // Alternar el valor de mostrarEstado
+
   }
 }

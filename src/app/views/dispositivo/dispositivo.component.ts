@@ -382,7 +382,7 @@ export class DispositivoComponent implements OnInit {
       this.dispositivo=this.dispositivoSeleccionado;
       this.dispositivo.categoria = this.categoriaselet;
       this.dispositivo.modelo = this.modeloselet;
-      this.dispositivo.zona_segura=this.zonaSeleccionado;
+      this.dispositivo.zonaSegura=this.zonaSeleccionado;
       this.dispositivo.nombre=this.nombredispo;
       this.dispositivo.disponible=this.disponible;
       this.dispositivo.vinculado=true;
@@ -390,7 +390,7 @@ export class DispositivoComponent implements OnInit {
       }else{
       this.dispositivo.categoria = this.categoriamod;
       this.dispositivo.modelo = this.modelomod;
-      this.dispositivo.zona_segura= this.zonamod;
+      this.dispositivo.zonaSegura= this.zonamod;
 
       }
 
@@ -401,9 +401,9 @@ export class DispositivoComponent implements OnInit {
   }
   asigparaedit() {
     if (this.dispositivo) {
-      if (this.dispositivo.categoria&&this.dispositivo.modelo?.marca?.id_marca&&this.dispositivo.zona_segura) {
+      if (this.dispositivo.categoria&&this.dispositivo.modelo?.marca?.id_marca&&this.dispositivo.zonaSegura) {
         this.categoriamod = this.dispositivo.categoria;
-        this.zonamod=this.dispositivo.zona_segura;
+        this.zonamod=this.dispositivo.zonaSegura;
         this.id_marca=this.dispositivo.modelo?.marca?.id_marca
       }
       if (this.dispositivo.modelo) {

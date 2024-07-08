@@ -35,27 +35,6 @@ export class AlertaComponent {
         this.alertas=aler;
       }
     )
-    // para recibir dispositivos actualizados y obtener sus alertas en tiempo real
-    this.dispositivosSuscripcion = this.webSocket.obtenerDispositivos().subscribe(
-      (dispositivos: any[]) => {
-        if (dispositivos) {
-          this.dispositivos = dispositivos;
-          this.alertas = [];
-          for (let dispositivo of this.dispositivos) {
-            if(dispositivo.alertas){
-              for (let alerta of dispositivo.alertas) {
-                this.alertas.push(alerta);
-              }
-            }
-          }
-        }
-      },
-      error => {
-        console.error('Error al suscribirse a los dispositivos:', error);
-      }
-    );
-
-    console.log(this.alertas.at(0)?.descripcion);
   }
   mostrarDetalles(alert: any): void {
     this.alertSeleccionado = alert;

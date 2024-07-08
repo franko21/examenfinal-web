@@ -17,9 +17,20 @@
         ></map-marker>-->
       </google-map>
     </div>
-    <div class="button-container">
+  </div>
+  <div id="final_mapa">
+    <div class="lado_izquierdo">
       <button id="guardar-punto-seguro" (click)="ingresarZona()">
         Guardar Zona Segura
       </button>
     </div>
+      <!--BOTONES PARA ELIMINAR Y EDITAR-->
+      <div class="lado_derecho">
+        <div #btndelete_edit *ngIf="showOptions" [style.top.px]="clickPosition.y" [style.left.px]="clickPosition.x" class="context-menu">
+          <button class="botones" (click)="editPolygon()">Editar</button>
+          <button class="botones" (click)="deletePolygon()">Eliminar</button>
+        </div>
+      </div>
   </div>
+
+  

@@ -222,9 +222,9 @@
             <span cInputGroupText>
               <svg cIcon name="cilItalic"></svg>
             </span>
-            <select name="zona" id="zona" class="form-control" [(ngModel)]="zonamod.id_zona_segura">
+            <select name="zona" id="zona" class="form-control" [(ngModel)]="zonamod.idZonaSegura">
               <option Value="null" disabled selected>Seleccione la Zona</option>
-              <option *ngFor="let zona of zonaseg" [ngValue]="zona.id_zona_segura">
+              <option *ngFor="let zona of zonaseg" [ngValue]="zona.idZonaSegura">
                 {{ zona.descripcion }}
               </option>
             </select>
