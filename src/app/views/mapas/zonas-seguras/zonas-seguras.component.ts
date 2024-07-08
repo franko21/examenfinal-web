@@ -165,7 +165,7 @@ export class ZonasSegurasComponent{
             next: (data) => {
               console.log(data.idZonaSegura);
               this.listadoPuntos.forEach(punto => {
-                punto.zona_segura = data;
+                punto.zonaSegura = data;
                 data.puntos?.push(punto);
               });
               if(data.idZonaSegura){
