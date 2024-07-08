@@ -1,8 +1,8 @@
 import { Component, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import {GoogleMap, MapHeatmapLayer, MapMarker} from '@angular/google-maps';
+import { GoogleMap, MapHeatmapLayer, MapMarker } from '@angular/google-maps';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule, provideHttpClient } from '@angular/common/http';
-import{WebSocketDispositivos} from 'src/app/service/WebSocketDispositivos.service';
+import { WebSocketDispositivos } from 'src/app/service/WebSocketDispositivos.service';
 import { Subscription } from 'rxjs';
 import { Zona_seguraService } from 'src/app/service/Zona_segura.service';
 import { Posicion } from 'src/app/model/posicion.model';
@@ -18,98 +18,63 @@ import { DipositivoService } from 'src/app/service/dispositivo.service';
   selector: 'app-ubicaciones',
   standalone: true,
   imports: [
-    GoogleMap, MapHeatmapLayer, CommonModule, MapMarker,HttpClientModule,
+    GoogleMap, MapHeatmapLayer, CommonModule, MapMarker, HttpClientModule,
   ],
   templateUrl: './ubicaciones.component.html',
   styleUrl: './ubicaciones.component.scss'
 })
 
 
-export class UbicacionesComponent implements OnInit, OnDestroy{
+export class UbicacionesComponent implements OnInit, OnDestroy {
 
-editPolygon() {
-throw new Error('Method not implemented.');
-}
+  posicionesSubscription: Subscription;
 
+  editPolygon() {
+    throw new Error('Method not implemented.');
+  }
 
-  marcadores: google.maps.Marker[] = []; 
+  marcadores: google.maps.Marker[] = [];
   listadoPuntos: any[] = [];
-  private dispositivosSuscripcion:Subscription;
-  dispositivos: Dispositivo [] = [];
-  @ViewChild(GoogleMap, { static: false }) map: GoogleMap;
+  dispositivos: Dispositivo[] = [];
+  @ViewChild(GoogleMap, { static: false }) map: GoogleMap | undefined;
   center: google.maps.LatLngLiteral = { lat: -2.879767894744873, lng: -78.97490692138672 };
   zoom = 13;
   clickPosition
-   = { x: 0, y: 0 };
+    = { x: 0, y: 0 };
   showOptions = false;
-  id_zona:number;
+  id_zona: number;
   private posicionSubscription: Subscription;
   posiciones: Posicion[] = [];
   zonasSeguras: Zona_segura[] = [];
-  private zonasSegurasSubscription: Subscription;
-  private puntos: any[]=[];
-  private arrayPoligonos:google.maps.Polygon[]=[];
+  private puntos: any[] = [];
+  private arrayPoligonos: google.maps.Polygon[] = [];
   mostrar_dispositivos: boolean = false;
 
   constructor(
-    private webSocketPosicion: WebSocketDispositivos,
+    private webSocketService: WebSocketDispositivos,
     private Dispositivoservice: DipositivoService,
     private zone: NgZone,
     private http: HttpClient,
     private zonasSegurasService: Zona_seguraService,
-    private posicionesService:PosicionService,
+    private posicionesService: PosicionService,
     private puntoService: PuntoService,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
+    this.posicionesSubscription = this.webSocketService.obtenerPosiciones()
+      .subscribe((posiciones: any[]) => {
+        this.posiciones = posiciones;
+        this.listarPosiciones();
+      });
+
+    this.listarPosiciones();
     this.listarZonasSeguras();
   }
 
   ngOnDestroy(): void {
-    if (this.zonasSegurasSubscription) {
-      this.zonasSegurasSubscription.unsubscribe();
+    if (this.posicionesSubscription) {
+      this.posicionesSubscription.unsubscribe();
     }
-  }
-
-  loadOtherPositionsMarkers() {
-    // Obtener posiciones de otros dispositivos y agregar marcadores en el mapa
-    this.listarposiciones();
-    console.log(this.posiciones.length);
-    const ruta = 'https://th.bing.com/th/id/R.e6d5549d7d43ef8e34af49fed37e1196?rik=nb2KWBpNv895Bw&pid=ImgRaw&r=0';
-    //suscribirse al WebSocket para recibir actualización posiciones en tiempo real:
-    this.posicionSubscription = this.webSocketPosicion.obtenerDispositivos().subscribe(
-      (posiciones: any[]) => {
-        this.posiciones = posiciones;
-        // Agregar marcadores de posiciones
-        this.posiciones.forEach((pos, index) => {
-          const marker = new google.maps.Marker({
-            position: { lat: pos.latitud, lng: pos.longitud },
-            icon: {
-              url: ruta,
-                scaledSize: new google.maps.Size(30, 30),  // Escala del ícono
-              },
-            map: this.map.googleMap
-          });
-        });
-      },
-      error => {
-        console.error('Error al suscribirse a las posiciones:', error);
-      }
-    );
-  }
-
-  listarposiciones() {
-    this.dispositivosSuscripcion = this.webSocketPosicion.obtenerDispositivos().subscribe(
-      (dispositivos: any[]) => {
-        if (dispositivos) {
-          this.dispositivos = dispositivos;
-          
-        }
-      },
-      error => {
-        console.error('Error al suscribirse a los dispositivos:', error);
-      }
-    );
   }
 
   onZonaSeguraChange(event: Event) {
@@ -118,7 +83,6 @@ throw new Error('Method not implemented.');
     console.log('Zona segura seleccionada:', selectedZonaSeguraIdStr);
     this.showOptions = true;
 
-    
     // Convertir el ID de string a number
     const selectedZonaSeguraId = parseInt(selectedZonaSeguraIdStr, 10);
     this.id_zona = selectedZonaSeguraId;
@@ -129,9 +93,8 @@ throw new Error('Method not implemented.');
     // como actualizar la vista del mapa con nuevas posiciones u otros datos.
   }
 
-
   listarZonasSeguras() {
-    this.zonasSegurasSubscription = this.zonasSegurasService.listar().subscribe(
+    this.zonasSegurasService.listar().subscribe(
       (zonas: Zona_segura[]) => {
         this.zonasSeguras = zonas;
       },
@@ -140,33 +103,16 @@ throw new Error('Method not implemented.');
       }
     );
   }
-// CÓDIGO PARA MOSTRAR LOS DISPOSITIVOS EN EL MAPA
-  mostrarDispositivos() {
-    const mapContainer = this.map.googleMap;
+  // CÓDIGO PARA MOSTRAR LOS DISPOSITIVOS EN EL MAPA
+  listarPosiciones() {
     this.posicionesService.listar().subscribe(
       (posiciones: Posicion[]) => {
         this.posiciones = posiciones;
-        console.log('Posiciones:', this.posiciones);
-        // Agregar marcadores de posiciones
-        this.posiciones.forEach((pos, index) => {
-          const punto = {
-            lat: pos.latitud,
-            lng: pos.longitud
-          };  
-          const marcador = new google.maps.Marker({
-            position: punto,
-            icon: {
-              path: google.maps.SymbolPath.CIRCLE,
-              scale: 10,
-              strokeColor: '#f00',
-              strokeWeight: 5,
-              fillColor: '#000A02',
-              fillOpacity: 1,
-            },
-            map:mapContainer,
+        if (posiciones.length > 0) {
+          posiciones.forEach((p: Posicion) => {
+            this.pintarPosicion({ lat: p.latitud, lng: p.longitud }, p);
           });
-          this.marcadores.push(marcador);
-        });
+        }
       },
       error => {
         console.error('Error al listar posiciones:', error);
@@ -174,8 +120,50 @@ throw new Error('Method not implemented.');
     );
   }
 
+  private infowindows: Map<google.maps.Marker, google.maps.InfoWindow> = new Map();
+  pintarPosicion(position: google.maps.LatLngLiteral, posicion: Posicion) {
+    const marcador = new google.maps.Marker({
+      position: position,
+      icon: {
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 10,
+        strokeColor: '#f00',
+        strokeWeight: 5,
+        fillColor: '#000A02',
+        fillOpacity: 1,
+      },
+      map: this.map?.googleMap || null,
+    });
+
+    // Crear contenido HTML para el infowindow
+    const contenidoInfowindow = `
+    <div>
+      <h3>${posicion.dispositivo?.nombre}</h3>
+      <p>Latitud: ${posicion.latitud}</p>
+      <p>Longitud: ${posicion.longitud}</p>
+      <p>: ${posicion.dentro}</p>
+    </div>
+  `;
+
+    // Crear el infowindow
+    const infowindow = new google.maps.InfoWindow({
+      content: contenidoInfowindow,
+    });
+
+    // Asociar el marcador con el infowindow en el Map
+    this.infowindows.set(marcador, infowindow);
+
+    // Agregar evento de clic al marcador para mostrar el infowindow
+    marcador.addListener('click', () => {
+      // Cerrar todos los infowindows abiertos
+      this.infowindows.forEach(iw => iw.close());
+      // Abrir el infowindow del marcador clicado
+      infowindow.open(this.map?.googleMap, marcador);
+    });
+  }
+
   deletePolygon() {
-    var zona_eliminar:Zona_segura;
+    var zona_eliminar: Zona_segura;
     Swal.fire({
       icon: 'warning',
       title: '¿Estás seguro?',
@@ -186,12 +174,12 @@ throw new Error('Method not implemented.');
       confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
-      var validar_dispositivos:Boolean = false;
-      var listadispositivos:Dispositivo[] = [];
+      var validar_dispositivos: Boolean = false;
+      var listadispositivos: Dispositivo[] = [];
       if (result.isConfirmed) {
         // Aquí llamas a la función para eliminar la zona segura
         this.zonasSegurasService.buscar(this.id_zona).subscribe(
-          (zona: Zona_segura) =>{
+          (zona: Zona_segura) => {
             this.Dispositivoservice.buscarporzonasegura(this.id_zona).subscribe(
               (dispositivos: Dispositivo[]) => {
                 listadispositivos = dispositivos;
@@ -202,10 +190,10 @@ throw new Error('Method not implemented.');
               }
             );
             console.log('DISPOSITIVOS', listadispositivos.length);
-            if(zona.puntos && zona.puntos.length > 0){
-              if(listadispositivos.length === 0){
+            if (zona.puntos && zona.puntos.length > 0) {
+              if (listadispositivos.length === 0) {
                 zona.puntos.forEach((punto, index) => {
-                  if(punto.id_punto){
+                  if (punto.id_punto) {
                     console.log('Punto a eliminar:', punto);
                     this.puntoService.eliminar(punto.id_punto).subscribe(
                       () => {
@@ -215,93 +203,100 @@ throw new Error('Method not implemented.');
                         console.error('Error al eliminar el punto:', error);
                       }
                     );
-                  }  
+                  }
                 });
                 this.zonasSegurasService.eliminar(this.id_zona).subscribe(
                   () => {
                     Swal.fire('Zona segura eliminada', '', 'success');
                   },
                 );
-              }else{
+              } else {
                 console.log('No se puede eliminar la zona segura: ', zona.dispositivos?.length);
                 Swal.fire('No se puede eliminar la zona segura', 'La zona segura tiene dispositivos asociados', 'error');
               }
-            }  
+            }
           }
         );
-      } 
+      }
       this.arrayPoligonos.forEach(overlay => {
         if (overlay instanceof google.maps.Polygon) {
-            overlay.setMap(null); // Elimina el polígono del mapa
+          overlay.setMap(null); // Elimina el polígono del mapa
         }
-    });
+      });
     });
   }
 
-  crearPoligono(id:number) {
-    const mapContainer = this.map.googleMap;
-    if (mapContainer) {
+  crearPoligono(id: number) {
+    // Asegurarse de que this.map y this.map.googleMap estén definidos
+    if (this.map && this.map.googleMap) {
+      const mapContainer = this.map.googleMap;
+
       this.zonasSegurasService.buscar(id).subscribe(
-        (zona: Zona_segura) =>{
+        (zona: Zona_segura) => {
           this.puntos = zona.puntos ?? [];
-          if(this.puntos?.length > 0){
-            // Convertir los puntos de la zona segura a
+
+          if (this.puntos.length > 0) {
+            // Convertir los puntos de la zona segura a vértices del polígono
             const vertices = this.puntos.map(punto => ({
               lat: punto.latitud,
               lng: punto.longitud
             }));
+
             // Ordenar los vértices del polígono
             const vertices_parseados: google.maps.LatLng[] = convertirALatLng(vertices);
             this.functionordenarVertices(vertices_parseados);
-            // Crear el polígono
-            if(this.arrayPoligonos.length > 0){
-              this.arrayPoligonos.forEach(overlay => {
-                if (overlay instanceof google.maps.Polygon) {
-                    overlay.setMap(null); // Elimina el polígono del mapa
-                }
+
+            // Eliminar polígonos existentes del mapa
+            this.arrayPoligonos.forEach(overlay => {
+              if (overlay instanceof google.maps.Polygon) {
+                overlay.setMap(null);
+              }
             });
             this.arrayPoligonos = [];
-            }
-              const poligono = new google.maps.Polygon({
-                paths: vertices_parseados,
-                map: mapContainer,
-                strokeColor: '#0F3B04',
-                fillColor: '#4DE943',
-                strokeWeight: 4,
-              });
-              this.arrayPoligonos.push(poligono);
+
+            // Crear el nuevo polígono
+            const poligono = new google.maps.Polygon({
+              paths: vertices_parseados,
+              map: mapContainer,
+              strokeColor: '#0F3B04',
+              fillColor: '#4DE943',
+              strokeWeight: 4,
+            });
+
+            this.arrayPoligonos.push(poligono);
           }
         },
-        (error ) =>{
+        error => {
           console.error('Error al buscar la zona segura', error);
         }
       );
-      // Crear los vértices del polígono a partir de los puntos
-      // Borrar los marcadores del mapa
+
+      // Limpiar marcadores del mapa
       this.marcadores.forEach(marcador => marcador.setMap(null));
-      this.marcadores = []; // Vaciar el array de marcadores
+      this.marcadores = [];
     } else {
-      console.log("NO SE PUDO INICIAR LA CREACIÓN DE");
+      console.error('El mapa no está inicializado correctamente.');
     }
   }
-  
+
+
   //MÑETODO PARA ORDENAR LOS VÉRTICES DEL POLÍGONO
   functionordenarVertices(vertices: google.maps.LatLng[]): google.maps.LatLng[] {
     const centro = calcularCentroide(vertices);
     this.CentrarMapa(centro.lat(), centro.lng());
     return vertices.sort((a, b) => {
       const anguloA = calcularAngulo(centro, a);
-      const anguloB = calcularAngulo(centro, b);  
+      const anguloB = calcularAngulo(centro, b);
       return anguloA - anguloB;
     });
   }
 
-  CentrarMapa(lati:number, longi:number){
+  CentrarMapa(lati: number, longi: number) {
     this.center = { lat: lati, lng: longi };
     this.zoom = 18;
   }
 
-  
+
 }
 //OBTENER EL CENTRO DE LA ZONA SEGURA
 function calcularCentroide(vertices: google.maps.LatLng[]): google.maps.LatLng {
