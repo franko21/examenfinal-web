@@ -184,45 +184,44 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
               (dispositivos: Dispositivo[]) => {
                 listadispositivos = dispositivos;
                 console.log('Dispositivos:', listadispositivos);
+                if (zona.puntos && zona.puntos.length > 0) {
+                  if (listadispositivos.length === 0) {
+                    zona.puntos.forEach((punto, index) => {
+                      if (punto.id_punto) {
+                        console.log('Punto a eliminar:', punto);
+                        this.puntoService.eliminar(punto.id_punto).subscribe(
+                          () => {
+                            console.log('Punto eliminado:', punto);
+                          },
+                          error => {
+                            console.error('Error al eliminar el punto:', error);
+                          }
+                        );
+                      }
+                    });
+                    this.zonasSegurasService.eliminar(this.id_zona).subscribe(
+                      () => {
+                        Swal.fire('Zona segura eliminada', '', 'success');
+                        this.arrayPoligonos.forEach(overlay => {
+                          if (overlay instanceof google.maps.Polygon) {
+                            overlay.setMap(null); // Elimina el polígono del mapa
+                          }
+                        });
+                      },
+                    );
+                  } else {
+                    Swal.fire('No se puede eliminar la zona segura', 'La zona segura tiene dispositivos asociados', 'error');
+                  }
+                }
               },
               error => {
                 console.error('Error al listar dispositivos:', error);
               }
             );
-            console.log('DISPOSITIVOS', listadispositivos.length);
-            if (zona.puntos && zona.puntos.length > 0) {
-              if (listadispositivos.length === 0) {
-                zona.puntos.forEach((punto, index) => {
-                  if (punto.id_punto) {
-                    console.log('Punto a eliminar:', punto);
-                    this.puntoService.eliminar(punto.id_punto).subscribe(
-                      () => {
-                        console.log('Punto eliminado:', punto);
-                      },
-                      error => {
-                        console.error('Error al eliminar el punto:', error);
-                      }
-                    );
-                  }
-                });
-                this.zonasSegurasService.eliminar(this.id_zona).subscribe(
-                  () => {
-                    Swal.fire('Zona segura eliminada', '', 'success');
-                  },
-                );
-              } else {
-                console.log('No se puede eliminar la zona segura: ', zona.dispositivos?.length);
-                Swal.fire('No se puede eliminar la zona segura', 'La zona segura tiene dispositivos asociados', 'error');
-              }
-            }
+            
           }
         );
       }
-      this.arrayPoligonos.forEach(overlay => {
-        if (overlay instanceof google.maps.Polygon) {
-          overlay.setMap(null); // Elimina el polígono del mapa
-        }
-      });
     });
   }
 

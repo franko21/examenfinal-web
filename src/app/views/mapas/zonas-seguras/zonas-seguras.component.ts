@@ -115,8 +115,6 @@ export class ZonasSegurasComponent{
                 fillColor: '#92afb0',
                 strokeWeight: 4,
               });
-              poligono.addListener('click', (event: google.maps.MapMouseEvent) => this.handlePolygonClick(event, poligono));
-              console.log("SE HA AÑADIDO EL CLICK AL POLIGONO");
               this.arrayPoligonos.push(poligono);
             } else {
               console.warn('Zona sin puntos o puntos no definidos:', zona);
@@ -317,15 +315,6 @@ editPolygon() {
       this.arrayPoligonos = this.arrayPoligonos.filter(p => p !== this.selectedPolygon);
       this.selectedPolygon = null;
       this.showOptions = false;
-    }
-  }
-
-  handlePolygonClick(event: google.maps.MapMouseEvent, polygon: google.maps.Polygon) {
-    if (event.domEvent && event.domEvent instanceof MouseEvent) {
-      const { clientX, clientY } = event.domEvent;
-      this.clickPosition = { x: clientX, y: clientY };
-      this.showOptions = true;
-      this.selectedPolygon = polygon;
     }
   }
   
