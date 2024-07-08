@@ -92,7 +92,7 @@ export class LoginComponent {
           this.toggleToast();
       },
       complete: () => {
-        this.toggleToast();
+        // this.toggleToast();
         console.info("Inicio de sesión completo");
           // Realiza acciones adicionales después del inicio de sesión, si es necesario
           this.loginForm.reset();

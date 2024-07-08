@@ -1,4 +1,4 @@
-import { DatePipe, NgFor, NgIf } from '@angular/common';
+import {DatePipe, NgClass, NgFor, NgIf, NgStyle} from '@angular/common';
 import { Component,NgModule,OnInit } from '@angular/core';
 import{Prestamo} from '../../model/prestamo.model';
 import{PrestamoService} from '../../service/prestamo.service';
@@ -24,7 +24,12 @@ import {
   ToastComponent,
   ToastHeaderComponent,
   ToasterComponent,
-  ProgressBarDirective, ProgressComponent, ProgressBarComponent
+  ProgressBarDirective,
+  ProgressComponent,
+  ProgressBarComponent,
+  ModalComponent,
+  ModalFooterComponent,
+  ModalHeaderComponent, ModalBodyComponent
 } from '@coreui/angular';
 import {AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import { PersonaService } from 'src/app/service/persona.service';
@@ -43,7 +48,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
 @Component({
   selector: 'app-prestamo',
   standalone: true,
-  imports: [NgFor, HttpClientModule, NgIf, ContainerComponent, RowComponent, ColComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, IconDirective, FormControlDirective, ButtonDirective, ReactiveFormsModule, HttpClientModule, NgxPaginationModule, GutterDirective, FormFeedbackComponent, DatePipe, ToasterComponent, ToastComponent, ToastHeaderComponent, ToastBodyComponent, ProgressBarDirective, ProgressComponent, ProgressBarComponent, ButtonDirective, FormsModule],
+  imports: [NgFor, HttpClientModule, NgIf, ContainerComponent, RowComponent, ColComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, IconDirective, FormControlDirective, ButtonDirective, ReactiveFormsModule, HttpClientModule, NgxPaginationModule, GutterDirective, FormFeedbackComponent, DatePipe, ToasterComponent, ToastComponent, ToastHeaderComponent, ToastBodyComponent, ProgressBarDirective, ProgressComponent, ProgressBarComponent, ButtonDirective, FormsModule, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalBodyComponent, NgClass, NgStyle],
   providers:[PrestamoService,PersonaService,DipositivoService,UsuarioService,DatePipe],
   templateUrl: './prestamo.component.html',
   styleUrl: './prestamo.component.scss'
@@ -54,18 +59,18 @@ export class PrestamoComponent {
   mostrarFormularioEditar = false;
   prestamos:Prestamo[]=[];
   personas:Persona[]=[];
-  zonaS:Zona_segura[]=[];
   dispositivos:Dispositivo[]=[];
-  prestamoSeleccionado: any = {};
+  finalizarForm: FormGroup;
   filaEditada: number | null = null;
   registerForm: FormGroup;
   registerFormIn: FormGroup;
   usuario:Usuario;
+  prestamoSeleccionado: any = null;
   hoy: Date = new Date();
   idusu:number;
   p: number = 1; // Página actual para la paginación
   searchText: string = '';
-
+  public visible3 = false;
 
   position = 'top-end';
   visible = false;
@@ -74,6 +79,148 @@ export class PrestamoComponent {
   position2 = 'top-end';
   visible2 = false;
   percentage2 = 0;
+  ngOnInit():void {
+    this.usuarioService.getUsuarioByUsername(environment.username).subscribe(
+      usu=>{
+        this.idusu=usu.id_usuario;
+      }
+    )
+    this.prestamoService.getPrestamos().subscribe(
+      prestamo => {
+        this.prestamos = prestamo.sort((a, b) => {
+          if (a.finalizado !== b.finalizado) {
+            return a.finalizado ? 1 : -1;
+          }
+          // Si son iguales en finalizado, ordenar por fecha de devolución ascendente
+          const fechaDevolucionA = new Date(a.fecha_finalizacion);
+          const fechaDevolucionB = new Date(b.fecha_finalizacion);
+          return fechaDevolucionA.getTime() - fechaDevolucionB.getTime();
+
+        }); // @ts-ignore
+      }
+    );
+    this.personaService.getPersonas().subscribe(
+      persona=>{
+        this.personas=persona;
+      }
+    )
+    this.dispoService.listar().subscribe(
+      dipo=>{
+        this.dispositivos=dipo;
+      }
+    )
+  }
+  constructor(private datePipe:DatePipe,private usuarioService:UsuarioService, private dispoService:DipositivoService, private personaService:PersonaService,private prestamoService: PrestamoService,private router:Router,private fb:FormBuilder){
+    this.registerForm = this.fb.group({
+      beneficiario: ['', Validators.required],
+      dispositivo: ['', Validators.required],
+      fecha: ['', Validators.required],
+      motivo: ['', Validators.required],
+      finalizado: ['', Validators.required],
+      estado_devolucion:['', Validators.required],
+      // Otros campos del formulario
+    });
+    this.registerFormIn = this.fb.group({
+      beneficiario: ['', Validators.required],
+      dispositivo: ['', Validators.required],
+      fecha: ['', Validators.required],
+      motivo: ['',Validators.required],
+    });
+    this.finalizarForm = this.fb.group({
+      estado_devolucion: ['', Validators.required],
+    });
+  }
+
+  calcularTiempoRestante(prestamo: Prestamo): string {
+    const fechaDevolucion = new Date(prestamo.fecha_finalizacion);
+    const now = new Date(); // Usar la fecha y hora actual cada vez que se llame el método
+    const diff = fechaDevolucion.getTime() - now.getTime();
+
+    if (diff < 0) {
+      return "Caducado";
+    }
+
+    // Convertir la diferencia a días, horas, minutos y segundos
+    const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const horas = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const segundos = Math.floor((diff % (1000 * 60)) / 1000);
+
+    return `${dias}d ${horas}h ${minutos}m ${segundos}s`;
+  }
+  formatDate2(date: Date, format: string): string {
+    return <string>this.datePipe.transform(date, format);
+  }
+  filtrarDispositivosDisponibles(): Dispositivo[] {
+    return this.dispositivos.filter(dispositivo => dispositivo.disponible);
+  }
+
+  handleLiveDemoChange(event: any) {
+    this.visible = event;
+  }
+  toggleLiveDemo2(index: number) {
+    this.selectedPrestamo = this.prestamos[index];
+    this.visible3 = !this.visible3;
+    console.log(this.selectedPrestamo.id_prestamo);
+  }
+  abrirModalFinalizar(prestamo: any) {
+    this.prestamoSeleccionado = prestamo;
+    this.finalizarForm.reset();
+    // $('#modalFinalizar').modal('show');
+  }
+
+  onFinalizarSubmit() {
+    if (this.finalizarForm.valid) {
+      // Lógica para manejar la finalización del préstamo
+      const formValues=this.finalizarForm.value;
+      let prestamo:Prestamo=new Prestamo();
+      prestamo.dispositivo=this.selectedPrestamo.dispositivo;
+      prestamo.estado_devolucion=formValues.estado_devolucion;
+      this.prestamoService.finalizarPrestamo(this.selectedPrestamo.id_prestamo,prestamo).subscribe({
+        next:(userData)=>{
+          console.log('Datos de edicion recibidos:', userData);
+          this.prestamoService.getPrestamos().subscribe(
+            prestamo => {
+              this.prestamos = prestamo;
+            }
+
+          );
+          this.finalizarForm.reset();
+          //   Swal.fire({
+          //     icon: 'success',
+          //     title: '¡Edicion de prestamo exitosa!',
+          //     text: 'EXITO',
+          //     confirmButtonColor: '#3085d6',
+          //     confirmButtonText: 'OK'
+          // })
+          this.toggleToast();
+          this.toggleLiveDemo2(0);
+        },
+        error:(errorData)=>{
+          console.error('Error al editar prestamo:', errorData);
+          //   Swal.fire({
+          //     icon: 'error',
+          //     title: 'Error al edita prestamo',
+          //     text: 'Error al ingresar los datos.',
+          //     confirmButtonColor: '#3085d6',
+          //     confirmButtonText: 'OK'
+          // });
+          this.toggleToast2();
+        },
+        complete:()=>{
+          console.info("Edicion completa");
+          this.filaEditada = null;
+          this.mostrarFormularioEditar=false;
+        }
+      })
+
+      // Aquí puedes agregar la lógica para actualizar el estado del préstamo en tu base de datos
+
+      // $('#modalFinalizar').modal('hide');
+    }else{
+      this.markFormGroupTouched(this.registerFormIn);
+    }
+  }
 
   filteredPrestamos() {
     if (!this.searchText) {
@@ -88,8 +235,14 @@ export class PrestamoComponent {
         prestamo.dispositivo.modelo?.marca?.nombre?.toLowerCase().includes(this.searchText.toLowerCase())||
         prestamo.persona.nombre.toLowerCase().includes(this.searchText.toLowerCase())||
         prestamo.persona.apellido.toLowerCase().includes(this.searchText.toLowerCase())||
-        prestamo.persona.cedula.toLowerCase().includes(this.searchText.toLowerCase())
+        prestamo.persona.cedula.toLowerCase().includes(this.searchText.toLowerCase())||
+        prestamo.fecha_prestamo.toString().toLowerCase().includes(this.searchText.toLowerCase())||
+        prestamo.fecha_finalizacion.toString().toLowerCase().includes(this.searchText.toLowerCase())
       );
+    }).sort((a, b) => {
+      // Primero, ordenar por el estado finalizado
+      return a.finalizado === b.finalizado ? 0 : a.finalizado ? 1 : -1;
+
     });
   }
   toggleToast() {
@@ -117,54 +270,22 @@ export class PrestamoComponent {
     this.percentage2 = $event * 25;
   }
 
-  constructor(private datePipe:DatePipe,private usuarioService:UsuarioService, private dispoService:DipositivoService, private personaService:PersonaService,private prestamoService: PrestamoService,private router:Router,private fb:FormBuilder){
-    this.registerForm = this.fb.group({
-      beneficiario: ['', Validators.required],
-      dispositivo: ['', Validators.required],
-      fecha: ['', Validators.required],
-      motivo: ['', Validators.required],
-      finalizado: ['', Validators.required],
-      estado_devolucion:['', Validators.required],
-      // Otros campos del formulario
-    });
-    this.registerFormIn = this.fb.group({
-      beneficiario: ['', Validators.required],
-      dispositivo: ['', Validators.required],
-      fecha: ['', Validators.required],
-      motivo: ['',Validators.required],
-    });
-  }
+
   fechaValida(control: AbstractControl): { [key: string]: boolean } | null {
     const currentDate = new Date();
     const selectedDate = new Date(control.value);
     return selectedDate >= currentDate ? null : { fechaInvalida: true };
   }
 
-  ngOnInit():void {
-    this.usuarioService.getUsuarioByUsername(environment.username).subscribe(
-      usu=>{
-        this.idusu=usu.id_usuario;
-      }
-    )
-    this.prestamoService.getPrestamos().subscribe(
-      prestamo => {
-        this.prestamos = prestamo; // @ts-ignore
-        console.log(this.prestamos?.at(0).persona);
-      }
-    );
-    this.personaService.getPersonas().subscribe(
-      persona=>{
-        this.personas=persona;
-      }
-    )
+
+  ingresarPrestamo(){
+    this.mostrarFormularioIngreso = !this.mostrarFormularioIngreso;
+    this.registerFormIn.reset();
     this.dispoService.listar().subscribe(
       dipo=>{
         this.dispositivos=dipo;
       }
     )
-  }
-  ingresarPrestamo(){
-    this.mostrarFormularioIngreso = !this.mostrarFormularioIngreso;
     console.log(this.dispositivos);
   }
   edit(index: number) {
@@ -215,7 +336,7 @@ export class PrestamoComponent {
 
       prestamo.dispositivo.idDispositivo=formValues.dispositivo;
       prestamo.persona.id_persona=formValues.beneficiario;
-      prestamo.fecha_finalizacion=formValues.fecha;
+      prestamo.fecha_finalizacion=new Date(formValues.fecha);
       prestamo.motivo_prestamo=formValues.motivo;
       // prestamo.usuario.id_usuario=this.idusu;
       prestamo.fecha_prestamo=fecha;
@@ -224,7 +345,16 @@ export class PrestamoComponent {
           console.log('Datos de prestamo recibidos:', userData);
           this.prestamoService.getPrestamos().subscribe(
             prestamo => {
-              this.prestamos = prestamo;
+              this.prestamos = prestamo.sort((a, b) => {
+                if (a.finalizado !== b.finalizado) {
+                  return a.finalizado ? 1 : -1;
+                }
+                // Si son iguales en finalizado, ordenar por fecha de devolución ascendente
+                const fechaDevolucionA = new Date(a.fecha_finalizacion);
+                const fechaDevolucionB = new Date(b.fecha_finalizacion);
+                return fechaDevolucionA.getTime() - fechaDevolucionB.getTime();
+
+              }); // @ts-ignore
             }
           );
           // Swal.fire({
@@ -297,7 +427,16 @@ export class PrestamoComponent {
         console.log('Datos de prestamo recibidos:', userData);
         this.prestamoService.getPrestamos().subscribe(
           prestamo => {
-            this.prestamos = prestamo;
+            this.prestamos = prestamo.sort((a, b) => {
+              if (a.finalizado !== b.finalizado) {
+                return a.finalizado ? 1 : -1;
+              }
+              // Si son iguales en finalizado, ordenar por fecha de devolución ascendente
+              const fechaDevolucionA = new Date(a.fecha_finalizacion);
+              const fechaDevolucionB = new Date(b.fecha_finalizacion);
+              return fechaDevolucionA.getTime() - fechaDevolucionB.getTime();
+
+            }); // @ts-ignore
           }
         );
       //   Swal.fire({
@@ -319,6 +458,7 @@ export class PrestamoComponent {
       //     confirmButtonText: 'OK'
       // });
         this.toggleToast2();
+
       },
       complete:()=>{
         console.info("Edicion completa");

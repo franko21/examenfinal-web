@@ -22,11 +22,14 @@ export class PrestamoService {
 
     return this.http.get(`${environment.urlHost}api/prestamo`).pipe(
       map(Response => Response as Prestamo[])
-  
+
     );
   }
   editPrestamo(id:any,prestamo:Prestamo):Observable<any>{
     return this.http.put<Prestamo>(`${environment.urlHost}api/prestamo/${id}`,prestamo)
+  }
+  finalizarPrestamo(id:any,prestamo:Prestamo):Observable<any>{
+    return this.http.put<Prestamo>(`${environment.urlHost}api/prestamo/finalizar/${id}`,prestamo)
   }
   deletePrestamo(id: any):Observable<any>{
     return this.http.delete<Prestamo>(`${environment.urlHost}api/prestamo/${id}`)

@@ -57,7 +57,7 @@
           </span>
           <select class="form-select" formControlName="dispositivo" cFormControl required>
             <option value="" disabled selected>Seleccione un Dispositivo</option>
-            <option *ngFor="let dispo of dispositivos" [value]="dispo.idDispositivo">
+            <option *ngFor="let dispo of filtrarDispositivosDisponibles()" [value]="dispo.idDispositivo">
               {{ dispo.nombre }}-{{ dispo.modelo?.marca?.nombre }}
             </option>
           </select>
@@ -69,8 +69,11 @@
           <span cInputGroupText>
             <svg cIcon name="cilItalic"></svg>
           </span>
-          <input formControlName="fecha" type="date" cFormControl placeholder="Fecha Devolucion" required
-                 min="{{ hoy | date: 'yyyy-MM-dd' }}"
+<!--          <input formControlName="fecha" type="date" cFormControl placeholder="Fecha Devolucion" required-->
+<!--                 min="{{ hoy | date: 'yyyy-MM-dd' }}"-->
+<!--          />-->
+          <input formControlName="fecha" type="datetime-local" cFormControl placeholder="Fecha Devolucion" required
+                 min="{{ hoy | date: 'yyyy-MM-ddTHH:mm' }}"
           />
           <div *ngIf="registerFormIn.controls['fecha']?.invalid && registerFormIn.controls['fecha']?.touched" class="invalid-feedback">
             El Fecha es obligatoria.
@@ -106,8 +109,9 @@
           <th>Dispositivo</th>
           <th>Fecha Prestamo</th>
           <th>Fecha Devolucion</th>
-          <th>Motivo</th>
+          <th>Tiempo Restante</th>
           <th>Finalizado</th>
+          <th>Finalizar</th>
           <th>Editar</th>
           <th>Eliminar</th>
         </tr>
@@ -118,17 +122,31 @@
              <div class="small text-body-secondary text-nowrap">
                <span>{{ prestamo.persona?.cedula }} </span></div>
           </td>
-          <td><div>{{ prestamo.dispositivo?.nombre }}{{ prestamo.dispositivo?.modelo?.marca?.nombre}}</div>
+          <td><div>{{ prestamo.dispositivo?.nombre }} {{ prestamo.dispositivo?.modelo?.marca?.nombre}}</div>
             <div class="small text-body-secondary text-nowrap"><span>{{ prestamo.dispositivo?.numSerie }} {{ prestamo.dispositivo?.modelo?.nombre}}</span></div>
             </td>
           <td>
-            {{ prestamo.fecha_prestamo ? prestamo.fecha_prestamo.toString().split("T")[0]  : 'NA' }}
+            <div>{{ prestamo.fecha_prestamo ? prestamo.fecha_prestamo.toString().split("T")[0]  : 'NA' }}</div>
+            <div class="small text-body-secondary text-nowrap"><span>{{ prestamo.fecha_prestamo ? formatDate2(prestamo.fecha_prestamo, 'HH:mm') : 'NA' }}</span></div>
           </td>
           <td>
-            {{ prestamo.fecha_finalizacion ? prestamo.fecha_finalizacion.toString().split("T")[0]: 'NA' }}
+            <div>{{ prestamo.fecha_finalizacion ? prestamo.fecha_finalizacion.toString().split("T")[0]: 'NA' }}</div>
+            <div class="small text-body-secondary text-nowrap"><span>{{ prestamo.fecha_finalizacion ? formatDate2(prestamo.fecha_finalizacion, 'HH:mm') : 'NA' }}</span></div>
           </td>
-          <td>{{ prestamo.motivo_prestamo }}</td>
-          <td>{{ prestamo.finalizado ? 'Finalizado' : 'En proceso' }}</td>
+          <td>
+            <div [ngClass]="{'text-danger': calcularTiempoRestante(prestamo) === 'Caducado'}">
+              {{ calcularTiempoRestante(prestamo) }}
+            </div>
+          </td>
+          <td>
+            <div class="fw-semibold text-nowrap" [ngStyle]="{ 'color': prestamo.finalizado ? 'green' : 'red', 'font-weight': prestamo.finalizado ? 'bold' : 'normal' }">
+              {{ prestamo.finalizado? 'Finalizado' : 'Prestado' }}
+            </div>
+          <td>
+            <button type="button" (click)="toggleLiveDemo2(i)" class="btn btn-success" [disabled]="prestamo.finalizado">
+              <svg cIcon name="cilCheck" size="lg"></svg>
+            </button>
+          </td>
           <td>
             <button type="button" name="button" (click)="edit(i)" class="btn btn-primary"><svg cIcon name="cilPencil" size="lg"></svg></button>
           </td>
@@ -181,8 +199,11 @@
                 <span cInputGroupText>
                   <svg cIcon name="cilItalic"></svg>
                 </span>
-              <input formControlName="fecha" type="date"  cFormControl placeholder="Fecha" required
-                     min="{{ hoy | date: 'yyyy-MM-dd' }}"
+<!--              <input formControlName="fecha" type="date"  cFormControl placeholder="Fecha" required-->
+<!--                     min="{{ hoy | date: 'yyyy-MM-dd' }}"-->
+<!--              />-->
+              <input formControlName="fecha" type="datetime-local" cFormControl placeholder="Fecha Devolucion" required
+                     min="{{ hoy | date: 'yyyy-MM-ddTHH:mm' }}"
               />
               <div *ngIf="registerForm.controls['fecha']?.invalid && registerFormIn.controls['fecha']?.touched" class="invalid-feedback">
                 La Fecha es obligatoria.
@@ -238,3 +259,46 @@
 
   </div>
 </div>
+
+<c-modal id="liveDemoModal" [visible]="visible3" (visibleChange)="handleLiveDemoChange($event)" class="modal-custom">
+    <c-modal-header class="modal-header-custom">
+<!--      <svg cIcon class="icon-secretary me-2" name="cilHandshake" size="lg"></svg>-->
+      <svg cIcon class="icon-device me-2" name="cilMobile" size="lg"></svg>
+
+      <h5 cModalTitle>Estado de devolucion</h5>
+<!--      <button (click)="toggleLiveDemo2()" cButtonClose></button>-->
+    </c-modal-header>
+    <c-modal-body>
+      <div class="d-flex align-items-center">
+        <img src="https://www.w3schools.com/howto/img_avatar.png" alt="Secretary" class="rounded-circle me-3">
+        <div>
+<!--          <p>holaa</p>-->
+          <form [formGroup]="finalizarForm" (ngSubmit)="onFinalizarSubmit()">
+            <div class="mb-3">
+              <label class="form-label">Estado de Devolución</label>
+<!--              <select id="estadoDevolucion" formControlName="estado_devolucion" class="form-select" required>-->
+<!--                <option value="" disabled selected>Seleccione Estado Devolución</option>-->
+<!--                <option value="Pendiente">Pendiente</option>-->
+<!--                <option value="Devuelto">Devuelto</option>-->
+<!--                <option value="Perdido">Perdido</option>-->
+<!--                <option value="Dañado">Dañado</option>-->
+<!--              </select>-->
+              <input formControlName="estado_devolucion" cFormControl placeholder="Estado de Devolucion" required
+              />
+              <div *ngIf="finalizarForm.controls['estado_devolucion']?.invalid && finalizarForm.controls['estado_devolucion']?.touched" class="invalid-feedback">
+                El Estado de Devolucion es obligatorio.
+              </div>
+            </div>
+            <div class="d-grid">
+              <button type="submit" class="btn btn-success">Finalizar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </c-modal-body>
+    <c-modal-footer>
+      <button (click)="toggleLiveDemo2(0)" cButton color="secondary">Cerrar</button>
+    </c-modal-footer>
+
+</c-modal>
+
