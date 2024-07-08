@@ -71,6 +71,8 @@ export class PrestamoComponent {
   p: number = 1; // Página actual para la paginación
   searchText: string = '';
   public visible3 = false;
+  filteredPrestamosList: any[] = [];
+
 
   position = 'top-end';
   visible = false;
@@ -79,6 +81,10 @@ export class PrestamoComponent {
   position2 = 'top-end';
   visible2 = false;
   percentage2 = 0;
+  filtroEstado: string = 'todos'; // Variable para almacenar el estado seleccionado en el select
+  fechaInicio: string = '';
+  fechaFin: string = '';
+
   ngOnInit():void {
     this.usuarioService.getUsuarioByUsername(environment.username).subscribe(
       usu=>{
@@ -106,7 +112,7 @@ export class PrestamoComponent {
     )
     this.dispoService.listar().subscribe(
       dipo=>{
-        this.dispositivos=dipo;
+        this.dispositivos=dipo.filter(dispositivo => dispositivo.disponible);
       }
     )
   }
@@ -130,7 +136,53 @@ export class PrestamoComponent {
       estado_devolucion: ['', Validators.required],
     });
   }
+  applyFilters(): void {
+    let filtered = this.prestamos;
 
+    if (this.searchText) {
+      filtered = filtered.filter(p =>
+        p.persona?.nombre.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        p.persona?.apellido.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        p.dispositivo?.nombre?.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        p.dispositivo?.modelo?.marca?.nombre?.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        p.dispositivo?.numSerie?.toLowerCase().includes(this.searchText.toLowerCase())
+      );
+    }
+
+    if (this.filtroEstado !== 'todos') {
+      const finalizado = this.filtroEstado === 'finalizado';
+      filtered = filtered.filter(p => p.finalizado === finalizado);
+    }
+
+    if (this.fechaInicio) {
+      filtered = filtered.filter(p => new Date(p.fecha_prestamo) >= new Date(this.fechaInicio));
+    }
+
+    if (this.fechaFin) {
+      filtered = filtered.filter(p => new Date(p.fecha_prestamo) <= new Date(this.fechaFin));
+    }
+
+    this.filteredPrestamosList = filtered;
+  }
+  // Método para manejar cambios en los filtros
+  onSearchTextChange(): void {
+    this.applyFilters();
+  }
+
+  onFiltroEstadoChange(): void {
+    this.applyFilters();
+  }
+
+  filterByDateRange(): void {
+    this.applyFilters();
+  }
+
+
+
+
+  isValidDate(date: any): boolean {
+    return date instanceof Date && !isNaN(date.getTime());
+  }
   calcularTiempoRestante(prestamo: Prestamo): string {
     const fechaDevolucion = new Date(prestamo.fecha_finalizacion);
     const now = new Date(); // Usar la fecha y hora actual cada vez que se llame el método
@@ -152,6 +204,7 @@ export class PrestamoComponent {
     return <string>this.datePipe.transform(date, format);
   }
   filtrarDispositivosDisponibles(): Dispositivo[] {
+
     return this.dispositivos.filter(dispositivo => dispositivo.disponible);
   }
 
@@ -222,29 +275,49 @@ export class PrestamoComponent {
     }
   }
 
-  filteredPrestamos() {
-    if (!this.searchText) {
-      return this.prestamos;
-    }
 
-    return this.prestamos.filter(prestamo => {
-      return (
+  filteredPrestamos() {
+    let filteredList = this.prestamos;
+
+    // Filtrar por texto de búsqueda
+    if (this.searchText) {
+      filteredList = filteredList.filter(prestamo =>
         prestamo.dispositivo.modelo?.nombre?.toLowerCase().includes(this.searchText.toLowerCase()) ||
         prestamo.dispositivo.nombre?.toLowerCase().includes(this.searchText.toLowerCase()) ||
         prestamo.dispositivo.numSerie?.toLowerCase().includes(this.searchText.toLowerCase()) ||
-        prestamo.dispositivo.modelo?.marca?.nombre?.toLowerCase().includes(this.searchText.toLowerCase())||
-        prestamo.persona.nombre.toLowerCase().includes(this.searchText.toLowerCase())||
-        prestamo.persona.apellido.toLowerCase().includes(this.searchText.toLowerCase())||
-        prestamo.persona.cedula.toLowerCase().includes(this.searchText.toLowerCase())||
-        prestamo.fecha_prestamo.toString().toLowerCase().includes(this.searchText.toLowerCase())||
+        prestamo.dispositivo.modelo?.marca?.nombre?.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        prestamo.persona.nombre.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        prestamo.persona.apellido.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        prestamo.persona.cedula.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        prestamo.fecha_prestamo.toString().toLowerCase().includes(this.searchText.toLowerCase()) ||
         prestamo.fecha_finalizacion.toString().toLowerCase().includes(this.searchText.toLowerCase())
       );
-    }).sort((a, b) => {
-      // Primero, ordenar por el estado finalizado
-      return a.finalizado === b.finalizado ? 0 : a.finalizado ? 1 : -1;
+    }
 
-    });
+    // Filtrar por estado seleccionado
+    if (this.filtroEstado === 'prestado') {
+      filteredList = filteredList.filter(prestamo => !prestamo.finalizado);
+    } else if (this.filtroEstado === 'finalizado') {
+      filteredList = filteredList.filter(prestamo => prestamo.finalizado);
+    }
+
+    // Filtrar por rango de fechas
+    if (this.fechaInicio && this.fechaFin) {
+      const startDate = new Date(this.fechaInicio);
+      const endDate = new Date(this.fechaFin);
+
+      // Verificar validez de las fechas
+      if (this.isValidDate(startDate) && this.isValidDate(endDate)) {
+        filteredList = filteredList.filter(prestamo => {
+          const prestamoDate = new Date(prestamo.fecha_finalizacion);
+          return prestamoDate >= startDate && prestamoDate <= endDate;
+        });
+      }
+    }
+
+    return filteredList;
   }
+
   toggleToast() {
     this.visible = !this.visible;
   }
@@ -270,22 +343,9 @@ export class PrestamoComponent {
     this.percentage2 = $event * 25;
   }
 
-
-  fechaValida(control: AbstractControl): { [key: string]: boolean } | null {
-    const currentDate = new Date();
-    const selectedDate = new Date(control.value);
-    return selectedDate >= currentDate ? null : { fechaInvalida: true };
-  }
-
-
   ingresarPrestamo(){
     this.mostrarFormularioIngreso = !this.mostrarFormularioIngreso;
     this.registerFormIn.reset();
-    this.dispoService.listar().subscribe(
-      dipo=>{
-        this.dispositivos=dipo;
-      }
-    )
     console.log(this.dispositivos);
   }
   edit(index: number) {
@@ -308,11 +368,6 @@ export class PrestamoComponent {
       finalizado: prestamoSeleccionado.finalizado,
       // Ajusta el resto de los campos según sea necesario
     });
-  }
-  formatTime(time:any) {
-    var hours = Math.floor(time);
-    var minutes = Math.round((time - hours) * 60);
-    return ('0' + hours).slice(-2) + ':' + ('0' + minutes).slice(-2);
   }
   formatDate(date: Date): string {
     return this.datePipe.transform(date, 'yyyy-MM-dd') || '';
@@ -349,6 +404,7 @@ export class PrestamoComponent {
                 if (a.finalizado !== b.finalizado) {
                   return a.finalizado ? 1 : -1;
                 }
+                this.ngOnInit();
                 // Si son iguales en finalizado, ordenar por fecha de devolución ascendente
                 const fechaDevolucionA = new Date(a.fecha_finalizacion);
                 const fechaDevolucionB = new Date(b.fecha_finalizacion);
@@ -395,12 +451,6 @@ export class PrestamoComponent {
         this.markFormGroupTouched(control);
       }
     });
-  }
-  convertirHoraADouble(fecha: Date): number {
-    const horas = fecha.getHours();
-    const minutos = fecha.getMinutes();
-    const segundos = fecha.getSeconds();
-    return horas + (minutos / 60) + (segundos / 3600);
   }
   onSubmit(){
     console.log(this.idusu);
@@ -497,7 +547,16 @@ export class PrestamoComponent {
           () => {
             this.prestamoService.getPrestamos().subscribe(
               prestamo => {
-                this.prestamos = prestamo;
+                this.prestamos = prestamo.sort((a, b) => {
+                  if (a.finalizado !== b.finalizado) {
+                    return a.finalizado ? 1 : -1;
+                  }
+                  // Si son iguales en finalizado, ordenar por fecha de devolución ascendente
+                  const fechaDevolucionA = new Date(a.fecha_finalizacion);
+                  const fechaDevolucionB = new Date(b.fecha_finalizacion);
+                  return fechaDevolucionA.getTime() - fechaDevolucionB.getTime();
+
+                }); // @ts-ignore
               }
             );
             swalWithBootstrapButtons.fire({

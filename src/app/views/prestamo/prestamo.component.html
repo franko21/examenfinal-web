@@ -57,7 +57,7 @@
           </span>
           <select class="form-select" formControlName="dispositivo" cFormControl required>
             <option value="" disabled selected>Seleccione un Dispositivo</option>
-            <option *ngFor="let dispo of filtrarDispositivosDisponibles()" [value]="dispo.idDispositivo">
+            <option *ngFor="let dispo of dispositivos" [value]="dispo.idDispositivo">
               {{ dispo.nombre }}-{{ dispo.modelo?.marca?.nombre }}
             </option>
           </select>
@@ -99,9 +99,29 @@
     </div>
     <div *ngIf="!mostrarFormularioIngreso &&!mostrarFormularioEditar">
       <div class="search-container">
-        <input type="text" placeholder="Buscar..." [(ngModel)]="searchText" class="form-control search-input" />
-        <svg class="search-icon" cIcon name="cilMagnifyingGlass"></svg>
+        <div class="search-input-container">
+          <!-- Input de búsqueda -->
+          <input type="text" placeholder="Buscar..." [(ngModel)]="searchText" (ngModelChange)="onSearchTextChange()"  class="form-control search-input" />
+          <svg class="search-icon" cIcon name="cilMagnifyingGlass"></svg>
+        </div>
+
+        <!-- Select para filtrar por estado -->
+        <select class="form-control search-select" [(ngModel)]="filtroEstado" (ngModelChange)="onFiltroEstadoChange()">
+          <option value="todos">Todos</option>
+          <option value="prestado">Prestados</option>
+          <option value="finalizado">Finalizados</option>
+        </select>
+
+        <div class="date-range-container ml-3">
+          <div class="input-group">
+            <input type="date" class="form-control" [(ngModel)]="fechaInicio" (change)="filterByDateRange()" />
+            <div class="input-group-text">a</div>
+            <input type="date" class="form-control" [(ngModel)]="fechaFin" (change)="filterByDateRange()" />
+          </div>
+        </div>
       </div>
+      <!-- Select para filtrar por estado -->
+
       <table class="table table-bordered table-striped" >
         <thead>
         <tr>
