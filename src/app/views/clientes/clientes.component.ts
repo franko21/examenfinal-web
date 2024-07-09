@@ -172,7 +172,7 @@ export class ClientesComponent {
 
     this.personaService.editPersona(this.selectedPersona.id_persona,persona).subscribe({
       next:(userData)=>{
-        console.log('Datos de prestamo recibidos:', userData);
+        console.log('Datos de presona recibidos:', userData);
         this.personaService.getPersonas().subscribe(
           persona => {
             this.personas = persona;
@@ -186,6 +186,7 @@ export class ClientesComponent {
         //   confirmButtonText: 'OK'
         // })
         this.toggleToast();
+        this.registerForm.reset();
       },
       error:(errorData)=>{
         console.error('Error al editar persona:', errorData);
@@ -235,6 +236,7 @@ export class ClientesComponent {
               console.error('Error al obtener persona por cédula:', error);
             }
           );
+
         },
         error: (errorData) => {
           console.error('Error al ingresar Persona:', errorData);
@@ -279,6 +281,7 @@ export class ClientesComponent {
           //   confirmButtonText: 'OK'
           // })
           this.toggleToast();
+          this.registerFormIn.reset();
         }
       });
     }else{
