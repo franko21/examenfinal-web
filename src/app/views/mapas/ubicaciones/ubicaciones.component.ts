@@ -28,6 +28,12 @@ import { Punto } from 'src/app/model/punto.model';
 
 export class UbicacionesComponent implements OnInit, OnDestroy {
   //VARIABLES
+  opcionSeleccionada: string = ''; 
+  // VARIABLES DE ARRAYLIST PARA EDITAR LA ZONA SEGURA
+  arraEditarPuntos: Punto[] = [];
+  arrayNuevosPuntos:Punto[] = [];  
+  EliminarPuntos: Punto[] = [];
+  //VARIABLES DE ARRAYLIST PARA EDITAR LA ZONA SEGURA
   punto_borrado:Punto = new Punto(); 
   nuevos_marcadores: google.maps.Marker[] = [];
   markador_actualizado: google.maps.Marker;
@@ -87,6 +93,9 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
         boton.innerText = "Editar";
         this.textoBoton = "Editar";
       }
+      this.clicks_posiciones = 0;
+      this.punto_borrado = {};
+      this.nuevos_marcadores.forEach(marcador => marcador.setMap(null));
       this.finalizarEdicion();
       this.nuevos_marcadores.forEach(marcador => marcador.setMap(null));
       this.nuevos_marcadores = [];
@@ -301,27 +310,22 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
 
   //método para editar las zonas seguras
   editPolygon() {
+    const boton = document.getElementById('boton_editar') as HTMLButtonElement;
+    const textoBoton = boton.textContent || boton.innerText;
+    
     if(!this.id_zona){
       Swal.fire('Error', 'Seleccione una zona segura para editar', 'error');
       return;
     }else{
-      //
-      const boton = document.getElementById('boton_editar') as HTMLButtonElement;
+      this.clicks_posiciones++;
+      if(this.clicks_posiciones % 2 === 0){
       if (boton) {
-        this.clicks_posiciones++;
-        console.log('Clicks:', this.clicks_posiciones);
-        const textoBoton = boton.textContent || boton.innerText;
         switch (textoBoton) {
           case 'Editar':
             boton.textContent = "Guardar";
             boton.innerText = "Guardar";
             this.textoBoton = "Guardar";
-            this.puntosEditar = [];
-            this.mostrarPuntos(this.id_zona);
             // Lógica para editar el polígono
-            if(esDivisiblePorDos(this.clicks_posiciones)){
-              console.log('Se dio click un numero par');
-            }else{
               this.clickListener = this.map?.googleMap?.addListener('click', (event: google.maps.MapMouseEvent) => {
                 if (event.latLng) {
                   if(this.nuevos_marcadores.length > 0){
@@ -341,32 +345,101 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
                             fillColor: '#000A02',
                             fillOpacity: 1,
                         }
-                    });
-                    this.markador_actualizado = nuevoMarcador;
-                    
-                    // Aquí podrías guardar este nuevo marcador en un array si necesitas rastrearlos
-                    // this.marcadores.push(nuevoMarcador); 
-                    this.nuevos_marcadores.push(nuevoMarcador);
-                    nuevoMarcador.getPosition()?.lat();
-                    nuevoMarcador.getPosition()?.lng();
+                    });                    
                   }
-                    
+
                 }
-            });
-            }         
+            });      
             break;
           case 'Guardar':
-            console.log('Se seleccionó Guardar');
             this.finalizarEdicion();
             boton.textContent = "Editar";
             boton.innerText = "Editar";
             this.textoBoton = "Editar";
-            this.puntosEditar = [];
-            this.nuevos_marcadores.forEach(marcador => {  });
-            this.nuevos_marcadores.forEach(marcador => marcador.setMap(null));
-            this.nuevos_marcadores = [];
-            this.actualizarPunto();
+            //this.actualizarPunto();
             // Lógica para guardar el polígono
+            switch (this.opcionSeleccionada) {
+              case 'EDITAR 1 PUNTO':
+                Swal.fire('ESTA SEGURO DE EDITAR ESTE PUNTO', '', 'success');
+                
+                break;
+                case 'ELIMINAR 1 PUNTO':
+                  Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: "¿Deseas realizar los cambios?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, haz los cambios',
+                    cancelButtonText: 'No, cancelar'
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                      // Código para realizar los cambios
+                      this.EliminarPuntos.forEach((punto, index) => {
+                        try {
+                          if (punto.id_punto) {
+                            this.puntoService.eliminar(punto.id_punto).subscribe(
+                              () => {
+                                Swal.fire('Puntos eliminados correctamente', '', 'success');
+                                this.puntosEditar.forEach((puntoEditar, indexEditar) => {
+                                  if (puntoEditar.id_punto === this.punto_borrado.id_punto) {
+                                    this.puntosEditar.splice(indexEditar, 1);
+                                  }
+                                });
+                                this.marcadores.forEach(marcador => marcador.setMap(null));
+                                this.marcadores = [];
+                                this.nuevos_marcadores = [];
+                                this.crearPoligono(this.id_zona);
+                                this.punto_borrado = {};
+                              },
+                              error => {
+                                console.error('Error al eliminar el punto:', error);
+                                Swal.fire('Error al eliminar el punto', error.message, 'error');
+                              }
+                            );
+                          }
+                        } catch (error) {
+                          console.error('Error en el proceso de eliminación:', error);
+                          Swal.fire('Error en el proceso de eliminación');
+                        }
+                      });
+                      
+                    } else {
+                      // Código para cuando el usuario cancela
+                      this.marcadores.forEach(marcador => marcador.setMap(null));
+                      this.marcadores = [];
+                      this.crearPoligono(this.id_zona);
+                      this.nuevos_marcadores = [];
+                    }
+                  });
+                
+                break;
+                case 'AÑADIR UN PUNTO':
+                  Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: "¿Deseas realizar los cambios?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, haz los cambios',
+                    cancelButtonText: 'No, cancelar'
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                      // Código para realizar los cambios
+                      
+                      
+                    } else {
+                      // Código para cuando el usuario cancela
+                      this.marcadores.forEach(marcador => marcador.setMap(null));
+                      this.marcadores = [];
+                      this.crearPoligono(this.id_zona);
+                      this.nuevos_marcadores = [];
+                    }
+                  });
+                break;
+            }
             break;
           default:
             console.log('Opción no reconocida');
@@ -375,9 +448,74 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
       } else {
         console.error('El botón editarZona no está disponible');
       }  
+      }else{
+        Swal.fire({
+          title: 'Selecciona una opción',
+          text: '¿Qué deseas hacer?',
+          icon: 'question',
+          showCancelButton: true,
+          showDenyButton: true,
+          showConfirmButton: true,
+          confirmButtonText: 'EDITAR 1 PUNTO',
+          denyButtonText: 'ELIMINAR 1 PUNTO',
+          cancelButtonText: 'AÑADIR UN PUNTO',
+          confirmButtonColor: '#3085d6',
+          denyButtonColor: '#d33',
+          cancelButtonColor: '#aaa'
+        }).then((result) => {
+          
+          if (result.isConfirmed) {
+            this.opcionSeleccionada = 'EDITAR 1 PUNTO';
+          } else if (result.isDenied) {
+            this.opcionSeleccionada = 'ELIMINAR 1 PUNTO';
+          } else if (result.dismiss === Swal.DismissReason.cancel) {
+            this.opcionSeleccionada = 'AÑADIR UN PUNTO';
+          } else if (result.dismiss === Swal.DismissReason.backdrop || result.dismiss === Swal.DismissReason.close || result.dismiss === Swal.DismissReason.esc) {
+            // El usuario cerró el modal
+            console.log('El usuario cerró el modal');
+            this.clicks_posiciones = 0;
+          }
+          // Aquí puedes programar las acciones según la opción seleccionada
+          switch (this.opcionSeleccionada) {
+            case 'EDITAR 1 PUNTO':
+              // Código para editar un punto
+              console.log('Editar un punto seleccionado');
+              boton.textContent = "Guardar";
+              boton.innerText = "Guardar";
+              this.textoBoton = "Guardar";
+              break;
+            case 'ELIMINAR 1 PUNTO':
+              // Código para eliminar un punto
+              console.log('Eliminar un punto seleccionado');
+              boton.textContent = "Guardar";
+              boton.innerText = "Guardar";
+              this.textoBoton = "Guardar";
+              this.mostrarPuntos_Eliminar(this.id_zona);
+              break;
+            case 'AÑADIR UN PUNTO':
+              // Código para añadir un punto
+              console.log('Añadir un punto seleccionado');
+              boton.textContent = "Guardar";
+              boton.innerText = "Guardar";
+              this.textoBoton = "Guardar";
+              this.mostrarPuntos_Añadir(this.id_zona);
+
+              //ELIMINAR LOS POLÍGONOS EXISTENTES
+              this.arrayPoligonos.forEach(overlay => {
+                if (overlay instanceof google.maps.Polygon) {
+                  overlay.setMap(null);
+                }
+              });
+              break;
+            default:
+              // Manejo de otras opciones si es necesario
+              break;
+          }
+        });
+      }
+      // FIN DE LA VENTANA EMERGENTE
     }
   }
-
   actualizarPunto() {
     if(this.markador_actualizado){
       this.punto_borrado.latitud = this.markador_actualizado.getPosition()?.lat();
@@ -435,7 +573,7 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
   }
 
   //Método para agregar un punto a la zona segura
-  mostrarPuntos(id_zona:number){
+  mostrarPuntos_Eliminar(id_zona:number){
     this.zonasSegurasService.buscar(id_zona).subscribe(
       (zona: Zona_segura) => {
         this.puntosEditar = zona.puntos ?? [];
@@ -443,6 +581,25 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
         if (this.puntosEditar.length > 0) {
           this.puntosEditar.forEach((puntosEditar, index) => {
             this.actualizarMarcadorEnMapa(puntosEditar);
+
+          });
+        }
+      },
+      error => {
+        console.error('Error al buscar la zona segura', error);
+      }
+    );
+  }
+
+  //MOSTRAR PUNTOS PARA AÑADIR UN PUNTO EXTRA
+  mostrarPuntos_Añadir(id_zona:number){
+    this.zonasSegurasService.buscar(id_zona).subscribe(
+      (zona: Zona_segura) => {
+        this.puntosEditar = zona.puntos ?? [];
+        console.log('Puntos:', this.puntos);
+        if (this.puntosEditar.length > 0) {
+          this.puntosEditar.forEach((puntosEditar, index) => {
+            this.actualizarMarcadorEnMapa_AñadirPunto(puntosEditar);
           });
         }
       },
@@ -480,28 +637,53 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
     }
   }
 
+  //ACTUALIZAR PUNTOS SIN AÑADIR UN LINSTENER
+  actualizarMarcadorEnMapa_AñadirPunto(position: Punto) {
+    // RUTA PARA COLOCAR UN MARKADOR PERSONALIZADO
+    if(position.latitud && position.longitud){
+      const latLng: google.maps.LatLngLiteral = {
+        lat: position.latitud,
+        lng: position.longitud,
+      };
+      const ruta = 'https://th.bing.com/th/id/R.e6d5549d7d43ef8e34af49fed37e1196?rik=nb2KWBpNv895Bw&pid=ImgRaw&r=0';
+    const marcador = new google.maps.Marker({
+      position: latLng,
+      icon: {
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 10,
+        strokeColor: '#f00',
+        strokeWeight: 5,
+        fillColor: '#000A02',
+        fillOpacity: 1,
+      },
+      map: this.map?.googleMap || null,
+    });    
+    this.marcadores.push(marcador); // Agregar el marcador al array
+    }
+  }
+
   eliminarMarcador(marcador: google.maps.Marker,position: Punto) {
     if(this.marcadores.length <= 3){
       Swal.fire('Error', 'No se puede eliminar mas puntos de la zona segura', 'error');
       return;
     }else{
       // Remover el marcador del mapa
-      marcador.setMap(null);
+        this.nuevos_marcadores.push(marcador);
+        marcador.setMap(null);
         const index = this.marcadores.indexOf(marcador);
         if (index > -1) {
         this.marcadores.splice(index, 1);
-      }
-      //REMOVER EL PUNTO DE MI ARRAY DE PUNTOS
-      const index_punto = this.puntosEditar.indexOf(position);
-      this.punto_borrado = position;
-      console.log('Punto a eliminar:', this.punto_borrado);
-      if (index_punto > -1) {
-        this.puntosEditar.splice(index_punto, 1);
-      }
-    // Remover el marcador del mapa
-    marcador.setMap(null);
-    // ACTUALIZAR EL POLÍGONO
-    this.actualizarPoligono();
+        }
+        //REMOVER EL PUNTO DE MI ARRAY DE PUNTOS
+        const index_punto = this.puntosEditar.indexOf(position);
+        this.EliminarPuntos.push(position);
+        if (index_punto > -1) {
+          this.puntosEditar.splice(index_punto, 1);
+        }
+        // Remover el marcador del mapa
+        marcador.setMap(null);
+        // ACTUALIZAR EL POLÍGONO
+        this.actualizarPoligono();      
     }
   }
 
@@ -534,7 +716,6 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
   }
 
   finalizarEdicion() {
-  
     // Verificar si hay un listener de clic para eliminar
     if (this.clickListener) {
       // Eliminar el listener de clic del mapa
