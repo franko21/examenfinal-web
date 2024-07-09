@@ -1,4 +1,4 @@
-import { Component, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { GoogleMap, MapHeatmapLayer, MapMarker } from '@angular/google-maps';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule, provideHttpClient } from '@angular/common/http';
@@ -28,9 +28,14 @@ import { Punto } from 'src/app/model/punto.model';
 
 export class UbicacionesComponent implements OnInit, OnDestroy {
   //VARIABLES
-
+  punto_borrado:Punto = new Punto(); 
+  nuevos_marcadores: google.maps.Marker[] = [];
+  markador_actualizado: google.maps.Marker;
+  textoBoton: string = '';
+  clicks_posiciones:number = 0;
   posicionesSubscription: Subscription;
   marcadores: google.maps.Marker[] = [];
+  private clickListener: google.maps.MapsEventListener | undefined;
   listadoPuntos: any[] = [];
   puntosEditar: Punto[] = [];
   dispositivos: Dispositivo[] = [];
@@ -76,9 +81,17 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
   }
 
   onZonaSeguraChange(event: Event) {
+    const boton = document.getElementById('boton_editar') as HTMLButtonElement;
+      if (boton) {
+        boton.textContent = "Editar";
+        boton.innerText = "Editar";
+        this.textoBoton = "Editar";
+      }
+      this.finalizarEdicion();
+      this.nuevos_marcadores.forEach(marcador => marcador.setMap(null));
+      this.nuevos_marcadores = [];
     const selectElement = event.target as HTMLSelectElement;
     const selectedZonaSeguraIdStr = selectElement.value;
-    console.log('Zona segura seleccionada:', selectedZonaSeguraIdStr);
     this.showOptions = true;
 
     // Convertir el ID de string a number
@@ -227,22 +240,18 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
     // Asegurarse de que this.map y this.map.googleMap estén definidos
     if (this.map && this.map.googleMap) {
       const mapContainer = this.map.googleMap;
-
       this.zonasSegurasService.buscar(id).subscribe(
         (zona: Zona_segura) => {
           this.puntos = zona.puntos ?? [];
-
           if (this.puntos.length > 0) {
             // Convertir los puntos de la zona segura a vértices del polígono
             const vertices = this.puntos.map(punto => ({
               lat: punto.latitud,
               lng: punto.longitud
             }));
-
             // Ordenar los vértices del polígono
             const vertices_parseados: google.maps.LatLng[] = convertirALatLng(vertices);
             this.functionordenarVertices(vertices_parseados);
-
             // Eliminar polígonos existentes del mapa
             this.arrayPoligonos.forEach(overlay => {
               if (overlay instanceof google.maps.Polygon) {
@@ -250,7 +259,6 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
               }
             });
             this.arrayPoligonos = [];
-
             // Crear el nuevo polígono
             const poligono = new google.maps.Polygon({
               paths: vertices_parseados,
@@ -259,7 +267,6 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
               fillColor: '#4DE943',
               strokeWeight: 4,
             });
-
             this.arrayPoligonos.push(poligono);
           }
         },
@@ -267,7 +274,6 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
           console.error('Error al buscar la zona segura', error);
         }
       );
-
       // Limpiar marcadores del mapa
       this.marcadores.forEach(marcador => marcador.setMap(null));
       this.marcadores = [];
@@ -300,29 +306,144 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
       return;
     }else{
       //
-      this.puntosEditar = [];
-      this.mostrarPuntos(this.id_zona);
+      const boton = document.getElementById('boton_editar') as HTMLButtonElement;
+      if (boton) {
+        this.clicks_posiciones++;
+        console.log('Clicks:', this.clicks_posiciones);
+        const textoBoton = boton.textContent || boton.innerText;
+        switch (textoBoton) {
+          case 'Editar':
+            boton.textContent = "Guardar";
+            boton.innerText = "Guardar";
+            this.textoBoton = "Guardar";
+            this.puntosEditar = [];
+            this.mostrarPuntos(this.id_zona);
+            // Lógica para editar el polígono
+            if(esDivisiblePorDos(this.clicks_posiciones)){
+              console.log('Se dio click un numero par');
+            }else{
+              this.clickListener = this.map?.googleMap?.addListener('click', (event: google.maps.MapMouseEvent) => {
+                if (event.latLng) {
+                  if(this.nuevos_marcadores.length > 0){
+                    Swal.fire('Error', 'SOLO PUEDES EDITAR UN PUNTO A LA VEZ', 'error');
+                  }else{
+                    const position = event.latLng.toJSON();
+                    // Aquí puedes crear un nuevo marcador en la posición clicada
+                    const nuevoMarcador = new google.maps.Marker({
+                        position: position,
+                        map: this.map?.googleMap || null,
+                        // Aquí puedes personalizar el icono u otras propiedades del marcador
+                        icon: {
+                            path: google.maps.SymbolPath.CIRCLE,
+                            scale: 10,
+                            strokeColor: '#f00',
+                            strokeWeight: 5,
+                            fillColor: '#000A02',
+                            fillOpacity: 1,
+                        }
+                    });
+                    this.markador_actualizado = nuevoMarcador;
+                    
+                    // Aquí podrías guardar este nuevo marcador en un array si necesitas rastrearlos
+                    // this.marcadores.push(nuevoMarcador); 
+                    this.nuevos_marcadores.push(nuevoMarcador);
+                    nuevoMarcador.getPosition()?.lat();
+                    nuevoMarcador.getPosition()?.lng();
+                  }
+                    
+                }
+            });
+            }         
+            break;
+          case 'Guardar':
+            console.log('Se seleccionó Guardar');
+            this.finalizarEdicion();
+            boton.textContent = "Editar";
+            boton.innerText = "Editar";
+            this.textoBoton = "Editar";
+            this.puntosEditar = [];
+            this.nuevos_marcadores.forEach(marcador => {  });
+            this.nuevos_marcadores.forEach(marcador => marcador.setMap(null));
+            this.nuevos_marcadores = [];
+            this.actualizarPunto();
+            // Lógica para guardar el polígono
+            break;
+          default:
+            console.log('Opción no reconocida');
+            break;
+        }
+      } else {
+        console.error('El botón editarZona no está disponible');
+      }  
     }
+  }
+
+  actualizarPunto() {
+    if(this.markador_actualizado){
+      this.punto_borrado.latitud = this.markador_actualizado.getPosition()?.lat();
+      this.punto_borrado.longitud = this.markador_actualizado.getPosition()?.lng();
+      console.log('Punto a guardar:', this.punto_borrado.zonaSegura?.idZonaSegura);
+      this.puntoService.actualizar(this.punto_borrado).subscribe(
+        (punto: Punto) => {
+          console.log('Punto guardado:', punto);
+          this.puntosEditar.push(punto);
+          this.actualizarMarcadorEnMapa(punto);
+          this.actualizarPoligono();
+          this.crearPoligono(this.id_zona);
+          Swal.fire('ZONA EDITADA CORRECTAMENTE', '', 'success');
+        },
+        error => {
+          console.error('Error al guardar el punto:', error);
+        }
+      );
+    }else{
+        Swal.fire({
+          icon: 'warning',
+          title: '¿Estás seguro?',
+          text: '¿Realmente deseas eliminar esta el punto de zona segura?',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: 'Sí, eliminar',
+          cancelButtonText: 'Cancelar'
+        }).then((result) => {
+          var validar_dispositivos: Boolean = false;
+          var listadispositivos: Dispositivo[] = [];
+          if (result.isConfirmed) {
+            if(this.punto_borrado.id_punto){
+              this.puntoService.eliminar(this.punto_borrado.id_punto).subscribe(
+                () => {
+                  Swal.fire('Punto eliminado', '', 'success');
+                  this.puntosEditar.forEach((punto, index) => {
+                    if (punto.id_punto === this.punto_borrado.id_punto) {
+                      this.puntosEditar.splice(index, 1);
+                    }
+                  });
+                  this.actualizarPoligono();
+                  this.crearPoligono(this.id_zona);
+                },
+                error => {
+                  console.error('Error al eliminar el punto:', error);
+                }
+              );
+            }
+            // Aquí llamas a la función para eliminar la zona segura
+            
+          }
+        });
+      }
   }
 
   //Método para agregar un punto a la zona segura
   mostrarPuntos(id_zona:number){
     this.zonasSegurasService.buscar(id_zona).subscribe(
       (zona: Zona_segura) => {
-        this.puntos = zona.puntos ?? [];
+        this.puntosEditar = zona.puntos ?? [];
         console.log('Puntos:', this.puntos);
-        if (this.puntos.length > 0) {
-          this.puntos.forEach((punto, index) => {
-            this.actualizarMarcadorEnMapa(punto);
+        if (this.puntosEditar.length > 0) {
+          this.puntosEditar.forEach((puntosEditar, index) => {
+            this.actualizarMarcadorEnMapa(puntosEditar);
           });
-          // Convertir los puntos de la zona segura a vértices del polígono
-          const vertices = this.puntos.map(punto => ({
-            lat: punto.latitud,
-            lng: punto.longitud
-          }));
-          // Ordenar los vértices del polígono
-          const vertices_parseados: google.maps.LatLng[] = convertirALatLng(vertices);
-          this.functionordenarVertices(vertices_parseados);
         }
       },
       error => {
@@ -353,20 +474,72 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
     });
     // Agregar el evento click al marcador
     marcador.addListener('click', () => {
-      this.eliminarMarcador(marcador);
+      this.eliminarMarcador(marcador,position);
     });
     this.marcadores.push(marcador); // Agregar el marcador al array
     }
   }
 
-  eliminarMarcador(marcador: google.maps.Marker) {
+  eliminarMarcador(marcador: google.maps.Marker,position: Punto) {
+    if(this.marcadores.length <= 3){
+      Swal.fire('Error', 'No se puede eliminar mas puntos de la zona segura', 'error');
+      return;
+    }else{
+      // Remover el marcador del mapa
+      marcador.setMap(null);
+        const index = this.marcadores.indexOf(marcador);
+        if (index > -1) {
+        this.marcadores.splice(index, 1);
+      }
+      //REMOVER EL PUNTO DE MI ARRAY DE PUNTOS
+      const index_punto = this.puntosEditar.indexOf(position);
+      this.punto_borrado = position;
+      console.log('Punto a eliminar:', this.punto_borrado);
+      if (index_punto > -1) {
+        this.puntosEditar.splice(index_punto, 1);
+      }
     // Remover el marcador del mapa
     marcador.setMap(null);
+    // ACTUALIZAR EL POLÍGONO
+    this.actualizarPoligono();
+    }
+  }
+
+  //ACTUALIZAR EL POLÍGONO PARA LA EDICIÓN
+  actualizarPoligono() {
+    if (this.puntosEditar.length > 0 && this.puntosEditar) {
+      const vertices = this.puntosEditar.filter(punto => punto.latitud !== undefined && punto.longitud !== undefined).map(punto => ({
+          lat: punto.latitud as number,
+          lng: punto.longitud as number
+        }));
+      const vertices_parseados: google.maps.LatLng[] = convertirALatLng(vertices);
+      this.functionordenarVertices(vertices_parseados);
+      //Eliminar polígonos existentes del mapa
+      this.arrayPoligonos.forEach(overlay => {
+        if (overlay instanceof google.maps.Polygon) {
+          overlay.setMap(null);
+        }
+      });
+      this.arrayPoligonos = [];
+      // Crear el nuevo polígono
+      const poligono = new google.maps.Polygon({
+        paths: vertices_parseados,
+        map: this.map?.googleMap,
+        strokeColor: '#0F3B04',
+        fillColor: '#4DE943',
+        strokeWeight: 4,
+      });
+      this.arrayPoligonos.push(poligono);
+    }
+  }
+
+  finalizarEdicion() {
   
-    // Remover el marcador del array
-    const index = this.marcadores.indexOf(marcador);
-    if (index > -1) {
-      this.marcadores.splice(index, 1);
+    // Verificar si hay un listener de clic para eliminar
+    if (this.clickListener) {
+      // Eliminar el listener de clic del mapa
+      this.clickListener.remove();
+      this.clickListener = undefined; // Limpiar la variable de referencia al listener
     }
   }
 }
@@ -395,4 +568,7 @@ function boostrapApplication(App: any, arg1: { providers: any[]; }) {
   throw new Error('Function not implemented.');
 }
 
+function esDivisiblePorDos(numero: number): boolean {
+  return numero % 2 === 0;
+}
 

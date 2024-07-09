@@ -37,6 +37,7 @@ import { DipositivoService } from 'src/app/service/dispositivo.service';
 import { Subscription } from 'rxjs';
 import { Estado } from 'src/app/model/estado.model';
 
+
 @Component({
   selector: 'app-monitoreo',
   standalone: true,
@@ -76,25 +77,34 @@ import { Estado } from 'src/app/model/estado.model';
 })
 export class MonitoreoComponent implements OnInit, OnDestroy {
   estadosSubscription: Subscription;
-  estados: Estado[] = [];
-  mostrarEstado: boolean = true; // Variable para controlar qué sección mostrar
+  estados: any[] = []; // Asegúrate de tener una estructura adecuada para estados
+  mostrarEstado: boolean = true;
+  selectedEstado: any | null = null;
 
   tab: string = 'estado';
-  toggleTab(tabName: string): void {
-    this.tab = tabName;
-  }
-
   showTable: boolean = false;
-  public dispositivo: Dispositivo = new Dispositivo();
-  dispositivos: Dispositivo[] = [];
-  selectedEstado: Estado | null = null;
   p: number = 1;
+
   constructor(
     private webSocketService: WebSocketDispositivos,
-    private el: ElementRef,
-    private service: EstadoService) { }
+    private service: EstadoService
+  ) {}
 
-  listarEstados() {
+  ngOnInit(): void {
+    this.listarEstados(); // Cargar estados al inicio
+    this.estadosSubscription = this.webSocketService.obtenerEstados()
+      .subscribe((estados: any[]) => {
+        this.estados = estados;
+      });
+  }
+
+  ngOnDestroy(): void {
+    if (this.estadosSubscription) {
+      this.estadosSubscription.unsubscribe();
+    }
+  }
+
+  listarEstados(): void {
     this.service.listar().subscribe(
       estados => {
         this.estados = estados;
@@ -105,28 +115,22 @@ export class MonitoreoComponent implements OnInit, OnDestroy {
     );
   }
 
-  ngOnInit(): void {
-    this.listarEstados();
-    this.estadosSubscription = this.webSocketService.obtenerEstados()
-      .subscribe((estados: any[]) => {
-        this.estados = estados;
-      }); 
+  ubicarDispositivo(dispositivo: any) {
+    // Lógica para ubicar el dispositivo
+    console.log('Ubicando dispositivo:', dispositivo);
   }
 
-  ngOnDestroy(): void {
-    if (this.estadosSubscription) {
-      this.estadosSubscription.unsubscribe();
+  hoverEffect(event: MouseEvent, estado: any) {
+    // Cambios de estilo adicionales o lógica según el evento (hover, mouseleave)
+    if (event.type === 'mouseenter') {
+      this.selectedEstado = estado;
+    } else {
+      this.selectedEstado = null;
     }
   }
 
-  // Método para alternar la vista de la tabla
-  toggleView() {
-    this.showTable = !this.showTable;
-  }
-
-  seleccionarDispositivo(estado: Estado): void {
-    this.selectedEstado = estado;
-        this.mostrarEstado = !this.mostrarEstado; // Alternar el valor de mostrarEstado
-
+  getRandomDelay(): string {
+    const delay = Math.random() * 50; // Retraso aleatorio entre 0 y 70 segundos
+    return `${delay}s`;
   }
 }
