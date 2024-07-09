@@ -13,6 +13,7 @@ import { PosicionService } from 'src/app/service/posicion.service';
 import Swal from 'sweetalert2';
 import { PuntoService } from 'src/app/service/Punto.service';
 import { DipositivoService } from 'src/app/service/dispositivo.service';
+import { Punto } from 'src/app/model/punto.model';
 
 @Component({
   selector: 'app-ubicaciones',
@@ -26,15 +27,12 @@ import { DipositivoService } from 'src/app/service/dispositivo.service';
 
 
 export class UbicacionesComponent implements OnInit, OnDestroy {
+  //VARIABLES
 
   posicionesSubscription: Subscription;
-
-  editPolygon() {
-    throw new Error('Method not implemented.');
-  }
-
   marcadores: google.maps.Marker[] = [];
   listadoPuntos: any[] = [];
+  puntosEditar: Punto[] = [];
   dispositivos: Dispositivo[] = [];
   @ViewChild(GoogleMap, { static: false }) map: GoogleMap | undefined;
   center: google.maps.LatLngLiteral = { lat: -2.879767894744873, lng: -78.97490692138672 };
@@ -295,7 +293,82 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
     this.zoom = 18;
   }
 
+  //método para editar las zonas seguras
+  editPolygon() {
+    if(!this.id_zona){
+      Swal.fire('Error', 'Seleccione una zona segura para editar', 'error');
+      return;
+    }else{
+      //
+      this.puntosEditar = [];
+      this.mostrarPuntos(this.id_zona);
+    }
+  }
 
+  //Método para agregar un punto a la zona segura
+  mostrarPuntos(id_zona:number){
+    this.zonasSegurasService.buscar(id_zona).subscribe(
+      (zona: Zona_segura) => {
+        this.puntos = zona.puntos ?? [];
+        console.log('Puntos:', this.puntos);
+        if (this.puntos.length > 0) {
+          this.puntos.forEach((punto, index) => {
+            this.actualizarMarcadorEnMapa(punto);
+          });
+          // Convertir los puntos de la zona segura a vértices del polígono
+          const vertices = this.puntos.map(punto => ({
+            lat: punto.latitud,
+            lng: punto.longitud
+          }));
+          // Ordenar los vértices del polígono
+          const vertices_parseados: google.maps.LatLng[] = convertirALatLng(vertices);
+          this.functionordenarVertices(vertices_parseados);
+        }
+      },
+      error => {
+        console.error('Error al buscar la zona segura', error);
+      }
+    );
+  }
+
+  actualizarMarcadorEnMapa(position: Punto) {
+    // RUTA PARA COLOCAR UN MARKADOR PERSONALIZADO
+    if(position.latitud && position.longitud){
+      const latLng: google.maps.LatLngLiteral = {
+        lat: position.latitud,
+        lng: position.longitud,
+      };
+      const ruta = 'https://th.bing.com/th/id/R.e6d5549d7d43ef8e34af49fed37e1196?rik=nb2KWBpNv895Bw&pid=ImgRaw&r=0';
+    const marcador = new google.maps.Marker({
+      position: latLng,
+      icon: {
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 10,
+        strokeColor: '#f00',
+        strokeWeight: 5,
+        fillColor: '#000A02',
+        fillOpacity: 1,
+      },
+      map: this.map?.googleMap || null,
+    });
+    // Agregar el evento click al marcador
+    marcador.addListener('click', () => {
+      this.eliminarMarcador(marcador);
+    });
+    this.marcadores.push(marcador); // Agregar el marcador al array
+    }
+  }
+
+  eliminarMarcador(marcador: google.maps.Marker) {
+    // Remover el marcador del mapa
+    marcador.setMap(null);
+  
+    // Remover el marcador del array
+    const index = this.marcadores.indexOf(marcador);
+    if (index > -1) {
+      this.marcadores.splice(index, 1);
+    }
+  }
 }
 //OBTENER EL CENTRO DE LA ZONA SEGURA
 function calcularCentroide(vertices: google.maps.LatLng[]): google.maps.LatLng {
