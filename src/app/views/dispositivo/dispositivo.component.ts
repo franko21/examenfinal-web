@@ -1,4 +1,4 @@
-import { Component,NgModule,OnInit } from '@angular/core';
+import { Component,ElementRef,NgModule,OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule,FormBuilder,FormGroup, ReactiveFormsModule,Validators,AbstractControl, NgForm } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -19,9 +19,11 @@ import {
   ToastComponent,
   ToastHeaderComponent,
   ToasterComponent,
-  ProgressBarDirective, ProgressBarComponent
+  ProgressBarDirective,
+  ProgressBarComponent
 } from '@coreui/angular';
-
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
 import { IconDirective } from '@coreui/icons-angular';
 import { Dispositivo } from 'src/app/model/dispositivo.model';
 import { DipositivoService } from 'src/app/service/dispositivo.service';
@@ -102,7 +104,7 @@ export class DispositivoComponent implements OnInit {
    disponible: boolean;
    id_marca:number;
   searchText: string = '';
-
+  @ViewChild('content') content!: ElementRef; 
   position = 'top-end';
   visible = false;
   percentage = 0;
@@ -110,6 +112,32 @@ export class DispositivoComponent implements OnInit {
   position2 = 'top-end';
   visible2 = false;
   percentage2 = 0;
+
+ 
+
+
+  generarPDF() {
+    const doc = new jsPDF();
+
+    // Capturar el contenido HTML como una imagen con mayor calidad
+    html2canvas(this.content.nativeElement, {
+      scale: 2, // Aumenta la escala para mejorar la calidad
+      logging: true, // Activa los mensajes de registro para depuración
+      allowTaint: true // Permite el tinte de origen, necesario si el contenido HTML tiene imágenes externas
+    }).then((canvas) => {
+      const imageData = canvas.toDataURL('image/png');
+      const imgWidth = 210;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      // Agregar la imagen al documento PDF
+      doc.addImage(imageData, 'PNG', 0, 0, imgWidth, imgHeight);
+
+      // Guardar el PDF y abrir en una nueva pestaña
+      const pdfBlob = doc.output('blob');
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      window.open(pdfUrl, '_blank');
+    });
+  }
 
   filteredDispositivos() {
     if (!this.searchText) {
@@ -326,13 +354,13 @@ export class DispositivoComponent implements OnInit {
     this.serdispo.crear(this.dispositivo).subscribe(
       () => {
         if(this.titulo=="Ingresar dispostivo"){
-           Swal.fire({
-             icon: 'success',
-            title: '¡Dispositivo creado con éxito!',
-            text: 'EXITO',
-            confirmButtonColor: '#3085d6',
-             confirmButtonText: 'OK'
-           });
+          // Swal.fire({
+           //  icon: 'success',
+           // title: '¡Dispositivo creado con éxito!',
+           // text: 'EXITO',
+           // confirmButtonColor: '#3085d6',
+           //  confirmButtonText: 'OK'
+           //});
           this.toggleToast();
         }else{
           console.log(this.dispositivo);
@@ -343,7 +371,7 @@ export class DispositivoComponent implements OnInit {
           //   confirmButtonColor: '#3085d6',
           //   confirmButtonText: 'OK'
           // });
-          this.toggleToast();
+          this.toggleToast2();
         }
         this.toggleView();
         this.showTablem=true;
@@ -360,7 +388,7 @@ export class DispositivoComponent implements OnInit {
           confirmButtonColor: '#d33',
           confirmButtonText: 'OK'
         });
-        this.toggleToast2();
+       //this.toggleToast2();
       }
     );
     }
@@ -458,6 +486,7 @@ export class DispositivoComponent implements OnInit {
   this.modelosfiltro= [];
   this.nombredispo="";
   this.id_marca=0;
+  this.disponible=false;
 
   }
   cancelar(): void{
