@@ -95,6 +95,15 @@ export class MonitoreoComponent implements OnInit, OnDestroy {
     this.estadosSubscription = this.webSocketService.obtenerEstados()
       .subscribe((estados: any[]) => {
         this.estados = estados;
+        for (const estado of this.estados) {
+          // Verificar si estado, dispositivo y posición no son nulos
+          if (estado.dispositivo.posicion.dentro) {
+            console.log("dentro");
+
+          } else{
+            console.log("fuera");
+          }
+      }      
       });
   }
 
@@ -129,8 +138,10 @@ export class MonitoreoComponent implements OnInit, OnDestroy {
     }
   }
 
+  /*
   getRandomDelay(): string {
     const delay = Math.random() * 50; // Retraso aleatorio entre 0 y 70 segundos
     return `${delay}s`;
   }
+  */
 }

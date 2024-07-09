@@ -2,7 +2,7 @@ import { Dispositivo } from "./dispositivo.model";
 
 export class Estado {
     idEstado?: number;
-    fechActualizacion?: Date;
+    fechaActualizacion?: Date;
     nivelBateria?: number;
     cargando?:boolean;
     gps?:boolean;
