@@ -68,23 +68,27 @@ export class ZonasSegurasComponent{
 
   //MÉTODO PARA ACTUALIZAR EL MARCADOR EN EL MAPA
   actualizarMarcadorEnMapa(position: google.maps.LatLngLiteral) {
-    //RUTA PARA COLOCAR UN MARKADOR PERSONALIZADO
+    // RUTA PARA COLOCAR UN MARKADOR PERSONALIZADO
     const ruta = 'https://th.bing.com/th/id/R.e6d5549d7d43ef8e34af49fed37e1196?rik=nb2KWBpNv895Bw&pid=ImgRaw&r=0';
+    const marcador = new google.maps.Marker({
+      position: position,
+      icon: {
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 10,
+        strokeColor: '#f00',
+        strokeWeight: 5,
+        fillColor: '#000A02',
+        fillOpacity: 1,
+      },
+      map: this.map?.googleMap || null,
+    });
   
-  const marcador = new google.maps.Marker({
-    position: position,
-    icon: {
-      path: google.maps.SymbolPath.CIRCLE,
-      scale: 10,
-      strokeColor: '#f00',
-      strokeWeight: 5,
-      fillColor: '#000A02',
-      fillOpacity: 1,
-    },
-    map: this.map?.googleMap || null,
-  });
+    // Agregar el evento click al marcador
+    marcador.addListener('click', () => {
+      this.eliminarMarcador(marcador);
+    });
   
-  this.marcadores.push(marcador); // Agregar el marcador al array
+    this.marcadores.push(marcador); // Agregar el marcador al array
   }
 
   Cargar_Zonas(){
@@ -319,7 +323,16 @@ editPolygon() {
   }
   
   //MÉTODO PARA MANEJAR EL EVENTO DE CLIC EN UN POLÍGONO
+  eliminarMarcador(marcador: google.maps.Marker) {
+    // Remover el marcador del mapa
+    marcador.setMap(null);
   
+    // Remover el marcador del array
+    const index = this.marcadores.indexOf(marcador);
+    if (index > -1) {
+      this.marcadores.splice(index, 1);
+    }
+  }
 
 }
 //FUNCION PARA CALCULAR EL CENTROIDE

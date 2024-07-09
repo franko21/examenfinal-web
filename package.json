@@ -40,7 +40,6 @@
     "@stomp/ng2-stompjs": "^8.0.0",
     "@stomp/stompjs": "^7.0.0",
     "angular-smart-table": "^2.1.11",
-    "bootstrap": "^5.3.3",
     "chart.js": "^4.4.3",
     "install": "^0.13.0",
     "lodash-es": "^4.17.21",
