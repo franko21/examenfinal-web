@@ -121,14 +121,37 @@
   margin: 0; /* Ajusta el margen del h4 para evitar espacios innecesarios */
 }
 
-
-
-
-
+//
+//
+//
+//
+//.search-container {
+//  position: relative;
+//  margin-bottom: 1rem;
+//  margin-top: 1rem;
+//}
+//
+//.search-icon {
+//  position: absolute;
+//  top: 50%;
+//  left: 10px;
+//  transform: translateY(-50%);
+//  pointer-events: none;
+//}
+//
+//.search-input {
+//  padding-left: 40px;
+//}
 .search-container {
-  position: relative;
-  margin-bottom: 1rem;
   margin-top: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.search-input-container {
+  position: relative;
+  flex: 1; /* El campo de búsqueda ocupa todo el espacio disponible */
 }
 
 .search-icon {
@@ -140,8 +163,15 @@
 }
 
 .search-input {
-  padding-left: 40px;
+  padding-left: 40px; /* Ajustar según el icono de búsqueda */
 }
+
+.search-select {
+  margin-left: 10px; /* Ajusta el margen izquierdo para separar el select del campo de búsqueda */
+  margin-right: 10px;
+  width: 150px; /* Ajusta el ancho del select según sea necesario */
+}
+
 .modal-custom {
   z-index: 9050; /* Ensure modal is above other elements */
   position: fixed; /* Ensure it stays in one place */
