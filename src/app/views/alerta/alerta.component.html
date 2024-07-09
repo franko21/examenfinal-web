@@ -1,6 +1,11 @@
 <div class="card">
     <div class="card-body">
       <h5 class="card-title">Alertas</h5>
+      <div class="search-input-container">
+        <!-- Input de búsqueda -->
+        <input type="text" placeholder="Buscar..." [(ngModel)]="searchText" class="form-control search-input" />
+        <svg class="search-icon" cIcon name="cilMagnifyingGlass"></svg>
+      </div>
         <table class="table table-bordered table-striped">
             <thead>
             <tr>
@@ -11,10 +16,14 @@
             </tr>
             </thead>
             <tbody>
-            <tr *ngFor="let alert of alertas; let i = index">
+            <tr *ngFor="let alert of filteredAlertas(); let i = index">
                 <td>{{alert.dispositivo?.nombre}}</td>
                 <td>{{alert.descripcion}}</td>
-                <td>{{ alert.fecha}}</td>
+                <td>
+                  <div>{{ alert.fecha ? alert.fecha.toString().split("T")[0]  : 'NA' }}</div>
+                  <div class="small text-body-secondary text-nowrap"><span>{{ alert.fecha ? formatDate2(alert.fecha, 'HH:mm') : 'NA' }}</span></div>
+
+                </td>
                 <td>
                 <button type="button" name="button"  class="btn btn-danger" (click)="mostrarDetalles(alert)">Detalles</button>
                 </td>
@@ -22,10 +31,7 @@
             <tr *ngIf="alertSeleccionado">
                 <td [attr.colspan]="4">
                     <div class="detalles">
-                        <p><strong>Beneficiario:</strong> {{alertSeleccionado.prestamo.persona.cedula}} - {{alertSeleccionado.prestamo.persona.nombre}} {{alertSeleccionado.prestamo.persona.apellido}}</p>
-                        <p><strong>Dispositivo:</strong> {{alertSeleccionado.prestamo.dispositivo.nombre}} - {{alertSeleccionado.prestamo.dispositivo.modelo.nombre}} - {{alertSeleccionado.prestamo.dispositivo.numero_serie}} </p>
-                        <p><strong>Fecha Prestamo:</strong> {{alertSeleccionado.prestamo.fecha_prestamo.toString().split("T")[0]}}</p>  
-                        <p><strong>Fecha Devolucion:</strong> {{alertSeleccionado.prestamo.fecha_finalizacion.toString().split("T")[0]}}</p>  
+                        <p><strong>Dispositivo:</strong> {{alertSeleccionado.dispositivo.nombre}} - {{alertSeleccionado.dispositivo.modelo.nombre}} - {{alertSeleccionado.dispositivo.numSerie}} </p>
                         <p><strong>Descripción de Alerta:</strong> {{alertSeleccionado.descripcion}}</p>
                         <p><strong>Fecha de Alerta:</strong> {{alertSeleccionado.fecha.toString().split("T")[0]}} {{alertSeleccionado.fecha.toString().split("T")[1].split(".")[0]}}</p>
                         <button type="button" class="btn btn-secondary" (click)="cerrarDetalles()">Cerrar</button>
@@ -36,5 +42,5 @@
         </table>
     </div>
   </div>
-  
-  
+
+

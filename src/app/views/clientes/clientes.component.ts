@@ -12,7 +12,7 @@ import {
   ToasterComponent,
   ToastHeaderComponent
 } from "@coreui/angular";
-import {IconDirective} from "@coreui/icons-angular";
+import {IconDirective, IconSetService} from "@coreui/icons-angular";
 import {DatePipe, NgForOf, NgIf} from "@angular/common";
 import {NgxPaginationModule} from "ngx-pagination";
 import {AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
@@ -20,12 +20,8 @@ import {PersonaService} from "../../service/persona.service";
 import {RolService} from "../../service/rol.service";
 import {Rol} from "../../model/rol.model";
 import {Persona} from "../../model/persona.model";
-import {Prestamo} from "../../model/prestamo.model";
-import {Dispositivo} from "../../model/dispositivo.model";
-import {Zona_segura} from "../../model/zona_segura";
-import {Usuario} from "../../model/usuario.model";
 import Swal from "sweetalert2";
-import {RegisterRequest} from "../pages/login/RegisterRequest";
+import * as icons from '@coreui/icons';
 
 @Component({
   selector: 'app-clientes',
@@ -105,7 +101,7 @@ export class ClientesComponent {
   onTimerChange2($event: number) {
     this.percentage2 = $event * 25;
   }
-  constructor(private datePipe:DatePipe, private rolService:RolService, private personaService:PersonaService,private fb:FormBuilder) {
+  constructor(private datePipe:DatePipe, private rolService:RolService, private personaService:PersonaService,private fb:FormBuilder,private iconSet: IconSetService) {
     this.registerFormIn = this.fb.group({
       cedula: ['',[Validators.required, Validators.pattern('^[0-9]*$')]],
       nombre: ['',Validators.required],
@@ -118,6 +114,8 @@ export class ClientesComponent {
       apellido: ['',Validators.required],
       rol: ['',Validators.required]
     });
+    // @ts-ignore
+    this.iconSet.icons = icons;
   }
   ngOnInit():void {
     this.rolService.getRoles().subscribe(
@@ -174,7 +172,7 @@ export class ClientesComponent {
 
     this.personaService.editPersona(this.selectedPersona.id_persona,persona).subscribe({
       next:(userData)=>{
-        console.log('Datos de prestamo recibidos:', userData);
+        console.log('Datos de presona recibidos:', userData);
         this.personaService.getPersonas().subscribe(
           persona => {
             this.personas = persona;
@@ -188,6 +186,7 @@ export class ClientesComponent {
         //   confirmButtonText: 'OK'
         // })
         this.toggleToast();
+        this.registerForm.reset();
       },
       error:(errorData)=>{
         console.error('Error al editar persona:', errorData);
@@ -237,6 +236,7 @@ export class ClientesComponent {
               console.error('Error al obtener persona por cédula:', error);
             }
           );
+
         },
         error: (errorData) => {
           console.error('Error al ingresar Persona:', errorData);
@@ -281,6 +281,7 @@ export class ClientesComponent {
           //   confirmButtonText: 'OK'
           // })
           this.toggleToast();
+          this.registerFormIn.reset();
         }
       });
     }else{

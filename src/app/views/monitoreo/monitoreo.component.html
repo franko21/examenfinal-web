@@ -76,12 +76,10 @@
         <tbody class="estado-center">
           <tr *ngFor="let estado of estados">
             <td>
-              <span [ngClass]="estado.conexionInternet ? 'indicator green' : 'indicator red'"
-                    [ngStyle]="{'--animation-delay': getRandomDelay()}"></span>
+              <span [ngClass]="estado.conexionInternet ? 'indicator green' : 'indicator red'"></span>
             </td>
             <td >
-              <span [ngClass]="estado.dispositivo?.posicion?.dentro ? 'indicator green' : 'indicator red'"
-                    [ngStyle]="{'--animation-delay': getRandomDelay()}"></span>
+              <span [ngClass]="estado.dispositivo?.posicion?.dentro ? 'indicator green' : 'indicator red'"></span>
             </td>
             <td>
               <div >
@@ -107,24 +105,19 @@
               </div>
             </td>
             <td>
-              <span [ngClass]="estado.localizacion ? 'indicator green' : 'indicator red'"
-                    [ngStyle]="{'--animation-delay': getRandomDelay()}"></span>
+              <span [ngClass]="estado.localizacion ? 'indicator green' : 'indicator red'"></span>
             </td>
             <td>
-              <span [ngClass]="estado.gps ? 'indicator green' : 'indicator red'"
-                    [ngStyle]="{'--animation-delay': getRandomDelay()}"></span>
+              <span [ngClass]="estado.gps ? 'indicator green' : 'indicator red'"></span>
             </td>
             <td>
-              <span [ngClass]="estado.phoneState ? 'indicator green' : 'indicator red'"
-                    [ngStyle]="{'--animation-delay': getRandomDelay()}"></span>
+              <span [ngClass]="estado.phoneState ? 'indicator green' : 'indicator red'"></span>
             </td>
             <td>
-              <span [ngClass]="estado.notificaciones ? 'indicator green' : 'indicator red'"
-                    [ngStyle]="{'--animation-delay': getRandomDelay()}"></span>
+              <span [ngClass]="estado.notificaciones ? 'indicator green' : 'indicator red'"></span>
             </td>
             <td>
-              <span [ngClass]="estado.dispositivo?.disponible ? 'indicator green' : 'indicator red'"
-                    [ngStyle]="{'--animation-delay': getRandomDelay()}"></span>
+              <span [ngClass]="estado.dispositivo?.disponible ? 'indicator green' : 'indicator red'"></span>
             </td>
           </tr>
         </tbody>

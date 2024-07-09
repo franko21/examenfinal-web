@@ -39,7 +39,7 @@
         <h1>Ingresar Prestamo</h1>
         <c-input-group class="mb-3">
           <span cInputGroupText>
-            <svg cIcon name="cilCreditCard"></svg>
+            <svg cIcon name="cilUser"></svg>
           </span>
           <select class="form-select" formControlName="beneficiario" cFormControl required>
             <option value="" disabled selected>Seleccione un Beneficiario</option>
@@ -53,7 +53,7 @@
         </c-input-group>
         <c-input-group class="mb-3">
           <span cInputGroupText>
-            <svg cIcon name="cilItalic"></svg>
+            <svg cIcon name="cil-phone"></svg>
           </span>
           <select class="form-select" formControlName="dispositivo" cFormControl required>
             <option value="" disabled selected>Seleccione un Dispositivo</option>
@@ -67,11 +67,8 @@
         </c-input-group>
         <c-input-group class="mb-3">
           <span cInputGroupText>
-            <svg cIcon name="cilItalic"></svg>
+            <svg cIcon name="cil-clock"></svg>
           </span>
-<!--          <input formControlName="fecha" type="date" cFormControl placeholder="Fecha Devolucion" required-->
-<!--                 min="{{ hoy | date: 'yyyy-MM-dd' }}"-->
-<!--          />-->
           <input formControlName="fecha" type="datetime-local" cFormControl placeholder="Fecha Devolucion" required
                  min="{{ hoy | date: 'yyyy-MM-ddTHH:mm' }}"
           />
@@ -81,7 +78,7 @@
         </c-input-group>
         <c-input-group class="mb-3">
           <span cInputGroupText>
-            <svg cIcon name="cilUser"></svg>
+            <svg cIcon name="cil-comment-bubble"></svg>
           </span>
           <input formControlName="motivo" cFormControl placeholder="Motivo" required
           />
@@ -120,7 +117,6 @@
           </div>
         </div>
       </div>
-      <!-- Select para filtrar por estado -->
 
       <table class="table table-bordered table-striped" >
         <thead>
@@ -219,9 +215,6 @@
                 <span cInputGroupText>
                   <svg cIcon name="cilItalic"></svg>
                 </span>
-<!--              <input formControlName="fecha" type="date"  cFormControl placeholder="Fecha" required-->
-<!--                     min="{{ hoy | date: 'yyyy-MM-dd' }}"-->
-<!--              />-->
               <input formControlName="fecha" type="datetime-local" cFormControl placeholder="Fecha Devolucion" required
                      min="{{ hoy | date: 'yyyy-MM-ddTHH:mm' }}"
               />
@@ -282,27 +275,17 @@
 
 <c-modal id="liveDemoModal" [visible]="visible3" (visibleChange)="handleLiveDemoChange($event)" class="modal-custom">
     <c-modal-header class="modal-header-custom">
-<!--      <svg cIcon class="icon-secretary me-2" name="cilHandshake" size="lg"></svg>-->
       <svg cIcon class="icon-device me-2" name="cilMobile" size="lg"></svg>
 
       <h5 cModalTitle>Estado de devolucion</h5>
-<!--      <button (click)="toggleLiveDemo2()" cButtonClose></button>-->
     </c-modal-header>
     <c-modal-body>
       <div class="d-flex align-items-center">
-        <img src="https://www.w3schools.com/howto/img_avatar.png" alt="Secretary" class="rounded-circle me-3">
+        <img src="https://www.insidehighered.com/sites/default/files/media/barber%20handshake.jpg" alt="Secretary" class="rounded-circle me-3">
         <div>
-<!--          <p>holaa</p>-->
           <form [formGroup]="finalizarForm" (ngSubmit)="onFinalizarSubmit()">
             <div class="mb-3">
               <label class="form-label">Estado de Devolución</label>
-<!--              <select id="estadoDevolucion" formControlName="estado_devolucion" class="form-select" required>-->
-<!--                <option value="" disabled selected>Seleccione Estado Devolución</option>-->
-<!--                <option value="Pendiente">Pendiente</option>-->
-<!--                <option value="Devuelto">Devuelto</option>-->
-<!--                <option value="Perdido">Perdido</option>-->
-<!--                <option value="Dañado">Dañado</option>-->
-<!--              </select>-->
               <input formControlName="estado_devolucion" cFormControl placeholder="Estado de Devolucion" required
               />
               <div *ngIf="finalizarForm.controls['estado_devolucion']?.invalid && finalizarForm.controls['estado_devolucion']?.touched" class="invalid-feedback">
