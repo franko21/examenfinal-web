@@ -128,4 +128,9 @@ export class MonitoreoComponent implements OnInit, OnDestroy {
       this.selectedEstado = null;
     }
   }
+
+  getRandomDelay(): string {
+    const delay = Math.random() * 50; // Retraso aleatorio entre 0 y 70 segundos
+    return `${delay}s`;
+  }
 }

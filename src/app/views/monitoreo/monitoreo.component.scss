@@ -13,7 +13,7 @@
 
 /* Estilos para la lista de dispositivos */
 .scrollable-card {
-  max-height: 300px;
+  max-height: 80%;
   overflow-y: auto;
 }
 
@@ -29,14 +29,18 @@
 }
 
 .list-group-horizontal {
-  display: inline-flex; /* Flexbox horizontal */
-  flex-direction: row; /* Dirección horizontal */
+  display: flex;
+  flex-direction: row;
+  padding-left: 0;
+  list-style: none; /* Quitamos list-style, ya que no aplica a listas horizontales */
+  overflow-x: auto; /* Permite el desplazamiento horizontal cuando sea necesario */
 }
 
-.list-group-item {
-  flex: 0 0 auto; /* No expandir los elementos */
-  margin-right: 0px; /* Espacio entre elementos */
+
+.list-group-horizontal .list-group-item {
+  margin-right: 0px;
 }
+
 
 /* Estilos para la tabla de detalles de dispositivos */
 .table-responsive {
@@ -107,3 +111,57 @@
 .custom-text-right {
   text-align: right !important; /* Asegura que el estilo se aplique incluso con alta especificidad */
 }
+
+.table-fixed-header thead {
+  position: sticky;
+  top: 0;
+  background-color: #f8f9fa; /* Color de fondo del thead */
+  z-index: 999; /* Z-index alto para asegurar que esté por encima del contenido */
+}
+
+/* Ajustar las celdas para que el thead no sea más ancho que el tbody */
+.table-fixed-header th,
+.table-fixed-header td {
+  white-space: nowrap; /* Evitar que el contenido se desborde */
+}
+
+/* centrar los estados */
+.estado-center {
+  text-align: center; /* Centra horizontalmente */
+  vertical-align: middle; /* Centra verticalmente */
+}
+
+
+/* Estilos para los indicadores */
+.indicator {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 5px; /* Espacio entre la bola y el texto */
+  animation: blink 1s infinite alternate;
+  animation-delay: var(--animation-delay);
+}
+
+/* Colores para los indicadores */
+.indicator.green {
+  background-color: rgb(0, 203, 0);
+  box-shadow: 0 0 5px rgb( 0,203, 0);
+}
+
+.indicator.red {
+  background-color: rgb(255, 0, 0);
+  box-shadow: 0 0 5px red;
+}
+
+/* Animación de titilar */
+@keyframes blink {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.6;
+  }
+}
+
+
