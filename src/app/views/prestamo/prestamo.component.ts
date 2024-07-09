@@ -5,7 +5,7 @@ import{PrestamoService} from '../../service/prestamo.service';
 import { HttpClientModule } from '@angular/common/http';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
-import { IconDirective } from '@coreui/icons-angular';
+import {IconDirective, IconSetService} from '@coreui/icons-angular';
 import {
   ContainerComponent,
   RowComponent,
@@ -41,6 +41,10 @@ import { Dispositivo } from 'src/app/model/dispositivo.model';
 import { Usuario } from 'src/app/model/usuario.model';
 import { environment } from 'src/enviroments/environment';
 import { NgxPaginationModule } from 'ngx-pagination';
+import * as icons from '@coreui/icons';
+
+
+
 
 
 
@@ -65,7 +69,6 @@ export class PrestamoComponent {
   registerForm: FormGroup;
   registerFormIn: FormGroup;
   usuario:Usuario;
-  prestamoSeleccionado: any = null;
   hoy: Date = new Date();
   idusu:number;
   p: number = 1; // Página actual para la paginación
@@ -116,7 +119,7 @@ export class PrestamoComponent {
       }
     )
   }
-  constructor(private datePipe:DatePipe,private usuarioService:UsuarioService, private dispoService:DipositivoService, private personaService:PersonaService,private prestamoService: PrestamoService,private router:Router,private fb:FormBuilder){
+  constructor(private datePipe:DatePipe,private usuarioService:UsuarioService, private dispoService:DipositivoService, private personaService:PersonaService,private prestamoService: PrestamoService,private router:Router,private fb:FormBuilder,private iconSet: IconSetService){
     this.registerForm = this.fb.group({
       beneficiario: ['', Validators.required],
       dispositivo: ['', Validators.required],
@@ -135,6 +138,9 @@ export class PrestamoComponent {
     this.finalizarForm = this.fb.group({
       estado_devolucion: ['', Validators.required],
     });
+    // @ts-ignore
+    this.iconSet.icons = icons;
+
   }
   applyFilters(): void {
     let filtered = this.prestamos;
@@ -203,23 +209,14 @@ export class PrestamoComponent {
   formatDate2(date: Date, format: string): string {
     return <string>this.datePipe.transform(date, format);
   }
-  filtrarDispositivosDisponibles(): Dispositivo[] {
-
-    return this.dispositivos.filter(dispositivo => dispositivo.disponible);
-  }
 
   handleLiveDemoChange(event: any) {
-    this.visible = event;
+    this.visible3 = event;
   }
   toggleLiveDemo2(index: number) {
     this.selectedPrestamo = this.prestamos[index];
     this.visible3 = !this.visible3;
     console.log(this.selectedPrestamo.id_prestamo);
-  }
-  abrirModalFinalizar(prestamo: any) {
-    this.prestamoSeleccionado = prestamo;
-    this.finalizarForm.reset();
-    // $('#modalFinalizar').modal('show');
   }
 
   onFinalizarSubmit() {
