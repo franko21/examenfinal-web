@@ -67,6 +67,17 @@ $primary-color: #007bff; // Color primario, puedes ajustarlo según tus preferen
   margin-left: 10px; /* Espacio entre los botones */
 }
 
+#boton_editar{
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-left: 10px; /* Espacio entre los botones */
+}
+
 .botones:hover {
   background-color: #0056b3;
 }

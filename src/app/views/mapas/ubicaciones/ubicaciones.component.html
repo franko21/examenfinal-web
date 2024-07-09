@@ -8,7 +8,7 @@
 </div>
 <div id="map-container">
   <google-map
-    height="600px"
+    height="420px"
     width="100%"
     [center]="center"
     [zoom]="zoom"
@@ -22,7 +22,7 @@
     <!--BOTONES PARA ELIMINAR Y EDITAR-->
     <div class="lado_derecho">
       <div #btndelete_edit *ngIf="showOptions" [style.top.px]="clickPosition.y" [style.left.px]="clickPosition.x" class="context-menu">
-        <button class="botones" (click)="editPolygon()">Editar</button>
+        <button id="boton_editar" (click)="editPolygon()">Editar</button>
         <button class="botones" (click)="deletePolygon()">Eliminar</button>
       </div>
     </div>

@@ -24,16 +24,15 @@ export class PuntoService {
     
       crear(punto: Punto): Observable<Punto>{
         return this.http.post<Punto>(this.UrlEndPoint, punto,{headers: this.httpHeaders})
-      }
-    
-      editar(punto: Punto): Observable<Punto> {
-        const id_punto = `${this.UrlEndPoint}/${punto.id_punto}`;
-        return this.http.put<Punto>(id_punto, punto, { headers: this.httpHeaders});
-      }
+      }      
     
       eliminar(id_punto: number): Observable<Punto>{
         return this.http.delete<Punto>(`${this.UrlEndPoint}/${id_punto}`)
       }
 
+    actualizar(punto: Punto): Observable<Punto> {
+      const id_punto = `${this.UrlEndPoint}/${punto.id_punto}`;
+      return this.http.put<Punto>(id_punto, punto, { headers: this.httpHeaders});
+    }
     
 }
