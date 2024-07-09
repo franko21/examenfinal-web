@@ -1,120 +1,133 @@
-<div class="dashboard">
-  <section class="stats">
-    <div class="stat">
-      <span class="value">{{ estados.length }}</span>
-      <span class="label">Dispositivos</span>
-    </div>
-    <div class="stat">
-      <span class="value">{{ estados.length}}</span>
-      <span class="label">Disponibles</span>
-    </div>
-    <div class="stat">
-      <span class="value">{{ estados.length }}</span>
-      <span class="label">Mobile</span>
-    </div>
-    <div class="stat">
-      <span class="value">{{ estados.length }}</span>
-      <span class="label">Tablet</span>
-    </div>
-  </section>
-
-  <div class="content">
-    <section class="geo-performance">
-      <div class="google-map">
-        <app-ubicaciones></app-ubicaciones>
+<div class="card mb-4">
+  <div class="card-body">
+    <div class="row">
+      <div class="col-lg-4">
+        <h5>Monitoreo de dispositivos</h5>
       </div>
-    </section>
-
-    <section class="right-section">
-      <section class="top-slow">
-        <h3>Listado de dispositivos</h3>
-        <table class="mb-0 border">
-          <thead>
-            <tr>
-              <th>Marca/Modelo</th>
-              <th>Categoria</th>
-              <th>Nombre</th>
-              <th>Estado</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="bg-body-tertiary text-center" *ngFor="let estado of estados | paginate: { itemsPerPage: 5, currentPage: p }; let i = index" (click)="seleccionarDispositivo(estado)">
-              <td>
-                <div class="fontable">{{ estado.dispositivo?.modelo?.marca?.nombre }}</div>
-                <div class="fontable">
-                  <span>{{ estado.dispositivo?.modelo?.nombre }}</span>
-                </div>
-              </td>
-              <td>
-                <div class="fontable">{{ estado.dispositivo?.categoria?.nombre }}</div>
-              </td>
-              <td>
-                <div class="fontable">{{ estado.dispositivo?.nombre }}</div>
-              </td>
-              <td>
-                <div class="fontable" [ngStyle]="{ 'color': estado.dispositivo?.disponible ? 'green' : 'red', 'font-weight': estado.dispositivo?.disponible ? 'bold' : 'normal' }">
-                  {{ estado.dispositivo?.disponible ? 'Disponible' : 'Prestado' }}
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="d-flex justify-content-center mt-3">
-          <pagination-controls class="fontable" (pageChange)="p = $event"></pagination-controls>
-        </div>
-        <section class="details" *ngIf="selectedEstado">
-          <h5 class="text-center">Detalles del Dispositivo Seleccionado</h5>
-          <ul class="nav nav-tabs" id="myTab" role="tablist">
-            <li class="nav-item" role="presentation">
-              <button class="nav-link" [class.active]="mostrarEstado" (click)="selectEstado(selectedEstado)">
-                {{ mostrarEstado ? 'Estado del Dispositivo' : 'Información del Dispositivo' }}
-              </button>
-            </li>
+      <div class="col-lg-8">
+        <div class="scrollable-list">
+          <ul class="list-group list-group-horizontal">
+            <!-- Ejemplo de ítems de lista -->
+            <li class="list-group-item">Dispositivo 1</li>
+            <li class="list-group-item">Dispositivo 2</li>
+            <li class="list-group-item">Dispositivo 3</li>
+            <li class="list-group-item">Dispositivo 1</li>
+            <li class="list-group-item">Dispositivo 2</li>
+            <!-- Puedes usar *ngFor para generar dinámicamente según tus datos -->
           </ul>
-          <div class="tab-content" id="myTabContent">
-            <!-- Sección para mostrar el estado del dispositivo -->
-            <div *ngIf="mostrarEstado" class="tab-pane fade show active" id="estado" role="tabpanel" aria-labelledby="estado-tab">
-              <div class="container">
-                <div class="row">
-                  <div class="col-md-6">
-                    <p><strong>Fecha Actualización:</strong> {{ selectedEstado.fechActualizacion }}</p>
-                    <p><strong>Nivel Batería:</strong> {{ selectedEstado.nivelBateria }}%</p>
-                    <span class="ms-auto font-semibold">{{ selectedEstado.nivelBateria }}%</span>
-                    <p><strong>Cargando:</strong> {{ selectedEstado.cargando }}</p>
-                    <p><strong>GPS:</strong> {{ selectedEstado.gps }}</p>
-                    <p><strong>Phone State:</strong> {{ selectedEstado.phoneState }}</p>
-                    <p><strong>Notificaciones:</strong> {{ selectedEstado.notificaciones }}</p>
-                    <p><strong>Localización:</strong> {{ selectedEstado.localizacion }}</p>
-                    <p><strong>Conexión Internet:</strong> {{ selectedEstado.conexionInternet }}</p>
-                  </div>
-                </div>
-              </div>
+        </div>
+      </div>
+      <hr>
+    </div>    
+    <div class="row">
+      <div class="col-lg-9">
+        <section class="google-map">
+          <app-ubicaciones style="width: 100%; height: 400px"></app-ubicaciones>
+        </section>
+      </div>
+      <div class="col-lg-3">
+        <section class="right-section text-right"> <!-- Alineación a la derecha -->
+          <div class="mb-4">
+            <h5>Dispositivos</h5>
+            <hr>
+            <div class="scrollable-card">
+              <ul class="list-group list-group-flush custom-list-group">
+                <li
+                  class="list-group-item"
+                  *ngFor="let estado of estados"
+                  (click)="ubicarDispositivo(estado.dispositivo)"
+                  (mouseenter)="hoverEffect($event, estado)"
+                  (mouseleave)="hoverEffect($event, null)"
+                  [ngClass]="{ selected: estado === selectedEstado }"
+                  style="max-width: 90%; overflow: hidden; text-overflow: ellipsis;"
+                >
+                  {{ estado.dispositivo?.nombre }}
+                </li>
+              </ul>
             </div>
+          </div>
         
-            <!-- Sección para mostrar la información del dispositivo -->
-            <div *ngIf="!mostrarEstado" class="tab-pane fade" id="info" role="tabpanel" aria-labelledby="info-tab">
-              <div class="container">
-                <div class="row">
-                  <div class="col-md-6">
-                    <p><strong>ID Dispositivo:</strong> {{ selectedEstado.dispositivo?.idDispositivo }}</p>
-                    <p><strong>IP/MAC:</strong> {{ selectedEstado.dispositivo?.ipMac }}</p>
-                    <p><strong>Nombre:</strong> {{ selectedEstado.dispositivo?.nombre }}</p>
-                    <p><strong>Número de Serie:</strong> {{ selectedEstado.dispositivo?.numSerie }}</p>
-                    <p><strong>Versión:</strong> {{ selectedEstado.dispositivo?.version }}</p>
-                    <p><strong>Disponible:</strong> {{ selectedEstado.dispositivo?.disponible }}</p>
-                    <p><strong>Vinculado:</strong> {{ selectedEstado.dispositivo?.vinculado }}</p>
-                    <p><strong>Categoría:</strong> {{ selectedEstado.dispositivo?.categoria?.nombre }}</p>
-                    <p><strong>Modelo:</strong> {{ selectedEstado.dispositivo?.modelo?.nombre }}</p>
-                    <p><strong>Marca:</strong> {{ selectedEstado.dispositivo?.modelo?.marca?.nombre }}</p>
-                  </div>
+          <div class="mt-4">
+            <h5>Resumen</h5>
+            <hr>
+            
+            <div class="stats-card">
+              <div class="card-body">
+                <div class="stat">
+                  <span class="label">Dispositivos</span>
+                  <span class="value">{{ estados.length }}</span>
+                </div>
+                <div class="stat">
+                  <span class="label">No asd a asd a asd a asd  asd:</span>
+                  <span class="value">{{ 1 }}</span>
                 </div>
               </div>
             </div>
           </div>
         </section>
         
-        
-      </section>
-    </section>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <h4>Detalles de dispositivos</h4>
+    <hr>
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <th>Marca/Modelo</th>
+            <th>Categoría</th>
+            <th>Nombre</th>
+            <th>Número de Serie</th>
+            <th>Estado</th>
+            <th>Nivel de Batería</th>
+            <th>Cargando</th>
+            <th>GPS</th>
+            <th>Estado del Teléfono</th>
+            <th>Notificaciones</th>
+            <th>Localización</th>
+            <th>Conexión a Internet</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let estado of estados">
+            <td>
+              {{ estado.dispositivo?.modelo?.marca?.nombre }} -
+              {{ estado.dispositivo?.modelo?.nombre }}
+            </td>
+            <td>{{ estado.dispositivo?.categoria?.nombre }}</td>
+            <td>{{ estado.dispositivo?.nombre }}</td>
+            <td>{{ estado.dispositivo?.numSerie }}</td>
+            <td
+              [style.color]="estado.dispositivo?.disponible ? 'green' : 'red'"
+              [style.font-weight]="
+                estado.dispositivo?.disponible ? 'bold' : 'normal'
+              "
+            >
+              {{ estado.dispositivo?.disponible ? "Disponible" : "Prestado" }}
+            </td>
+            <td>{{ estado.nivelBateria }}</td>
+            <td>{{ estado.cargando ? "Sí" : "No" }}</td>
+            <td>{{ estado.gps ? "Sí" : "No" }}</td>
+            <td>{{ estado.phoneState ? "Activo" : "Inactivo" }}</td>
+            <td>{{ estado.notificaciones ? "Activas" : "Inactivas" }}</td>
+            <td>{{ estado.localizacion ? "Activada" : "Desactivada" }}</td>
+            <td>
+              {{ estado.conexionInternet ? "Conectado" : "Desconectado" }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="d-flex justify-content-center mt-3">
+      <pagination-controls
+        class="fontable"
+        (pageChange)="p = $event"
+      ></pagination-controls>
+    </div>
   </div>
 </div>
