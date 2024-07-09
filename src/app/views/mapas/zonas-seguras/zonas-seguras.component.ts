@@ -82,12 +82,10 @@ export class ZonasSegurasComponent{
       },
       map: this.map?.googleMap || null,
     });
-  
     // Agregar el evento click al marcador
     marcador.addListener('click', () => {
       this.eliminarMarcador(marcador);
     });
-  
     this.marcadores.push(marcador); // Agregar el marcador al array
   }
 
