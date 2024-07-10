@@ -16,23 +16,27 @@ export class PuntoService {
 
     listar(): Observable<Punto[]>{
         return this.http.get<Punto[]>(this.UrlEndPoint);
-      }
+    }
     
-      buscar(id_punto: number):Observable<Punto>{
-        return this.http.get<Punto>(`${this.UrlEndPoint}/${id_punto}`);
-      }
+    buscar(id_punto: number):Observable<Punto>{
+      return this.http.get<Punto>(`${this.UrlEndPoint}/${id_punto}`);
+    }
     
-      crear(punto: Punto): Observable<Punto>{
-        return this.http.post<Punto>(this.UrlEndPoint, punto,{headers: this.httpHeaders})
-      }      
+    crear(punto: Punto): Observable<Punto>{
+      return this.http.post<Punto>(this.UrlEndPoint, punto,{headers: this.httpHeaders})
+    }      
     
-      eliminar(id_punto: number): Observable<Punto>{
+    eliminar(id_punto: number): Observable<Punto>{
         return this.http.delete<Punto>(`${this.UrlEndPoint}/${id_punto}`)
-      }
+    }
 
     actualizar(punto: Punto): Observable<Punto> {
       const id_punto = `${this.UrlEndPoint}/${punto.id_punto}`;
       return this.http.put<Punto>(id_punto, punto, { headers: this.httpHeaders});
+    }
+
+    BuscarPorZonaSegura(id_zona:number):Observable<Punto[]>{
+      return this.http.get<Punto[]>(`${this.UrlEndPoint+'/puntosPorZonaSegura'}/${id_zona}`);
     }
     
 }
