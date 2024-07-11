@@ -5,16 +5,16 @@ export const navItems: INavData[] = [
     name: 'Monitoreo',
     url: '/monitoreo',
     iconComponent: { name: 'cil-speedometer' },
-    
+
   },
   {
     title: true,
-    name: 'Theme'
+    name: 'Perfile'
   },
   {
-    name: 'Colors',
-    url: '/theme/colors',
-    iconComponent: { name: 'cil-drop' }
+    name: 'Perfil',
+    url: '/perfil',
+    iconComponent: { name: 'cil-contact' }
   },
   {
     name: 'Components',

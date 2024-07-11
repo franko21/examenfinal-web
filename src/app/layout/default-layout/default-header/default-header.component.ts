@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, inject, Input,OnInit } from '@angular/core';
+import {Component, computed, DestroyRef, inject, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {
   AvatarComponent,
   BadgeComponent,
@@ -33,7 +33,7 @@ import {
 
 
 } from '@coreui/angular';
-import { NgStyle, NgTemplateOutlet } from '@angular/common';
+import {DatePipe, NgStyle, NgTemplateOutlet} from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { IconDirective } from '@coreui/icons-angular';
@@ -50,12 +50,13 @@ import { Prestamo } from 'src/app/model/prestamo.model';
 import { PrestamoService } from 'src/app/service/prestamo.service';
 import Swal from 'sweetalert2';
 import {LoginService} from "../../../views/pages/login/login.service";
+import {WebSocketDispositivos} from "../../../service/WebSocketDispositivos.service";
 
 @Component({
   selector: 'app-default-header',
   templateUrl: './default-header.component.html',
   styleUrl:'./default-header.component.scss',
-  providers:[ConfiguracionService,AlertaService,PrestamoService,LoginService],
+  providers:[ConfiguracionService,AlertaService,PrestamoService,LoginService,AlertaService,DatePipe],
   standalone: true,
   imports: [ContainerComponent,ReactiveFormsModule,FormsModule,CommonModule,CardBodyComponent,CardComponent, HeaderTogglerDirective, SidebarToggleDirective, IconDirective, HeaderNavComponent, NavItemComponent, NavLinkDirective, RouterLink, RouterLinkActive, NgTemplateOutlet, BreadcrumbRouterComponent, ThemeDirective, DropdownComponent, DropdownToggleDirective, TextColorDirective, AvatarComponent, DropdownMenuDirective, DropdownHeaderDirective, DropdownItemDirective, BadgeComponent, DropdownDividerDirective, ProgressBarDirective, ProgressComponent, NgStyle,HttpClientModule,ButtonDirective, ModalComponent, ModalHeaderComponent, ModalTitleDirective, ThemeDirective, ButtonCloseDirective, ModalBodyComponent, ModalFooterComponent]
 })
@@ -71,10 +72,58 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
   recop :number=0;
   value = 1;
   public visible = false;
-
-
-  prestamos: Prestamo[] = [];
   alertas:Alerta[]=[];
+  alerta: any;
+  isVisible = false;
+
+  @ViewChild('alertModal') alertModal: TemplateRef<any>;
+  constructor(
+    private router: Router,
+    private serconfig: ConfiguracionService,
+    private seralerta: AlertaService,
+    private serpres: PrestamoService,
+    private loginService:LoginService,
+    private datePipe:DatePipe,
+    private webSocket: WebSocketDispositivos
+
+  ) {
+    super();
+    this.#colorModeService.localStorageItemName.set('coreui-free-angular-admin-template-theme-default');
+    this.#colorModeService.eventName.set('ColorSchemeChange');
+
+    this.#activatedRoute.queryParams
+      .pipe(
+        delay(1),
+        map(params => <string>params['theme']?.match(/^[A-Za-z0-9\s]+/)?.[0]),
+        filter(theme => ['dark', 'light', 'auto'].includes(theme)),
+        tap(theme => {
+          this.colorMode.set(theme);
+        }),
+        takeUntilDestroyed(this.#destroyRef)
+      )
+      .subscribe();
+  }
+
+  ngOnInit(): void {
+    this.seralerta.getAlertas().subscribe(
+      alert=>{
+        this.alertas=alert;
+      }
+    )
+    this.webSocket.obtenerAlertas().subscribe((alerta) => {
+      this.alertas.unshift(alerta); // Agregar al inicio del array
+      this.alerta = alerta;
+      this.isVisible = true;
+      console.log('Alerta recibida:', alerta);
+      setTimeout(() => this.isVisible = false, 5000); // Cierra automáticamente después de 5 segundos
+    });
+
+  }
+
+  closeModal() {
+    this.isVisible = false;
+  }
+  prestamos: Prestamo[] = [];
   configuraciones:Configuracion[]=[];
 
   showTable: boolean = false;
@@ -98,6 +147,9 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
     );
 
 
+  }
+  formatDate2(date: Date, format: string): string {
+    return <string>this.datePipe.transform(date, format);
   }
 
  convertirASegundos(): number {
@@ -197,32 +249,7 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
     return this.colorModes.find(mode=> mode.name === currentMode)?.icon ?? 'cilSun';
   });
 
-  constructor(
-    private router: Router,
-    private serconfig: ConfiguracionService,
-    private seralerta: AlertaService,
-    private serpres: PrestamoService,
-    private loginService:LoginService
-  ) {
-    super();
-    this.#colorModeService.localStorageItemName.set('coreui-free-angular-admin-template-theme-default');
-    this.#colorModeService.eventName.set('ColorSchemeChange');
 
-    this.#activatedRoute.queryParams
-      .pipe(
-        delay(1),
-        map(params => <string>params['theme']?.match(/^[A-Za-z0-9\s]+/)?.[0]),
-        filter(theme => ['dark', 'light', 'auto'].includes(theme)),
-        tap(theme => {
-          this.colorMode.set(theme);
-        }),
-        takeUntilDestroyed(this.#destroyRef)
-      )
-      .subscribe();
-  }
-  ngOnInit(): void {
-
-  }
 
 
   @Input() sidebarId: string = 'sidebar1';
