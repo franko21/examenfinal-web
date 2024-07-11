@@ -72,6 +72,7 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.posicionesSubscription = this.webSocketService.obtenerPosiciones()
       .subscribe((posiciones: any[]) => {
+        console.log("ESTA ENTRANDO EN EL SOCKET DE POSICIONES");
         this.posiciones = posiciones;
         this.listarPosiciones();
       });
@@ -128,6 +129,7 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
     this.posicionesService.listar().subscribe(
       (posiciones: Posicion[]) => {
         this.posiciones = posiciones;
+        console.log("SI TIENES POSICIONES EN LA BASE: S"+this.posiciones.length);
         if (posiciones.length > 0) {
           posiciones.forEach((p: Posicion) => {
             this.pintarPosicion({ lat: p.latitud, lng: p.longitud }, p);
@@ -142,10 +144,11 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
 
   private infowindows: Map<google.maps.Marker, google.maps.InfoWindow> = new Map();
   pintarPosicion(position: google.maps.LatLngLiteral, posicion: Posicion) {
+    console.log("CARGA LA POSICIÓN , PERO NO CARGA EL ÍCONO BINE LPTM");
     const marcador = new google.maps.Marker({
       position: position,
       icon: {
-        path: google.maps.SymbolPath.CIRCLE,
+        path: 'src/assets/images/Tableta.jpg',
         scale: 10,
         strokeColor: '#f00',
         strokeWeight: 5,
@@ -518,6 +521,7 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
           icon: 'question',
           showCancelButton: true,
           showDenyButton: true,
+          showConfirmButton: false,
           //showConfirmButton: true, // Comentado para eliminar la opción de "EDITAR PUNTOS"
           //confirmButtonText: 'EDITAR PUNTOS', // Comentado para eliminar la opción de "EDITAR PUNTOS"
           denyButtonText: 'ELIMINAR PUNTOS',
