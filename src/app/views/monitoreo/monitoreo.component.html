@@ -17,8 +17,9 @@
           </ul>
         </div>
       </div>
-      <hr class="mt-4 mb-4"> <!-- Margen arriba y abajo para la línea divisora -->
-    </div>    
+      <hr class="mt-4 mb-4" />
+      <!-- Margen arriba y abajo para la línea divisora -->
+    </div>
     <div class="row">
       <div class="col-lg-9">
         <section class="google-map">
@@ -26,20 +27,33 @@
         </section>
       </div>
       <div class="col-lg-3">
-        <section class="right-section text-right"> <!-- Alineación a la derecha -->
+        <section class="right-section text-right">
+          <!-- Alineación a la derecha -->
           <div class="mb-4">
             <h5>Dispositivos</h5>
-            <hr>
+            <hr />
             <div class="scrollable-card">
               <ul class="list-group list-group-flush custom-list-group">
                 <li
+                [cPopoverTrigger]="'hover'"
+                cButton
+                cPopover="{{ estado.dispositivo?.modelo?.marca?.nombre + ' ' + estado.dispositivo?.modelo?.nombre }}"
+                cPopoverPlacement="left"
+                class="me-1"
+                color="information"
+
+
                   class="list-group-item"
                   *ngFor="let estado of estados"
                   (click)="ubicarDispositivo(estado.dispositivo)"
                   (mouseenter)="hoverEffect($event, estado)"
                   (mouseleave)="hoverEffect($event, null)"
                   [ngClass]="{ selected: estado === selectedEstado }"
-                  style="max-width: 90%; overflow: hidden; text-overflow: ellipsis;"
+                  style="
+                    max-width: 90%;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                  "
                 >
                   {{ estado.dispositivo?.nombre }}
                 </li>
@@ -47,7 +61,6 @@
             </div>
           </div>
         </section>
-        
       </div>
     </div>
   </div>
@@ -56,7 +69,7 @@
 <div class="card">
   <div class="card-body">
     <h4>Estado de dispositivos</h4>
-    <hr>
+    <hr />
     <div class="table-responsive">
       <table class="table table-borderless table-striped table-fixed-header">
         <thead>
@@ -66,11 +79,9 @@
             <th>Nombre</th>
             <th>Categoría</th>
             <th>Batería</th>
-            <th>Localización</th>
-            <th>GPS</th>
-            <th>Estado</th>
-            <th>Notificaciones</th>
+            <th>Permisos</th> <!-- Columna de Permisos -->
             <th>Disponible</th>
+            <th>Actualización</th>
           </tr>
         </thead>
         <tbody class="estado-center">
@@ -78,52 +89,69 @@
             <td>
               <span [ngClass]="estado.conexionInternet ? 'indicator green' : 'indicator red'"></span>
             </td>
-            <td >
+            <td>
               <span [ngClass]="estado.dispositivo?.posicion?.dentro ? 'indicator green' : 'indicator red'"></span>
             </td>
             <td>
-              <div >
-                {{estado.dispositivo?.nombre}}
-              </div>
-              <div class="small text-body-secondary text-nowrap">
-                <span>{{estado.dispositivo?.modelo?.marca?.nombre +' '+ estado.dispositivo?.modelo?.nombre}}</span>
-              </div>
-              <div class="small text-body-secondary text-nowrap">
-                <span>{{estado.dispositivo?.numSerie}}</span>
+              <div [cPopoverTrigger]="'hover'" cButton [cPopover]="popoverContent" cPopoverPlacement="top" class="me-1" color="information">
+                {{ estado.dispositivo?.nombre }}
               </div>
             </td>
+    
+            <!-- Añade este fragmento en el componente correspondiente -->
+            <ng-template #popoverContent>
+              {{ estado.dispositivo?.modelo?.marca?.nombre + ' ' + estado.dispositivo?.modelo?.nombre }}
+              <div class="small text-body-secondary text-nowrap">
+                <span>{{ estado.dispositivo?.numSerie }}</span>
+              </div>
+            </ng-template>
+    
             <td>{{ estado.dispositivo?.categoria?.nombre }}</td>
             <td>
-              
               <div class="progress">
                 <div class="progress-bar bg-success" role="progressbar" [style.width.%]="estado.nivelBateria">
                   {{ estado.nivelBateria }}%
                 </div>
               </div>
               <div class="small text-body-secondary text-nowrap">
-                <span>{{estado.cargando ? 'Cargando...' : ''}}</span>
+                <span>{{ estado.cargando ? "Cargando..." : "" }}</span>
               </div>
             </td>
             <td>
-              <span [ngClass]="estado.localizacion ? 'indicator green' : 'indicator red'"></span>
+              <!-- Columna de Permisos -->
+              <div class="d-flex flex-column" [cPopoverTrigger]="'hover'" cButton [cPopover]="permisos" cPopoverPlacement="top" class="me-1" color="information">
+                {{ getNumPermisos(estado) }}/4
+              </div>
             </td>
-            <td>
-              <span [ngClass]="estado.gps ? 'indicator green' : 'indicator red'"></span>
-            </td>
-            <td>
-              <span [ngClass]="estado.phoneState ? 'indicator green' : 'indicator red'"></span>
-            </td>
-            <td>
-              <span [ngClass]="estado.notificaciones ? 'indicator green' : 'indicator red'"></span>
-            </td>
+            
+            <ng-template #permisos>
+              <div class="mb-1">
+                <span [ngClass]="estado.localizacion ? 'indicator green' : 'indicator red'"></span>
+                <span class="text-sm">Localización</span>
+              </div>
+              <div class="mb-1">
+                <span [ngClass]="estado.gps ? 'indicator green' : 'indicator red'"></span>
+                <span class="text-sm">GPS</span>
+              </div>
+              <div class="mb-1">
+                <span [ngClass]="estado.phoneState ? 'indicator green' : 'indicator red'"></span>
+                <span class="text-sm">Estado</span>
+              </div>
+              <div>
+                <span [ngClass]="estado.notificaciones ? 'indicator green' : 'indicator red'"></span>
+                <span class="text-sm">Notificaciones</span>
+              </div>
+            </ng-template>
             <td>
               <span [ngClass]="estado.dispositivo?.disponible ? 'indicator green' : 'indicator red'"></span>
             </td>
+            <td>{{ estado.fechaActualizacion | amTimeAgo }}</td>
           </tr>
         </tbody>
       </table>
     </div>
     
+
     <div class="d-flex justify-content-center mt-3">
       <pagination-controls
         class="fontable"
