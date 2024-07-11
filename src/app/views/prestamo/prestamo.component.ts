@@ -2,6 +2,7 @@ import {DatePipe, NgClass, NgFor, NgIf, NgStyle} from '@angular/common';
 import { Component,NgModule,OnInit } from '@angular/core';
 import{Prestamo} from '../../model/prestamo.model';
 import{PrestamoService} from '../../service/prestamo.service';
+import{HistoricoService} from '../../service/historico.service';
 import { HttpClientModule } from '@angular/common/http';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
@@ -42,6 +43,9 @@ import { Usuario } from 'src/app/model/usuario.model';
 import { environment } from 'src/enviroments/environment';
 import { NgxPaginationModule } from 'ngx-pagination';
 import * as icons from '@coreui/icons';
+import { jsPDF } from 'jspdf';
+import autoTable, { CellInput, RowInput } from 'jspdf-autotable';
+import { Historico } from 'src/app/model/historico.model';
 
 
 
@@ -62,8 +66,10 @@ export class PrestamoComponent {
   mostrarFormularioIngreso = false;
   mostrarFormularioEditar = false;
   prestamos:Prestamo[]=[];
+  prestamo:Prestamo=new Prestamo;
   personas:Persona[]=[];
   dispositivos:Dispositivo[]=[];
+  historicos:Historico[]=[];
   finalizarForm: FormGroup;
   filaEditada: number | null = null;
   registerForm: FormGroup;
@@ -119,7 +125,7 @@ export class PrestamoComponent {
       }
     )
   }
-  constructor(private datePipe:DatePipe,private usuarioService:UsuarioService, private dispoService:DipositivoService, private personaService:PersonaService,private prestamoService: PrestamoService,private router:Router,private fb:FormBuilder,private iconSet: IconSetService){
+  constructor(private datePipe:DatePipe,private usuarioService:UsuarioService, private dispoService:DipositivoService, private personaService:PersonaService,private prestamoService: PrestamoService,private historicoService:HistoricoService,private router:Router,private fb:FormBuilder,private iconSet: IconSetService){
     this.registerForm = this.fb.group({
       beneficiario: ['', Validators.required],
       dispositivo: ['', Validators.required],
@@ -183,8 +189,133 @@ export class PrestamoComponent {
     this.applyFilters();
   }
 
+  listarHistoricos(prestamo: Prestamo) {
+    this.historicoService.listar().subscribe(
+      historicos => {
+        // Filtrar los históricos por id_dispositivo y por el rango de fechas y horas
+        this.historicos = historicos.filter(historico => {
+          // Verificar si el id_dispositivo del historico coincide con el del prestamo
+          const idDispositivoMatch = historico.dispositivo?.idDispositivo === prestamo.dispositivo?.idDispositivo;
+  
+          // Verificar si historico.fechaHora está definido antes de convertirlo a objeto Date
+          if (!historico.fecha) {
+            return false; // Si fechaHora es undefined, no cumple con el filtro
+          }
+  
+          // Convertir historico.fechaHora a objeto Date
+          const fechaHoraHistorico = new Date(historico.fecha);
+  
+          // Verificar si el historico.fechaHora está dentro del rango de fechas y horas del prestamo
+          const fechaInicio = new Date(prestamo.fecha_prestamo);  // Convertir a objeto Date
+          const fechaFin = new Date(prestamo.fecha_finalizacion);  // Convertir a objeto Date
+          const fechaMatch = fechaHoraHistorico >= fechaInicio && fechaHoraHistorico <= fechaFin;
+  
+          // Devolver verdadero si ambos criterios coinciden
+          return idDispositivoMatch && fechaMatch;
+        }).sort((a, b) => {
+          // Ordenar por fecha, asumiendo que historico.fecha es una cadena de fecha válida
+          if (a.fecha && b.fecha) {
+            return new Date(a.fecha).getTime() - new Date(b.fecha).getTime();
+          }
+          return 0; // Si no se puede comparar, dejar en el mismo orden
+        });
+  
+        console.log("Se supone que aquí están los históricos filtrados por id_dispositivo y rango de fechas, ordenados por fecha:", prestamo.dispositivo?.idDispositivo);
+        console.log(this.historicos);     
+       this.generatePDF(prestamo);
+      },
+      error => {
+        console.error('Error al listar dispositivos:', error);
+      }
+    );
+  }
 
 
+  generatePDF(prestamo:Prestamo) {
+    
+    const doc = new jsPDF();
+    // Encabezado
+    const imageWidth = 90;  
+    const imageHeight = 40;  
+    const imageURL = '../../../assets/images/jedanklogofondoo.jpg';  // Ruta de tu imagen
+    doc.addImage(imageURL, 'JPEG', 20, 8, imageWidth, imageHeight);
+  
+    // Texto a la derecha de la imagen
+    const textX = 20 + imageWidth + 10; // Ajusta la posición X para que esté a la derecha de la imagen con un pequeño margen
+    const textY = 11; // Ajusta la posición Y para alinear con la parte superior de la imagen
+    const textWidth = 10; // Ancho del área de texto
+  
+    const fechaFinalizacion = new Date(prestamo.fecha_finalizacion);
+    const fechaPrestamo = new Date(prestamo.fecha_prestamo);
+
+// Función para formatear la fecha y hora como "YYYY-MM-DD HH:mm:ss"
+function formatDate(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  return `${hours}:${minutes}:${seconds} ${year}-${month}-${day} `;
+}
+
+const textLines = [
+  `Administrador: ${prestamo.persona.nombre}`, 
+  `Usuario: ${prestamo.persona.nombre} ${prestamo.persona.apellido}`, 
+  `Identificación: ${prestamo.persona.cedula}`, 
+  `Dispositivo: ${prestamo.dispositivo.modelo?.marca?.nombre}/${prestamo.dispositivo.modelo?.nombre}`, 
+  `Inicia:       ${formatDate(fechaPrestamo)}`,
+  `Devuelve: ${formatDate(fechaFinalizacion)}`
+];
+  
+    // Ajustar el tamaño de la letra
+    const fontSize = 12; // Tamaño de letra deseado
+    doc.setFontSize(fontSize);
+  
+    // Agregar texto a la derecha de la imagen
+    textLines.forEach((line, index) => {
+      doc.text(line, textX, textY + (index * 7.5)); // Ajusta la separación entre líneas si es necesario
+    });
+  
+    // Restablecer el tamaño de la letra si es necesario para otros textos
+    doc.setFontSize(16); // Tamaño de letra para otros textos
+  
+    // Título de la tabla debajo de la imagen y el texto
+    const titleY = imageHeight + 20; // Ajusta la posición Y para que esté debajo de la imagen y el texto con un pequeño margen
+    doc.text('Historicos de posiciones', 20, titleY);
+  
+    // Definir las columnas de la tabla
+    const columns = ['Latitud', 'Longitud', 'Hora / Fecha'];
+  
+    // Mapear los datos para generar las filas
+    const rows: RowInput[] = this.historicos.map(historico => {
+      const row: CellInput[] = [
+        historico.latitud?.toString() || '', // Ajusta según el nombre de tu propiedad en Dispositivo
+        historico.longitud?.toString() || '',
+        historico.fecha ? formatDate(new Date(historico.fecha)) : '',
+
+      ];
+      return row;
+    });
+  
+    // Generar la tabla debajo del título
+    const tableStartY = titleY + 10; // Ajusta la posición Y para que esté debajo del título con un pequeño margen
+    autoTable(doc, {
+      head: [columns],
+      body: rows,
+      theme: 'striped',
+      headStyles: {
+        fillColor: '#343a40',
+        textColor: '#ffffff'
+      },
+      startY: tableStartY
+    });
+  
+    // Generar el blob y abrir en una nueva pestaña
+    const pdfBlob = doc.output('blob');
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    window.open(pdfUrl, '_blank');
+  }
 
   isValidDate(date: any): boolean {
     return date instanceof Date && !isNaN(date.getTime());

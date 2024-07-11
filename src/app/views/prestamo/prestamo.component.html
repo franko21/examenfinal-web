@@ -130,6 +130,7 @@
           <th>Finalizar</th>
           <th>Editar</th>
           <th>Eliminar</th>
+          <th>Historico</th>
         </tr>
         </thead>
         <tbody>
@@ -168,6 +169,9 @@
           </td>
           <td>
             <button type="button" (click)="eliminarPrestamo(prestamo.id_prestamo)" class="btn btn-danger"><svg cIcon name="cilTrash" size="lg"></svg></button>
+          </td>
+          <td>
+            <button type="button" (click)="listarHistoricos(prestamo) "class="btn btn-secondary" ><svg cIcon name="cil-print"></svg></button>
           </td>
         </tr>
 
