@@ -24,7 +24,7 @@ import {
 } from '@coreui/angular';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
-import { IconDirective } from '@coreui/icons-angular';
+import { IconDirective,IconSetService } from '@coreui/icons-angular';
 import { Dispositivo } from 'src/app/model/dispositivo.model';
 import { DipositivoService } from 'src/app/service/dispositivo.service';
 import { MarcaService } from 'src/app/service/marca.service';
@@ -40,6 +40,8 @@ import { NgModel } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { Zona_segura } from 'src/app/model/zona_segura';
 import { Zona_seguraService } from 'src/app/service/Zona_segura.service';
+import autoTable, { CellInput, RowInput } from 'jspdf-autotable'; // Asegúrate de importar CellInput y RowInput
+import * as icons from '@coreui/icons';
 @Component({
   selector: 'app-dispositivo',
   standalone: true,
@@ -104,11 +106,10 @@ export class DispositivoComponent implements OnInit {
    disponible: boolean;
    id_marca:number;
   searchText: string = '';
-  @ViewChild('content') content!: ElementRef; 
+  @ViewChild('content', { static: false }) content!: ElementRef; 
   position = 'top-end';
   visible = false;
   percentage = 0;
-
   position2 = 'top-end';
   visible2 = false;
   percentage2 = 0;
@@ -116,28 +117,66 @@ export class DispositivoComponent implements OnInit {
  
 
 
-  generarPDF() {
+  generatePDF() {
+
     const doc = new jsPDF();
-
-    // Capturar el contenido HTML como una imagen con mayor calidad
-    html2canvas(this.content.nativeElement, {
-      scale: 2, // Aumenta la escala para mejorar la calidad
-      logging: true, // Activa los mensajes de registro para depuración
-      allowTaint: true // Permite el tinte de origen, necesario si el contenido HTML tiene imágenes externas
-    }).then((canvas) => {
-      const imageData = canvas.toDataURL('image/png');
-      const imgWidth = 210;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-      // Agregar la imagen al documento PDF
-      doc.addImage(imageData, 'PNG', 0, 0, imgWidth, imgHeight);
-
-      // Guardar el PDF y abrir en una nueva pestaña
-      const pdfBlob = doc.output('blob');
-      const pdfUrl = URL.createObjectURL(pdfBlob);
-      window.open(pdfUrl, '_blank');
+  
+    // Encabezado
+    const imageWidth = 90;  
+    const imageHeight = 40;  
+    const imageURL = '../../../assets/images/jedanklogofondoo.jpg';  // Ruta de tu imagen
+    doc.addImage(imageURL, 'JPEG', 20, 8, imageWidth, imageHeight);
+  
+    // Título de la tabla debajo de la imagen
+    const titleY = 15 + imageHeight + 5; // Ajusta la posición Y para que esté debajo de la imagen con un pequeño margen
+    doc.text('Listado de Dispositivos', 20, titleY);
+  
+    // Definir las columnas de la tabla
+    const columns = ['Codigo', 'Marca', 'Modelo', 'Categoria', '# de Serie', 'Nombre'];
+  
+    // Mapear los datos para generar las filas
+    const rows: RowInput[] = this.dispovincu.map(dispositivo => {
+      const row: CellInput[] = [
+        dispositivo.idDispositivo?.toString() || '', // Ajusta según el nombre de tu propiedad en Dispositivo
+        dispositivo.modelo?.marca?.nombre?.toString() || '',
+        dispositivo.modelo?.nombre?.toString() || '',
+        dispositivo.categoria?.nombre?.toString() || '',
+        dispositivo.numSerie?.toString() || '',
+        dispositivo.nombre?.toString() || '',
+      ];
+      return row;
     });
+  
+    // Agregar el texto "Número de Dispositivos:" en la esquina superior derecha
+    const totalPages = this.dispovincu.length;
+    const pageNumberStr = `Número de Dispositivos: ${this.dispovincu.length}`;
+    for (let i = 1; i <= totalPages; i++) {
+      // Ir a la página i
+      doc.setPage(i);
+      // Esquina superior derecha
+      doc.setFontSize(10); // Tamaño de letra más pequeño
+      doc.text(pageNumberStr, doc.internal.pageSize.getWidth() - doc.getTextWidth(pageNumberStr) - 15, 10);
+    }
+  
+    // Generar la tabla debajo del título
+    const tableStartY = titleY + 10; // Ajusta la posición Y para que esté debajo del título con un pequeño margen
+    autoTable(doc, {
+      head: [columns],
+      body: rows,
+      theme: 'striped',
+      headStyles: {
+        fillColor: '#343a40',
+        textColor: '#ffffff'
+      },
+      startY: tableStartY
+    });
+  
+    // Generar el blob y abrir en una nueva pestaña
+    const pdfBlob = doc.output('blob');
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    window.open(pdfUrl, '_blank');
   }
+  
 
   filteredDispositivos() {
     if (!this.searchText) {
@@ -193,7 +232,8 @@ export class DispositivoComponent implements OnInit {
      this.titulo="Dispositivo"
 
   }
-  constructor(private serdispo:DipositivoService , private sermarca:MarcaService, private sermodelo:ModeloService, private sercateg:CategoriaService ,private router: Router,fb:FormBuilder,private serzona:Zona_seguraService){
+  constructor(private serdispo:DipositivoService , private sermarca:MarcaService, private sermodelo:ModeloService, private sercateg:CategoriaService ,private router: Router,fb:FormBuilder,private serzona:Zona_seguraService,public iconSet: IconSetService){
+
   }
   ngOnInit(): void {
     this.listardispo();
@@ -208,8 +248,7 @@ export class DispositivoComponent implements OnInit {
         this.dispositivos = dispositivos;
          this.filtradispovinculado();
          this.filtradispovinculadotrue();
-         console.log("aqui prestamos")
-         console.log(this.dispositivos[0].prestamos)
+ 
 
 
       },
