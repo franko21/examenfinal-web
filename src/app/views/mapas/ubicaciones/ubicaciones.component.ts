@@ -438,7 +438,7 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
                   });
                 
                 break;
-                case 'AÑADIR UN PUNTO':
+                case 'AÑADIR PUNTOS':
                   Swal.fire({
                     title: '¿Estás seguro?',
                     text: "¿Deseas realizar los cambios?",
@@ -451,25 +451,40 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
                   }).then((result) => {
                     if (result.isConfirmed) {
                       // Código para realizar los cambios
-                        this.arrayNuevosPuntos.forEach((punto, index) => {
-                          this.puntoService.crear(punto).subscribe(
-                            (puntoCreado: Punto) => {
-                              this.relacionar_punto_conzona(this.id_zona,puntoCreado);
-                              Swal.fire('Puntos añadidos correctamente', '', 'success');
-                              this.finalizarEdicion();
-                              this.crearPoligono(this.id_zona);
-                              this.eliminarTodosLosPuntos();
-                              this.puntosEditar = [];
-                              this.marcadores = [];
-                              this.arrayNuevosPuntos = [];
-                              this.nuevos_marcadores = [];
-                            },
-                            error => {
-                              Swal.fire('Error al añadir el punto', error.message, 'error');
+                        if(this.arrayNuevosPuntos.length===0){
+                          Swal.fire('VACÍO', 'NO HA AÑADIDO NINGÚN PUNTO A LA ZONA', 'error');
+                          this.finalizarEdicion();
+                          this.crearPoligono(this.id_zona);
+                          this.eliminarTodosLosPuntos();
+                          this.puntosEditar = [];
+                          this.marcadores = [];
+                          this.arrayNuevosPuntos = [];
+                          this.nuevos_marcadores = [];
+                        }else{
+                          this.arrayNuevosPuntos.forEach((punto, index) => {
+                            this.zonasSegurasService.buscar(this.id_zona).subscribe({
+                              next: (datazona) => {
+                                punto.zonaSegura = datazona;
+                                this.puntoService.crear(punto).subscribe(
+                                  (puntoCreado: Punto) => {
+                                    Swal.fire('HA AÑADIDO ',+this.arrayNuevosPuntos.length +' PUNTOS NUEVOSs', 'success');
+                                    this.finalizarEdicion();
+                                    this.crearPoligono(this.id_zona);
+                                    this.eliminarTodosLosPuntos();
+                                    this.puntosEditar = [];
+                                    this.marcadores = [];
+                                    this.arrayNuevosPuntos = [];
+                                    this.nuevos_marcadores = [];
+                                  },
+                                  error => {
+                                    Swal.fire('Error al añadir el punto', error.message, 'error');
+                                  }
+                                );
+                              }
+                            });
                             }
                           );
                         }
-                        );
                       //REINICIAR LAS VARIABLES QUE USO PARA AÑADIR PUNTOS                   
                     } else if(result.dismiss === Swal.DismissReason.cancel || result.dismiss === Swal.DismissReason.backdrop || result.dismiss === Swal.DismissReason.esc) {
                       // Código para cuando el usuario cancela
@@ -587,16 +602,7 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
   }
 
   //MÉTODO PARA RELACIONAR LOS PUNTOS CON LA ZONA SEGURA
-  relacionar_punto_conzona(id_zona:number,punto_nuevo:Punto) {
-    this.arrayNuevosPuntos.forEach(punto => {
-      this.zonasSegurasService.buscar(id_zona).subscribe({
-        next: (datazona) => {
-          datazona.puntos?.push(punto);
-          this.zonasSegurasService.editar(datazona);
-        }
-      });
-    });
-  }
+  
   //Método para agregar un punto a la zona segura
   mostrarPuntos_Eliminar(id_zona:number){
     this.zonasSegurasService.buscar(id_zona).subscribe(
@@ -625,12 +631,19 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
   mostrarPuntos_Añadir(id_zona:number){
     this.zonasSegurasService.buscar(id_zona).subscribe(
       (zona: Zona_segura) => {
-        this.puntosEditar = zona.puntos ?? [];
-        if (this.puntosEditar.length > 0) {
-          this.puntosEditar.forEach((puntosEditar, index) => {
-            this.actualizarMarcadorEnMapa_Añadir(puntosEditar);
-          });
-        }
+        this.puntoService.BuscarPorZonaSegura(id_zona).subscribe({
+          next: (puntos: Punto[]) => {
+            this.puntosEditar = puntos;
+            if (this.puntosEditar.length > 0) {
+              this.puntosEditar.forEach((puntosEditar, index) => {
+                this.actualizarMarcadorEnMapa_AñadirPunto(puntosEditar);
+              });
+            }
+          },
+          error: (error) => {
+            console.error('Error al buscar los puntos:', error);
+          }
+        });
       },
       error => {
         console.error('Error al buscar la zona segura', error);
