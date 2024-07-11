@@ -4,6 +4,6 @@ export class Historico {
     idHistorico?: number;
     latitud?: number;
     longitud?: number;
-    fechaHora?: Date;
+    fecha?: Date;
     dispositivo?: Dispositivo;
 }

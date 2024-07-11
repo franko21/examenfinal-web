@@ -21,7 +21,7 @@ export class WebSocketDispositivos {
     this.stompClient = new Client({
       brokerURL: environment.websocketUrl + 'ws',
       debug: (str) => {
-        console.log(str);
+        //console.log(str);
       }
     });
 
