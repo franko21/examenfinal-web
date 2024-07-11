@@ -25,6 +25,7 @@ export class LoginService {
     const cedula = sessionStorage.getItem("cedula");
     const nombre = sessionStorage.getItem("nombre");
     const apellido = sessionStorage.getItem("apellido");
+    const usuario = sessionStorage.getItem("usuario");
     if (token) {
         this.currentUserLoginOn.next(true);
         this.currentUserData.next(token);
@@ -40,6 +41,7 @@ export class LoginService {
                 sessionStorage.setItem("cedula", userData.usuario.persona.cedula);
                 sessionStorage.setItem("nombre", userData.usuario.persona.nombre);
                 sessionStorage.setItem("apellido", userData.usuario.persona.apellido);
+                sessionStorage.setItem("usuario", userData.usuario.username);
                 this.currentUserData.next(userData.token);
                 console.log("Token de sesión almacenado:", userData.token);
                 // console.log("Token de sesión almacenado:", userData.empleado.nombre);

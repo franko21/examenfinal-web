@@ -21,6 +21,10 @@ export const routes: Routes = [
         loadChildren: () => import('./views/monitoreo/routes').then((m) => m.routes),
       },
       {
+        path: 'perfil',
+        loadChildren: () => import('./views/perfil/routes').then((m) => m.routes),
+      },
+      {
         path: 'prestamo',
         loadChildren: () => import('./views/prestamo/routes').then((m) => m.routes),
 
