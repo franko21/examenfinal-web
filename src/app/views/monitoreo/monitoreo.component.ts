@@ -71,7 +71,7 @@ import { MomentModule } from 'ngx-moment';
     NgxPaginationModule,
     TableDirective,
     ProgressBarDirective,
-    ProgressComponent,
+    ProgressComponent
 
   ],
   providers: [DipositivoService],

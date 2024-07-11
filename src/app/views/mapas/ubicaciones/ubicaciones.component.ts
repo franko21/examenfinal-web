@@ -25,7 +25,6 @@ import { Punto } from 'src/app/model/punto.model';
   styleUrl: './ubicaciones.component.scss'
 })
 
-
 export class UbicacionesComponent implements OnInit, OnDestroy {
   //VARIABLES
   opcionSeleccionada: string = ''; 
@@ -148,12 +147,8 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
     const marcador = new google.maps.Marker({
       position: position,
       icon: {
-        path: 'src/assets/images/Tableta.jpg',
-        scale: 10,
-        strokeColor: '#f00',
-        strokeWeight: 5,
-        fillColor: '#000A02',
-        fillOpacity: 1,
+        url: 'assets/images/Tableta-correcto.png',
+        scaledSize: new google.maps.Size(50, 50), // Ajusta el tamaño según sea necesario
       },
       map: this.map?.googleMap || null,
     });
@@ -293,9 +288,10 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
                 const poligono = new google.maps.Polygon({
                   paths: vertices_parseados,
                   map: mapContainer,
-                  strokeColor: '#0F3B04',
-                  fillColor: '#4DE943',
+                  strokeColor: '#FF0B0B',
+                  fillColor: '#16A6FF',
                   strokeWeight: 4,
+                  
                 });
                 this.arrayPoligonos.push(poligono);
               }
@@ -614,6 +610,7 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
   
   //Método para agregar un punto a la zona segura
   mostrarPuntos_Eliminar(id_zona:number){
+    console.log("ESTAMOS ENTRANDO EN LA CARGA PARA ELIMNIAR");
     this.zonasSegurasService.buscar(id_zona).subscribe(
       (zona: Zona_segura) => {
         this.puntoService.BuscarPorZonaSegura(id_zona).subscribe({
