@@ -62,7 +62,6 @@ export class ZonasSegurasComponent{
       };  
       this.listadoPuntos.push(punto);
       this.actualizarMarcadorEnMapa(position);
-      
     }
   }
 
@@ -98,29 +97,35 @@ export class ZonasSegurasComponent{
       this.zonaService.listar().subscribe({
         next: (data) => {
           data.forEach((zona: Zona_segura) => {
-            if (zona.puntos && zona.puntos.length > 0) {
-              const vertices = zona.puntos
-              .filter(punto => punto.latitud !== undefined && punto.longitud !== undefined)
-              .map(punto => ({
-              lat: punto.latitud!,
-              lng: punto.longitud!
-              }));  
-          
-              // Convierte los vértices a `google.maps.LatLng`
-              const vertices_parseados: google.maps.LatLng[] = convertirALatLng(vertices);
-              this.functionordenarVertices(vertices_parseados);
-              // Crear el polígono
-              const poligono = new google.maps.Polygon({
-                paths: vertices_parseados,
-                map: mapContainer,
-                strokeColor: '#759192',
-                fillColor: '#92afb0',
-                strokeWeight: 4,
-              });
-              this.arrayPoligonos.push(poligono);
-            } else {
-              console.warn('Zona sin puntos o puntos no definidos:', zona);
-            }
+            this.puntoService.BuscarPorZonaSegura(zona.idZonaSegura!).subscribe({
+              next: (puntos) => {
+                zona.puntos = puntos;
+                if (zona.puntos && zona.puntos.length > 0) {
+                  const vertices = zona.puntos
+                  .filter(punto => punto.latitud !== undefined && punto.longitud !== undefined)
+                  .map(punto => ({
+                  lat: punto.latitud!,
+                  lng: punto.longitud!
+                  }));
+                  // Convierte los vértices a `google.maps.LatLng`
+                  const vertices_parseados: google.maps.LatLng[] = convertirALatLng(vertices);
+                  this.functionordenarVertices(vertices_parseados);
+                  // Crear el polígono
+                  const poligono = new google.maps.Polygon({
+                    paths: vertices_parseados,
+                    map: mapContainer,
+                    strokeColor: '#759192',
+                    fillColor: '#92afb0',
+                    strokeWeight: 4,
+                  });
+                  this.arrayPoligonos.push(poligono);
+                } else {
+                  console.warn('Zona sin puntos o puntos no definidos:', zona);
+                }
+              }
+            });
+
+            
           });
         },
         error: (err) => {
@@ -163,7 +168,6 @@ export class ZonasSegurasComponent{
           zona.descripcion = zoneName;
           this.zonaService.crear(zona).subscribe({
             next: (data) => {
-              console.log(data.idZonaSegura);
               this.listadoPuntos.forEach(punto => {
                 punto.zonaSegura = data;
                 data.puntos?.push(punto);
@@ -324,7 +328,6 @@ editPolygon() {
   eliminarMarcador(marcador: google.maps.Marker) {
     // Remover el marcador del mapa
     marcador.setMap(null);
-  
     // Remover el marcador del array
     const index = this.marcadores.indexOf(marcador);
     if (index > -1) {
@@ -333,6 +336,7 @@ editPolygon() {
   }
 
 }
+
 //FUNCION PARA CALCULAR EL CENTROIDE
 function calcularCentroide(vertices: google.maps.LatLng[]): google.maps.LatLng {
   let centroLat = 0, centroLng = 0;
