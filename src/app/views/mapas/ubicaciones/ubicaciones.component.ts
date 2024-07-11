@@ -416,6 +416,7 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
                                 this.EliminarPuntos = [];
                                 this.nuevos_marcadores = [];
                                 this.crearPoligono(this.id_zona);
+                                this.opcionSeleccionada = "";
                               },
                               error => {
                                 Swal.fire('Error al eliminar el punto', error.message, 'error');
@@ -460,6 +461,7 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
                           this.marcadores = [];
                           this.arrayNuevosPuntos = [];
                           this.nuevos_marcadores = [];
+                          this.opcionSeleccionada = "";
                         }else{
                           this.arrayNuevosPuntos.forEach((punto, index) => {
                             this.zonasSegurasService.buscar(this.id_zona).subscribe({
@@ -475,6 +477,7 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
                                     this.marcadores = [];
                                     this.arrayNuevosPuntos = [];
                                     this.nuevos_marcadores = [];
+                                    this.opcionSeleccionada = "";
                                   },
                                   error => {
                                     Swal.fire('Error al añadir el punto', error.message, 'error');
@@ -515,11 +518,11 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
           icon: 'question',
           showCancelButton: true,
           showDenyButton: true,
-          showConfirmButton: true,
-          confirmButtonText: 'EDITAR PUNTOS',
+          //showConfirmButton: true, // Comentado para eliminar la opción de "EDITAR PUNTOS"
+          //confirmButtonText: 'EDITAR PUNTOS', // Comentado para eliminar la opción de "EDITAR PUNTOS"
           denyButtonText: 'ELIMINAR PUNTOS',
           cancelButtonText: 'AÑADIR PUNTOS',
-          confirmButtonColor: '#3085d6',
+          //confirmButtonColor: '#3085d6', // Comentado ya que no se utiliza el botón de confirmación
           denyButtonColor: '#d33',
           cancelButtonColor: '#aaa'
         }).then((result) => {
@@ -534,6 +537,8 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
             console.log('El usuario cerró el modal');
             this.clicks_posiciones = 0;
             this.puntosEditar = [];
+            this.marcadores = [];
+
           }
           // Aquí puedes programar las acciones según la opción seleccionada
           switch (this.opcionSeleccionada) {
