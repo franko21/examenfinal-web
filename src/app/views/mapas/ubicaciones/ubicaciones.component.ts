@@ -25,7 +25,6 @@ import { Punto } from 'src/app/model/punto.model';
   styleUrl: './ubicaciones.component.scss'
 })
 
-
 export class UbicacionesComponent implements OnInit, OnDestroy {
   //VARIABLES
   opcionSeleccionada: string = ''; 
@@ -72,6 +71,7 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.posicionesSubscription = this.webSocketService.obtenerPosiciones()
       .subscribe((posiciones: any[]) => {
+        console.log("ESTA ENTRANDO EN EL SOCKET DE POSICIONES");
         this.posiciones = posiciones;
         this.listarPosiciones();
       });
@@ -128,6 +128,7 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
     this.posicionesService.listar().subscribe(
       (posiciones: Posicion[]) => {
         this.posiciones = posiciones;
+        console.log("SI TIENES POSICIONES EN LA BASE: S"+this.posiciones.length);
         if (posiciones.length > 0) {
           posiciones.forEach((p: Posicion) => {
             this.pintarPosicion({ lat: p.latitud, lng: p.longitud }, p);
@@ -142,15 +143,12 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
 
   private infowindows: Map<google.maps.Marker, google.maps.InfoWindow> = new Map();
   pintarPosicion(position: google.maps.LatLngLiteral, posicion: Posicion) {
+    console.log("CARGA LA POSICIÓN , PERO NO CARGA EL ÍCONO BINE LPTM");
     const marcador = new google.maps.Marker({
       position: position,
       icon: {
-        path: google.maps.SymbolPath.CIRCLE,
-        scale: 10,
-        strokeColor: '#f00',
-        strokeWeight: 5,
-        fillColor: '#000A02',
-        fillOpacity: 1,
+        url: 'assets/images/Tableta-correcto.png',
+        scaledSize: new google.maps.Size(50, 50), // Ajusta el tamaño según sea necesario
       },
       map: this.map?.googleMap || null,
     });
@@ -290,9 +288,10 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
                 const poligono = new google.maps.Polygon({
                   paths: vertices_parseados,
                   map: mapContainer,
-                  strokeColor: '#0F3B04',
-                  fillColor: '#4DE943',
+                  strokeColor: '#FF0B0B',
+                  fillColor: '#16A6FF',
                   strokeWeight: 4,
+                  
                 });
                 this.arrayPoligonos.push(poligono);
               }
@@ -518,6 +517,7 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
           icon: 'question',
           showCancelButton: true,
           showDenyButton: true,
+          showConfirmButton: false,
           //showConfirmButton: true, // Comentado para eliminar la opción de "EDITAR PUNTOS"
           //confirmButtonText: 'EDITAR PUNTOS', // Comentado para eliminar la opción de "EDITAR PUNTOS"
           denyButtonText: 'ELIMINAR PUNTOS',
@@ -610,6 +610,7 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
   
   //Método para agregar un punto a la zona segura
   mostrarPuntos_Eliminar(id_zona:number){
+    console.log("ESTAMOS ENTRANDO EN LA CARGA PARA ELIMNIAR");
     this.zonasSegurasService.buscar(id_zona).subscribe(
       (zona: Zona_segura) => {
         this.puntoService.BuscarPorZonaSegura(id_zona).subscribe({
