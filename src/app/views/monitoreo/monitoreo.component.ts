@@ -28,6 +28,7 @@ import {
   TableDirective,
   ProgressBarDirective,
   ProgressComponent,
+  PopoverModule,
   
 
 
@@ -35,7 +36,7 @@ import {
 import { Dispositivo } from 'src/app/model/dispositivo.model';
 import { DipositivoService } from 'src/app/service/dispositivo.service';
 import { Subscription } from 'rxjs';
-import { Estado } from 'src/app/model/estado.model';
+import { MomentModule } from 'ngx-moment';
 
 
 @Component({
@@ -43,6 +44,8 @@ import { Estado } from 'src/app/model/estado.model';
   standalone: true,
   // Importaciones de módulos y componentes (no deben estar aquí, sino en NgModule)
   imports: [
+    MomentModule,
+    PopoverModule,
     WidgetsDropdownComponent,
     IconDirective,
     ChartjsComponent,
@@ -94,16 +97,7 @@ export class MonitoreoComponent implements OnInit, OnDestroy {
     this.listarEstados(); // Cargar estados al inicio
     this.estadosSubscription = this.webSocketService.obtenerEstados()
       .subscribe((estados: any[]) => {
-        this.estados = estados;
-        for (const estado of this.estados) {
-          // Verificar si estado, dispositivo y posición no son nulos
-          if (estado.dispositivo.posicion.dentro) {
-            console.log("dentro");
-
-          } else{
-            console.log("fuera");
-          }
-      }      
+        this.estados = estados;    
       });
   }
 
@@ -138,10 +132,12 @@ export class MonitoreoComponent implements OnInit, OnDestroy {
     }
   }
 
-  /*
-  getRandomDelay(): string {
-    const delay = Math.random() * 50; // Retraso aleatorio entre 0 y 70 segundos
-    return `${delay}s`;
+  getNumPermisos(estado: any): number {
+    let count = 0;
+    if (estado.localizacion) count++;
+    if (estado.gps) count++;
+    if (estado.phoneState) count++;
+    if (estado.notificaciones) count++;
+    return count;
   }
-  */
 }
