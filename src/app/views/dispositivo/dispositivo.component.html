@@ -4,7 +4,6 @@
       <c-card-body>
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <h5 class="card-title" style="margin-bottom: 0;">{{titulo}}</h5>
-          <button type="button" *ngIf="!showTable" class="btn btn-secondary" (click)="cancelar()">Volver</button>
         </div>
         <br>
         <div class="button-container">
@@ -76,14 +75,13 @@
             <pagination-controls (pageChange)="p = $event"></pagination-controls>
           </div>
           </div>
-          <!-- tu-componente.component.html -->
-          <div #content>
-            <!-- Contenido que se convertirá en PDF -->
-            <div>ARIEL GUAMAN</div>
-          </div>
           
           <!-- Botón para generar y visualizar el PDF en nueva pestaña -->
-          <button (click)="generarPDF()">Generar PDF</button>
+          <div class="d-flex justify-content-end">
+            <button *ngIf="showTable"  (click)="generatePDF()" class="btn btn-secondary">
+              <svg cIcon name="cil-print"></svg>
+            </button>
+          </div>
           
           <!-- AQUI INICIAN LOS FORMULARIOS DE INGRESO Y MODIFICACION SEGUN CORRESPONDA-->
           <div *ngIf="!showTablec">
@@ -105,7 +103,7 @@
 
             <c-input-group class="mb-3">
               <span cInputGroupText>
-                <svg cIcon name="cilItalic"></svg>
+                <svg cIcon name="cil-tags"></svg>
               </span>
               <select class="form-control" name="Marcas" id="Marcas" [(ngModel)]="marcaselect" required (change)="filtrarModelosPorMarca()">
                 <option value="null" disabled selected>Seleccione la Marca</option>
@@ -135,7 +133,7 @@
 
             <c-input-group class="mb-3">
               <span cInputGroupText>
-                <svg cIcon name="cilUser"></svg>
+                <svg cIcon name="cil-list-numbered"></svg>
               </span>
               <select name="numero_serie" id="numero_serie" class="form-control" [(ngModel)]="dispositivoSeleccionado" required>
                 <option value="null" disabled selected>Seleccione el numero de serie</option>
@@ -149,7 +147,7 @@
             </c-input-group>
             <c-input-group class="mb-3">
               <span cInputGroupText>
-                <svg cIcon name="cilUser"></svg>
+                <svg cIcon name="cil-location-pin"></svg>
               </span>
               <select name="zona" id="zona" class="form-control" [(ngModel)]="zonaSeleccionado" required>
                 <option value="null" disabled selected>Seleccione la zona</option>
@@ -163,7 +161,7 @@
             </c-input-group>
             <c-input-group class="mb-3">
               <span cInputGroupText>
-                <svg cIcon name="cilUser"></svg>
+                <svg cIcon name="cil-file"></svg>
               </span>
               <input id="nombre" class="form-control" type="text" placeholder="Nombre" [(ngModel)]="nombredispo" name="nombre" required/>
               <div *ngIf="myForm.controls['nombre']?.invalid && myForm.controls['nombre']?.touched" class="invalid-feedback">
@@ -228,7 +226,7 @@
           </c-input-group>
           <c-input-group class="mb-3">
             <span cInputGroupText>
-              <svg cIcon name="cilItalic"></svg>
+              <svg cIcon name="cil-location-pin"></svg>
             </span>
             <select name="zona" id="zona" class="form-control" [(ngModel)]="zonamod.idZonaSegura">
               <option Value="null" disabled selected>Seleccione la Zona</option>
