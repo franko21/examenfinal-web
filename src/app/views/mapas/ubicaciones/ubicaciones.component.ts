@@ -73,7 +73,7 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
       .subscribe((posiciones: any[]) => {
         console.log("ESTA ENTRANDO EN EL SOCKET DE POSICIONES");
         this.posiciones = posiciones;
-        this.listarPosiciones();
+        this.pintarPosiciones();
       });
 
     this.listarPosiciones();
@@ -128,12 +128,7 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
     this.posicionesService.listar().subscribe(
       (posiciones: Posicion[]) => {
         this.posiciones = posiciones;
-        console.log("SI TIENES POSICIONES EN LA BASE: S"+this.posiciones.length);
-        if (posiciones.length > 0) {
-          posiciones.forEach((p: Posicion) => {
-            this.pintarPosicion({ lat: p.latitud, lng: p.longitud }, p);
-          });
-        }
+        this.pintarPosiciones();
       },
       error => {
         console.error('Error al listar posiciones:', error);
@@ -142,43 +137,60 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
   }
 
   private infowindows: Map<google.maps.Marker, google.maps.InfoWindow> = new Map();
-  pintarPosicion(position: google.maps.LatLngLiteral, posicion: Posicion) {
-    console.log("CARGA LA POSICIÓN , PERO NO CARGA EL ÍCONO BINE LPTM");
-    const marcador = new google.maps.Marker({
-      position: position,
-      icon: {
-        url: 'assets/images/Tableta-correcto.png',
-        scaledSize: new google.maps.Size(50, 50), // Ajusta el tamaño según sea necesario
-      },
-      map: this.map?.googleMap || null,
-    });
-
-    // Crear contenido HTML para el infowindow
-    const contenidoInfowindow = `
-    <div>
-      <h3>${posicion.dispositivo?.nombre}</h3>
-      <p>Latitud: ${posicion.latitud}</p>
-      <p>Longitud: ${posicion.longitud}</p>
-      <p>: ${posicion.dentro}</p>
-    </div>
-  `;
-
-    // Crear el infowindow
-    const infowindow = new google.maps.InfoWindow({
-      content: contenidoInfowindow,
-    });
-
-    // Asociar el marcador con el infowindow en el Map
-    this.infowindows.set(marcador, infowindow);
-
-    // Agregar evento de clic al marcador para mostrar el infowindow
-    marcador.addListener('click', () => {
-      // Cerrar todos los infowindows abiertos
-      this.infowindows.forEach(iw => iw.close());
-      // Abrir el infowindow del marcador clicado
-      infowindow.open(this.map?.googleMap, marcador);
-    });
+  pintarPosiciones() {
+    this.limpiarPosiciones(); // Limpia los marcadores antes de pintar nuevos
+  
+    if (this.posiciones.length > 0) {
+      this.posiciones.forEach((posicion: Posicion) => {
+        const location: google.maps.LatLngLiteral = { lat: posicion.latitud, lng: posicion.longitud };
+  
+        const marcador = new google.maps.Marker({
+          position: location,
+          icon: {
+            url: 'assets/images/Tableta-correcto.png',
+            scaledSize: new google.maps.Size(50, 50),
+          },
+          map: this.map?.googleMap || null,
+        });
+  
+        // Crear contenido HTML para el infowindow
+        const contenidoInfowindow = `
+          <div>
+            <h3>${posicion.dispositivo?.nombre}</h3>
+            <p>Latitud: ${posicion.latitud}</p>
+            <p>Longitud: ${posicion.longitud}</p>
+            <p>Dentro: ${posicion.dentro}</p>
+          </div>
+        `;
+  
+        // Crear el infowindow
+        const infowindow = new google.maps.InfoWindow({
+          content: contenidoInfowindow,
+        });
+  
+        // Asociar el marcador con el infowindow en el Map
+        this.infowindows.set(marcador, infowindow);
+  
+        // Agregar evento de clic al marcador para mostrar el infowindow
+        marcador.addListener('click', () => {
+          // Cerrar todos los infowindows abiertos
+          this.infowindows.forEach(iw => iw.close());
+          // Abrir el infowindow del marcador clicado
+          infowindow.open(this.map?.googleMap, marcador);
+        });
+      });
+    }
   }
+  
+  private limpiarPosiciones() {
+    // Iterar sobre los marcadores y eliminar cada uno
+    this.infowindows.forEach((infowindow, marcador) => {
+      marcador.setMap(null); // Quitar el marcador del mapa
+      infowindow.close();    // Cerrar el infowindow asociado
+    });
+    this.infowindows.clear(); // Limpiar el mapa de infowindows
+  }
+  
 
   deletePolygon() {
     var zona_eliminar: Zona_segura;
