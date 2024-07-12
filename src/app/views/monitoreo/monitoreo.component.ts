@@ -9,6 +9,7 @@ import { ZonasSegurasComponent } from '../mapas/zonas-seguras/zonas-seguras.comp
 import { NgxPaginationModule } from 'ngx-pagination';
 import { WebSocketDispositivos } from 'src/app/service/WebSocketDispositivos.service';
 import { EstadoService } from 'src/app/service/estado.service';
+import { UbicacionesMonitoreoService } from 'src/app/service/ubicaciones-monitoreo.service';
 
 import {
   RowComponent,
@@ -33,7 +34,6 @@ import {
 
 
 } from '@coreui/angular';
-import { Dispositivo } from 'src/app/model/dispositivo.model';
 import { DipositivoService } from 'src/app/service/dispositivo.service';
 import { Subscription } from 'rxjs';
 import { MomentModule } from 'ngx-moment';
@@ -89,6 +89,7 @@ export class MonitoreoComponent implements OnInit, OnDestroy {
   p: number = 1;
 
   constructor(
+    private ubicacionesMonitoreoService: UbicacionesMonitoreoService,
     private webSocketService: WebSocketDispositivos,
     private service: EstadoService
   ) {}
@@ -118,9 +119,10 @@ export class MonitoreoComponent implements OnInit, OnDestroy {
     );
   }
 
+
   ubicarDispositivo(dispositivo: any) {
-    // Lógica para ubicar el dispositivo
-    console.log('Ubicando dispositivo:', dispositivo);
+    // ubicar el dispositivo
+    this.ubicacionesMonitoreoService.fijarPunto(dispositivo.latitud, dispositivo.longitud);
   }
 
   hoverEffect(event: MouseEvent, estado: any) {
