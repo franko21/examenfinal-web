@@ -74,7 +74,7 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
   public visible = false;
   alertas:Alerta[]=[];
   alerta: any;
-  isVisible = false;
+  isVisible = true;
 
   @ViewChild('alertModal') alertModal: TemplateRef<any>;
   constructor(
@@ -95,7 +95,7 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
       .pipe(
         delay(1),
         map(params => <string>params['theme']?.match(/^[A-Za-z0-9\s]+/)?.[0]),
-        filter(theme => ['dark', 'light', 'auto'].includes(theme)),
+        filter(theme => ['oscuro', 'claro', 'auto'].includes(theme)),
         tap(theme => {
           this.colorMode.set(theme);
         }),
@@ -107,7 +107,10 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
   ngOnInit(): void {
     this.seralerta.getAlertas().subscribe(
       alert=>{
-        this.alertas=alert;
+        this.alertas=alert.sort((a, b) => {
+          // @ts-ignore
+          return new Date(b.fecha).getTime() - new Date(a.fecha).getTime();
+        });
       }
     )
     this.webSocket.obtenerAlertas().subscribe((alerta) => {

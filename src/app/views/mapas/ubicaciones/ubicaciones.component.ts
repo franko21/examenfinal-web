@@ -940,4 +940,3 @@ function boostrapApplication(App: any, arg1: { providers: any[]; }) {
 function esDivisiblePorDos(numero: number): boolean {
   return numero % 2 === 0;
 }
-

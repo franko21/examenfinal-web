@@ -14,7 +14,7 @@ export const navItems: INavData[] = [
   {
     name: 'Perfil',
     url: '/perfil',
-    iconComponent: { name: 'cil-contact' }
+    iconComponent: { name: 'cilUser' }
   },
   {
     name: 'Components',
@@ -42,11 +42,11 @@ export const navItems: INavData[] = [
     url: '/clientes',
     iconComponent: { name: 'cil-people' }
   },
-  {
-    name: 'Mapa',
-    url: '/mapa',
-    iconComponent: { name: 'cil-map' }
-  },
+  // {
+  //   name: 'Mapa',
+  //   url: '/mapa',
+  //   iconComponent: { name: 'cil-map' }
+  // },
   {
     name: 'Prestamo',
     url: '/prestamo',
@@ -54,12 +54,12 @@ export const navItems: INavData[] = [
   },
   {
 
-    name: 'Alerta',
+    name: 'Alertas',
     url: '/alerta',
     iconComponent: { name: 'cil-bell' },
     badge: {
       color: 'info',
-      text: 'NEW'
+      text: '!!!'
     }
   },
    { name: 'Dispositivo',
