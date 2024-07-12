@@ -10,6 +10,8 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { WebSocketDispositivos } from 'src/app/service/WebSocketDispositivos.service';
 import { EstadoService } from 'src/app/service/estado.service';
 import { UbicacionesMonitoreoService } from 'src/app/service/ubicaciones-monitoreo.service';
+import { PosicionService } from 'src/app/service/posicion.service';
+
 
 import {
   RowComponent,
@@ -91,7 +93,8 @@ export class MonitoreoComponent implements OnInit, OnDestroy {
   constructor(
     private ubicacionesMonitoreoService: UbicacionesMonitoreoService,
     private webSocketService: WebSocketDispositivos,
-    private service: EstadoService
+    private service: EstadoService,
+    private serviceposicion: PosicionService
   ) {}
 
   ngOnInit(): void {
@@ -121,8 +124,17 @@ export class MonitoreoComponent implements OnInit, OnDestroy {
 
 
   ubicarDispositivo(dispositivo: any) {
-    // ubicar el dispositivo
-    this.ubicacionesMonitoreoService.fijarPunto(dispositivo.latitud, dispositivo.longitud);
+    this.serviceposicion.buscarPorNumSerie(dispositivo.numSerie).subscribe(
+      posicion => {
+        if(posicion){
+          this.ubicacionesMonitoreoService.fijarPunto(posicion.latitud, posicion.longitud);
+
+        }
+      },
+      error => {
+        console.error('Error al buscar dispositivo:', error);
+      }
+    );
   }
 
   hoverEffect(event: MouseEvent, estado: any) {

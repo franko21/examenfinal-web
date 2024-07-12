@@ -26,6 +26,10 @@ export class PosicionService {
     return this.http.get<Posicion>(`${this.urlEndPoint}/${id}`);
   }
 
+  buscarPorNumSerie(numserie: string): Observable<Posicion> {
+    return this.http.get<Posicion>(`${this.urlEndPoint}PorNumSerie/${numserie}`);
+  }  
+
   editar(posicion: Posicion): Observable<Posicion> {
     const url = `${this.urlEndPoint}/${posicion.idPosicion}`;
     return this.http.put<Posicion>(url, posicion, { headers: this.httpHeaders });

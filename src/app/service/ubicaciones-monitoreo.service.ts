@@ -11,6 +11,7 @@ export class UbicacionesMonitoreoService {
   fijarPunto$ = this.fijarPuntoSubject.asObservable();
 
   fijarPunto(latitud: number, longitud: number) {
+    console.log("desde el servicio:"+ latitud+" "+ longitud);
     this.fijarPuntoSubject.next({ latitud, longitud });
   }
 }

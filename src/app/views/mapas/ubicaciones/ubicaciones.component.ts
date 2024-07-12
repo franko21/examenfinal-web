@@ -192,14 +192,25 @@ private limpiarPosiciones() {
 }
 
 // Método para fijar un marcador en el mapa dadas unas coordenadas
-fijarMarcador(latitud: number, longitud: number) {
-  console.log("aquiiiiiiiiii");
-  const location: google.maps.LatLngLiteral = { lat: latitud, lng: longitud };
+  fijarMarcador(latitud: any, longitud: any) {
+  // Convertir latitud y longitud a números si es necesario
+  const lat = parseFloat(latitud);
+  const lng = parseFloat(longitud);
+
+  if (isNaN(lat) || isNaN(lng)) {
+    console.error("Latitud o Longitud no son números válidos.");
+    return;
+  }
+
+  // Crear el objeto de ubicación
+  const location: google.maps.LatLngLiteral = { lat: lat, lng: lng };
+
+  // Crear el marcador
   const marcador = new google.maps.Marker({
     position: location,
     icon: {
       url: 'assets/images/Tableta-rojo.png',
-      scaledSize: new google.maps.Size(50, 50),
+      scaledSize: new google.maps.Size(100, 100),
     },
     map: this.map?.googleMap || null,
   });
@@ -214,7 +225,15 @@ fijarMarcador(latitud: number, longitud: number) {
 
   // Mostrar el infowindow del marcador fijado automáticamente
   infowindow.open(this.map?.googleMap, marcador);
+
+  // Centrar el mapa en la ubicación del marcador
+  this.map?.googleMap?.setCenter(location);
+
+  // Opcional: Zoom al nivel deseado
+  this.map?.googleMap?.setZoom(23); // Ajusta el nivel de zoom según sea necesario
 }
+
+
 
   onZonaSeguraChange(event: Event) {
     const boton = document.getElementById('boton_editar') as HTMLButtonElement;
