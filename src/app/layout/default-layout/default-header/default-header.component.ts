@@ -95,7 +95,7 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
       .pipe(
         delay(1),
         map(params => <string>params['theme']?.match(/^[A-Za-z0-9\s]+/)?.[0]),
-        filter(theme => ['dark', 'light', 'auto'].includes(theme)),
+        filter(theme => ['oscuro', 'claro', 'auto'].includes(theme)),
         tap(theme => {
           this.colorMode.set(theme);
         }),
