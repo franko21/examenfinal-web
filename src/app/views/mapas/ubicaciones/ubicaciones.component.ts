@@ -31,6 +31,10 @@ import { UbicacionesMonitoreoService } from 'src/app/service/ubicaciones-monitor
 })
 
 export class UbicacionesComponent implements OnInit, OnDestroy {
+  iconoFijado = 'assets/images/Tableta-fijada.png';
+  iconoFuera = 'assets/images/Tableta-falla.png';
+  iconoDentro = 'assets/images/Tableta-correcto.png';
+
   //VARIABLES
   opcionSeleccionada: string = '';
   // VARIABLES DE ARRAYLIST PARA EDITAR LA ZONA SEGURA
@@ -79,7 +83,6 @@ export class UbicacionesComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.posicionesSubscription = this.webSocketService.obtenerPosiciones()
       .subscribe((posiciones: any[]) => {
-        console.log("ESTA ENTRANDO EN EL SOCKET DE POSICIONES");
         this.posiciones = posiciones;
         this.pintarPosiciones();
       });
@@ -137,10 +140,11 @@ pintarPosiciones() {
   if (this.posiciones.length > 0) {
     this.posiciones.forEach((posicion: Posicion) => {
       const location: google.maps.LatLngLiteral = { lat: posicion.latitud, lng: posicion.longitud };
+      const icono = posicion.dentro ? this.iconoDentro : this.iconoFuera;
       const marcador = new google.maps.Marker({
         position: location,
         icon: {
-          url: 'assets/images/Tableta-correcto.png',
+          url: icono,
           scaledSize: new google.maps.Size(50, 50),
         },
         map: this.map?.googleMap || null,
@@ -197,11 +201,6 @@ private limpiarPosiciones() {
   const lat = parseFloat(latitud);
   const lng = parseFloat(longitud);
 
-  if (isNaN(lat) || isNaN(lng)) {
-    console.error("Latitud o Longitud no son números válidos.");
-    return;
-  }
-
   // Crear el objeto de ubicación
   const location: google.maps.LatLngLiteral = { lat: lat, lng: lng };
 
@@ -209,7 +208,7 @@ private limpiarPosiciones() {
   const marcador = new google.maps.Marker({
     position: location,
     icon: {
-      url: 'assets/images/Tableta-rojo.png',
+      url: this.iconoFijado,
       scaledSize: new google.maps.Size(100, 100),
     },
     map: this.map?.googleMap || null,
@@ -255,7 +254,6 @@ private limpiarPosiciones() {
     // Convertir el ID de string a number
     const selectedZonaSeguraId = parseInt(selectedZonaSeguraIdStr, 10);
     this.id_zona = selectedZonaSeguraId;
-    console.log(selectedZonaSeguraIdStr);
     this.mostrar_dispositivos = true;
     this.crearPoligono(selectedZonaSeguraId);
     // Aquí puedes agregar lógica adicional para manejar el cambio de zona segura,
@@ -287,17 +285,13 @@ private limpiarPosiciones() {
               this.Dispositivoservice.buscarporzonasegura(this.id_zona).subscribe(
                 (dispositivos: Dispositivo[]) => {
                   listadispositivos = dispositivos;
-                  console.log('Dispositivos:', listadispositivos);
-                  console.log('Cantidad de puntos:', zona.puntos?.length)
                   this.puntoService.BuscarPorZonaSegura(this.id_zona).subscribe({
                     next: (puntos: Punto[]) => {
                       zona.puntos = puntos;
-                      console.log('Puntos:', puntos);
                       if (zona.puntos && zona.puntos.length > 0) {
                         if (listadispositivos.length === 0) {
                           zona.puntos.forEach((punto, index) => {
                             if (punto.id_punto) {
-                              console.log('Punto a eliminar:', punto);
                               this.puntoService.eliminar(punto.id_punto).subscribe(
                                 () => {
                                   console.log('Punto eliminado:', punto);
@@ -455,8 +449,8 @@ private limpiarPosiciones() {
               });
               break;
             case 'Guardar':
-              console.log(this.opcionSeleccionada);
-              this.finalizarEdicion();
+
+            this.finalizarEdicion();
               boton.textContent = "Editar";
               boton.innerText = "Editar";
               this.textoBoton = "Editar";
@@ -616,7 +610,7 @@ private limpiarPosiciones() {
             this.opcionSeleccionada = 'AÑADIR PUNTOS';
           } else if (result.dismiss === Swal.DismissReason.backdrop || result.dismiss === Swal.DismissReason.close || result.dismiss === Swal.DismissReason.esc) {
             // El usuario cerró el modal
-            console.log('El usuario cerró el modal');
+        
             this.clicks_posiciones = 0;
             this.puntosEditar = [];
             this.marcadores = [];
@@ -626,14 +620,12 @@ private limpiarPosiciones() {
           switch (this.opcionSeleccionada) {
             case 'EDITAR PUNTOS':
               // Código para editar un punto
-              console.log('Editar un punto seleccionado');
               boton.textContent = "Guardar";
               boton.innerText = "Guardar";
               this.textoBoton = "Guardar";
               break;
             case 'ELIMINAR PUNTOS':
               // Código para eliminar un punto
-              console.log('Eliminar un punto seleccionado');
               boton.textContent = "Guardar";
               boton.innerText = "Guardar";
               this.textoBoton = "Guardar";
@@ -692,7 +684,6 @@ private limpiarPosiciones() {
 
   //Método para agregar un punto a la zona segura
   mostrarPuntos_Eliminar(id_zona: number) {
-    console.log("ESTAMOS ENTRANDO EN LA CARGA PARA ELIMNIAR");
     this.zonasSegurasService.buscar(id_zona).subscribe(
       (zona: Zona_segura) => {
         this.puntoService.BuscarPorZonaSegura(id_zona).subscribe({
@@ -830,7 +821,6 @@ private limpiarPosiciones() {
       }
       //REMOVER EL PUNTO DE MI ARRAY DE PUNTOS
       const index_punto = this.puntosEditar.indexOf(position);
-      console.log('Punto a eliminar:', position);
       this.EliminarPuntos.push(position);
       if (index_punto > -1) {
         this.puntosEditar.splice(index_punto, 1);
