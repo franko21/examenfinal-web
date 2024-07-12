@@ -10,7 +10,7 @@ import { Alerta } from '../model/alerta.model';
 })
 export class AlertaService {
   private httpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' })
-
+  private urlEndPoint:string = environment.urlHost+'api/alerta';
   constructor(private http:HttpClient) { }
 
   getAlertas(): Observable<Alerta[]> {
@@ -18,4 +18,11 @@ export class AlertaService {
       map(Response => Response as Alerta[])
     );
   }
+
+  listar(): Observable<Alerta[]>{
+    return this.http.get<Alerta[]>(this.urlEndPoint);
+  }
+
+
+
 }
