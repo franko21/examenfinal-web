@@ -267,12 +267,31 @@
     </div>
   </c-dropdown>
 </ng-template>
-<!-- custom-modal.component.html -->
+
+
+<!--&lt;!&ndash; custom-modal.component.html &ndash;&gt;-->
+<!--<div class="modal" *ngIf="isVisible">-->
+<!--  <div class="modal-content">-->
+<!--    <div class="modal-header">-->
+<!--      <span class="close" (click)="closeModal()">&times;</span>-->
+<!--      <h2>Nueva Alerta</h2>-->
+<!--    </div>-->
+<!--    <div class="modal-body">-->
+<!--      <p><strong>Fecha:</strong> {{ alerta?.fecha }}</p>-->
+<!--      <p><strong>Descripción:</strong> {{ alerta?.descripcion }}</p>-->
+<!--      <p><strong>Dispositivo:</strong> {{ alerta?.dispositivo?.nombre }}</p>-->
+<!--    </div>-->
+<!--    <div class="modal-footer">-->
+<!--      <button (click)="closeModal()">Cerrar</button>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
+
 <div class="modal" *ngIf="isVisible">
   <div class="modal-content">
     <div class="modal-header">
-      <span class="close" (click)="closeModal()">&times;</span>
       <h2>Nueva Alerta</h2>
+      <button class="close" (click)="closeModal()">&times;</button>
     </div>
     <div class="modal-body">
       <p><strong>Fecha:</strong> {{ alerta?.fecha }}</p>
@@ -280,8 +299,9 @@
       <p><strong>Dispositivo:</strong> {{ alerta?.dispositivo?.nombre }}</p>
     </div>
     <div class="modal-footer">
-      <button (click)="closeModal()">Cerrar</button>
+      <button class="btn btn-secondary" (click)="closeModal()">Cerrar</button>
     </div>
   </div>
 </div>
+
 

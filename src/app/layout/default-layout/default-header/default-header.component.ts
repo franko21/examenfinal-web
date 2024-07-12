@@ -74,7 +74,7 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
   public visible = false;
   alertas:Alerta[]=[];
   alerta: any;
-  isVisible = false;
+  isVisible = true;
 
   @ViewChild('alertModal') alertModal: TemplateRef<any>;
   constructor(
