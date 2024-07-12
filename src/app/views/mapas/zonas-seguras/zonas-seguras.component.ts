@@ -61,12 +61,12 @@ export class ZonasSegurasComponent{
         longitud: this.lastClickedPosition.lng
       };  
       this.listadoPuntos.push(punto);
-      this.actualizarMarcadorEnMapa(position);
+      this.actualizarMarcadorEnMapa(position,punto);
     }
   }
 
   //MÉTODO PARA ACTUALIZAR EL MARCADOR EN EL MAPA
-  actualizarMarcadorEnMapa(position: google.maps.LatLngLiteral) {
+  actualizarMarcadorEnMapa(position: google.maps.LatLngLiteral,punto:any) {
     // RUTA PARA COLOCAR UN MARKADOR PERSONALIZADO
     const ruta = 'https://th.bing.com/th/id/R.e6d5549d7d43ef8e34af49fed37e1196?rik=nb2KWBpNv895Bw&pid=ImgRaw&r=0';
     const marcador = new google.maps.Marker({
@@ -79,6 +79,21 @@ export class ZonasSegurasComponent{
         fillColor: '#000A02',
         fillOpacity: 1,
       },
+      map: this.map?.googleMap || null,
+    });
+    // Agregar el evento click al marcador
+    marcador.addListener('click', () => {
+      this.eliminarMarcador(marcador);
+    });
+    this.marcadores.push(marcador); // Agregar el marcador al array
+  }
+
+  //
+  actualizarMarkador_direcciones(position: google.maps.LatLngLiteral) {
+    // RUTA PARA COLOCAR UN MARKADOR PERSONALIZADO
+    const ruta = 'https://th.bing.com/th/id/R.e6d5549d7d43ef8e34af49fed37e1196?rik=nb2KWBpNv895Bw&pid=ImgRaw&r=0';
+    const marcador = new google.maps.Marker({
+      position: position,
       map: this.map?.googleMap || null,
     });
     // Agregar el evento click al marcador
@@ -201,7 +216,6 @@ export class ZonasSegurasComponent{
   crearPoligono() {
     const mapContainer = this.map.googleMap;
     if (mapContainer) {
-      console.log("SE INICIO LA CREACIÓN DE");
       // Crear los vértices del polígono a partir de los puntos
       const vertices = this.listadoPuntos.map(punto => ({
         lat: punto.latitud,
@@ -220,6 +234,7 @@ export class ZonasSegurasComponent{
       // Borrar los marcadores del mapa
       this.marcadores.forEach(marcador => marcador.setMap(null));
       this.marcadores = []; // Vaciar el array de marcadores
+      this.listadoPuntos = [];
   
     } else {
       console.log("NO SE PUDO INICIAR LA CREACIÓN DE");
@@ -241,7 +256,6 @@ export class ZonasSegurasComponent{
             );
             contadorPuntosIngresados++;
             if (contadorPuntosIngresados === this.listadoPuntos.length && puntosIngresadosCorrectamente) {
-              console.log('Todos los puntos fueron ingresados correctamente en la base de datos');
               this.crearPoligono();
             }
           },
@@ -288,7 +302,7 @@ export class ZonasSegurasComponent{
             console.log(place.name);
             
             // Actualizar marcador en la nueva ubicación
-            this.actualizarMarcadorEnMapa({
+            this.actualizarMarkador_direcciones({
               lat: place.geometry.location.lat(),
               lng: place.geometry.location.lng()
             });
@@ -332,6 +346,11 @@ editPolygon() {
     const index = this.marcadores.indexOf(marcador);
     if (index > -1) {
       this.marcadores.splice(index, 1);
+    }
+
+    const index_punto = this.listadoPuntos.indexOf(this.listadoPuntos.find(punto => punto.latitud === marcador.getPosition()?.lat() && punto.longitud === marcador.getPosition()?.lng()));
+    if (index_punto > -1) {
+      this.listadoPuntos.splice(index_punto, 1);
     }
   }
 
