@@ -49,7 +49,11 @@ export class AlertaComponent {
   ngOnInit(){
     this.alertaService.getAlertas().subscribe(
       aler=>{
-        this.alertas=aler;
+        this.alertas=aler.sort((a, b) => {
+          // @ts-ignore
+          return new Date(b.fecha).getTime() - new Date(a.fecha).getTime();
+        });
+
       }
     )
     this.dispositivoService.listar().subscribe(

@@ -107,7 +107,10 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
   ngOnInit(): void {
     this.seralerta.getAlertas().subscribe(
       alert=>{
-        this.alertas=alert;
+        this.alertas=alert.sort((a, b) => {
+          // @ts-ignore
+          return new Date(b.fecha).getTime() - new Date(a.fecha).getTime();
+        });
       }
     )
     this.webSocket.obtenerAlertas().subscribe((alerta) => {
