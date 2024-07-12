@@ -9,12 +9,14 @@ import { WebSocketDispositivos } from 'src/app/service/WebSocketDispositivos.ser
 import { Dispositivo } from 'src/app/model/dispositivo.model';
 import {FormsModule} from "@angular/forms";
 import {IconDirective} from "@coreui/icons-angular";
+import {NgxPaginationModule} from "ngx-pagination";
+import {ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent} from "@coreui/angular";
 
 
 @Component({
   selector: 'app-alerta',
   standalone: true,
-    imports: [NgFor, NgIf, HttpClientModule, FormsModule, IconDirective],
+  imports: [NgFor, NgIf, HttpClientModule, FormsModule, IconDirective, NgxPaginationModule, ModalComponent, ModalHeaderComponent, ModalBodyComponent, ModalFooterComponent],
   providers:[AlertaService,DatePipe,DipositivoService,WebSocketDispositivos],
   templateUrl: './alerta.component.html',
   styleUrl: './alerta.component.scss'
@@ -29,6 +31,8 @@ export class AlertaComponent {
   alertSeleccionado: any = null;
   searchText: string = '';
   alerta: any;
+  p: number = 1; // Página actual para la paginación
+  isModalVisible = false;
 
 
 
@@ -43,11 +47,11 @@ export class AlertaComponent {
 
   }
   ngOnInit(){
-    // this.alertaService.getAlertas().subscribe(
-    //   aler=>{
-    //     this.alertas=aler;
-    //   }
-    // )
+    this.alertaService.getAlertas().subscribe(
+      aler=>{
+        this.alertas=aler;
+      }
+    )
     this.dispositivoService.listar().subscribe(
       dis=>{
         this.dispositivos=dis;
@@ -76,10 +80,12 @@ export class AlertaComponent {
   }
   mostrarDetalles(alert: any): void {
     this.alertSeleccionado = alert;
+    this.isModalVisible = true;
 
   }
 
   cerrarDetalles(): void {
     this.alertSeleccionado = null;
+    this.isModalVisible = false;
   }
 }

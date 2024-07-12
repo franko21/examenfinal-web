@@ -46,6 +46,8 @@ import * as icons from '@coreui/icons';
 import { jsPDF } from 'jspdf';
 import autoTable, { CellInput, RowInput } from 'jspdf-autotable';
 import { Historico } from 'src/app/model/historico.model';
+import { Alerta } from 'src/app/model/alerta.model';
+import { AlertaService } from 'src/app/service/alerta.service';
 
 
 
@@ -57,7 +59,7 @@ import { Historico } from 'src/app/model/historico.model';
   selector: 'app-prestamo',
   standalone: true,
   imports: [NgFor, HttpClientModule, NgIf, ContainerComponent, RowComponent, ColComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, IconDirective, FormControlDirective, ButtonDirective, ReactiveFormsModule, HttpClientModule, NgxPaginationModule, GutterDirective, FormFeedbackComponent, DatePipe, ToasterComponent, ToastComponent, ToastHeaderComponent, ToastBodyComponent, ProgressBarDirective, ProgressComponent, ProgressBarComponent, ButtonDirective, FormsModule, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalBodyComponent, NgClass, NgStyle],
-  providers:[PrestamoService,PersonaService,DipositivoService,UsuarioService,DatePipe],
+  providers:[PrestamoService,PersonaService,DipositivoService,AlertaService,UsuarioService,DatePipe],
   templateUrl: './prestamo.component.html',
   styleUrl: './prestamo.component.scss'
 })
@@ -67,6 +69,8 @@ export class PrestamoComponent {
   mostrarFormularioEditar = false;
   prestamos:Prestamo[]=[];
   prestamo:Prestamo=new Prestamo;
+  alertas:Alerta[]=[];
+  alerta:Alerta=new Alerta;
   personas:Persona[]=[];
   dispositivos:Dispositivo[]=[];
   historicos:Historico[]=[];
@@ -125,7 +129,7 @@ export class PrestamoComponent {
       }
     )
   }
-  constructor(private datePipe:DatePipe,private usuarioService:UsuarioService, private dispoService:DipositivoService, private personaService:PersonaService,private prestamoService: PrestamoService,private historicoService:HistoricoService,private router:Router,private fb:FormBuilder,private iconSet: IconSetService){
+  constructor(private datePipe:DatePipe,private usuarioService:UsuarioService, private dispoService:DipositivoService, private personaService:PersonaService,private prestamoService: PrestamoService,private historicoService:HistoricoService,private alertaservice:AlertaService,private router:Router,private fb:FormBuilder,private iconSet: IconSetService){
     this.registerForm = this.fb.group({
       beneficiario: ['', Validators.required],
       dispositivo: ['', Validators.required],
@@ -189,133 +193,175 @@ export class PrestamoComponent {
     this.applyFilters();
   }
 
-  listarHistoricos(prestamo: Prestamo) {
+  listarhistoalertas(prestamo: Prestamo) {
     this.historicoService.listar().subscribe(
       historicos => {
-        // Filtrar los históricos por id_dispositivo y por el rango de fechas y horas
         this.historicos = historicos.filter(historico => {
-          // Verificar si el id_dispositivo del historico coincide con el del prestamo
           const idDispositivoMatch = historico.dispositivo?.idDispositivo === prestamo.dispositivo?.idDispositivo;
-  
-          // Verificar si historico.fechaHora está definido antes de convertirlo a objeto Date
           if (!historico.fecha) {
-            return false; // Si fechaHora es undefined, no cumple con el filtro
+            return false;
           }
-  
-          // Convertir historico.fechaHora a objeto Date
           const fechaHoraHistorico = new Date(historico.fecha);
-  
-          // Verificar si el historico.fechaHora está dentro del rango de fechas y horas del prestamo
-          const fechaInicio = new Date(prestamo.fecha_prestamo);  // Convertir a objeto Date
-          const fechaFin = new Date(prestamo.fecha_finalizacion);  // Convertir a objeto Date
+          const fechaInicio = new Date(prestamo.fecha_prestamo);
+          const fechaFin = new Date(prestamo.fecha_finalizacion);
           const fechaMatch = fechaHoraHistorico >= fechaInicio && fechaHoraHistorico <= fechaFin;
-  
-          // Devolver verdadero si ambos criterios coinciden
           return idDispositivoMatch && fechaMatch;
         }).sort((a, b) => {
-          // Ordenar por fecha, asumiendo que historico.fecha es una cadena de fecha válida
           if (a.fecha && b.fecha) {
             return new Date(a.fecha).getTime() - new Date(b.fecha).getTime();
           }
-          return 0; // Si no se puede comparar, dejar en el mismo orden
+          return 0;
         });
   
-        console.log("Se supone que aquí están los históricos filtrados por id_dispositivo y rango de fechas, ordenados por fecha:", prestamo.dispositivo?.idDispositivo);
-        console.log(this.historicos);     
-       this.generatePDF(prestamo);
+        this.alertaservice.listar().subscribe(
+          alertas => {
+            this.alertas = alertas.filter(alerta => {
+              const idDispositivoMatch = alerta.dispositivo?.idDispositivo === prestamo.dispositivo?.idDispositivo;
+              if (!alerta.fecha) {
+                return false;
+              }
+              const fechaHoraAlerta = new Date(alerta.fecha);
+              const fechaInicio = new Date(prestamo.fecha_prestamo);
+              const fechaFin = new Date(prestamo.fecha_finalizacion);
+              const fechaMatch = fechaHoraAlerta >= fechaInicio && fechaHoraAlerta <= fechaFin;
+              return idDispositivoMatch && fechaMatch;
+            }).sort((a, b) => {
+              if (a.fecha && b.fecha) {
+                return new Date(a.fecha).getTime() - new Date(b.fecha).getTime();
+              }
+              return 0;
+            });
+  
+            this.generatePDF(prestamo);
+          },
+          error => {
+            console.error('Error al listar alertas:', error);
+          }
+        );
       },
       error => {
-        console.error('Error al listar dispositivos:', error);
+        console.error('Error al listar históricos:', error);
       }
     );
   }
-
-
-  generatePDF(prestamo:Prestamo) {
-    
+  generatePDF(prestamo: Prestamo) {
     const doc = new jsPDF();
-    // Encabezado
-    const imageWidth = 90;  
-    const imageHeight = 40;  
-    const imageURL = '../../../assets/images/jedanklogofondoo.jpg';  // Ruta de tu imagen
+    const imageWidth = 90;
+    const imageHeight = 40;
+    const imageURL = '../../../assets/images/jedanklogofondoo.jpg';
+  
+    // Agregar imagen de encabezado
     doc.addImage(imageURL, 'JPEG', 20, 8, imageWidth, imageHeight);
   
-    // Texto a la derecha de la imagen
-    const textX = 20 + imageWidth + 10; // Ajusta la posición X para que esté a la derecha de la imagen con un pequeño margen
-    const textY = 11; // Ajusta la posición Y para alinear con la parte superior de la imagen
-    const textWidth = 10; // Ancho del área de texto
+    // Configurar estilos y posiciones iniciales
+    const textX = 20 + imageWidth + 10;
+    const textY = 11;
+    const titleY = imageHeight + 20;
+    const tableStartY = titleY + 20;
   
-    const fechaFinalizacion = new Date(prestamo.fecha_finalizacion);
-    const fechaPrestamo = new Date(prestamo.fecha_prestamo);
-
-// Función para formatear la fecha y hora como "YYYY-MM-DD HH:mm:ss"
-function formatDate(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  const seconds = String(date.getSeconds()).padStart(2, '0');
-  return `${hours}:${minutes}:${seconds} ${year}-${month}-${day} `;
-}
-
-const textLines = [
-  `Administrador: ${prestamo.persona.nombre}`, 
-  `Usuario: ${prestamo.persona.nombre} ${prestamo.persona.apellido}`, 
-  `Identificación: ${prestamo.persona.cedula}`, 
-  `Dispositivo: ${prestamo.dispositivo.modelo?.marca?.nombre}/${prestamo.dispositivo.modelo?.nombre}`, 
-  `Inicia:       ${formatDate(fechaPrestamo)}`,
-  `Devuelve: ${formatDate(fechaFinalizacion)}`
-];
+    // Función para formatear fecha y hora
+    function formatDate(date: Date): string {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      const seconds = String(date.getSeconds()).padStart(2, '0');
+      return `${hours}:${minutes}:${seconds} ${year}-${month}-${day}`;
+    }
   
-    // Ajustar el tamaño de la letra
-    const fontSize = 12; // Tamaño de letra deseado
+    // Información del préstamo
+    const textLines = [
+      `Administrador: ${prestamo.persona.nombre}`,
+      `Usuario: ${prestamo.persona.nombre} ${prestamo.persona.apellido}`,
+      `Identificación: ${prestamo.persona.cedula}`,
+      `Dispositivo: ${prestamo.dispositivo.modelo?.marca?.nombre}/${prestamo.dispositivo.modelo?.nombre}`,
+      `Inicia: ${formatDate(new Date(prestamo.fecha_prestamo))}`,
+      `Devuelve: ${formatDate(new Date(prestamo.fecha_finalizacion))}`
+    ];
+  
+    // Escribir información del préstamo
+    const fontSize = 12;
     doc.setFontSize(fontSize);
-  
-    // Agregar texto a la derecha de la imagen
     textLines.forEach((line, index) => {
-      doc.text(line, textX, textY + (index * 7.5)); // Ajusta la separación entre líneas si es necesario
+      doc.text(line, textX, textY + (index * 7));
     });
   
-    // Restablecer el tamaño de la letra si es necesario para otros textos
-    doc.setFontSize(16); // Tamaño de letra para otros textos
+    // Título de la sección de historicos y alertas
+    doc.setFontSize(16);
+    doc.text('Históricos de posiciones y alertas', 20, titleY);
   
-    // Título de la tabla debajo de la imagen y el texto
-    const titleY = imageHeight + 20; // Ajusta la posición Y para que esté debajo de la imagen y el texto con un pequeño margen
-    doc.text('Historicos de posiciones', 20, titleY);
-  
-    // Definir las columnas de la tabla
+    // Datos de historicos y alertas
     const columns = ['Latitud', 'Longitud', 'Hora / Fecha'];
+    const rows: RowInput[] = [];
   
-    // Mapear los datos para generar las filas
-    const rows: RowInput[] = this.historicos.map(historico => {
-      const row: CellInput[] = [
-        historico.latitud?.toString() || '', // Ajusta según el nombre de tu propiedad en Dispositivo
-        historico.longitud?.toString() || '',
-        historico.fecha ? formatDate(new Date(historico.fecha)) : '',
-
-      ];
-      return row;
+    // Combinar y ordenar historicos y alertas por fecha
+    const combinedData: { type: 'historico' | 'alerta', data: Historico | Alerta }[] = [];
+  
+    this.historicos.forEach(historico => {
+      combinedData.push({ type: 'historico', data: historico });
     });
   
-    // Generar la tabla debajo del título
-    const tableStartY = titleY + 10; // Ajusta la posición Y para que esté debajo del título con un pequeño margen
+    this.alertas.forEach(alerta => {
+      combinedData.push({ type: 'alerta', data: alerta });
+    });
+  
+    combinedData.sort((a, b) => {
+      const dateA = new Date(a.data.fecha || 0);
+      const dateB = new Date(b.data.fecha || 0);
+      return dateA.getTime() - dateB.getTime();
+    });
+  
+    // Crear filas de datos
+    combinedData.forEach(item => {
+      if (item.type === 'historico') {
+        const historico = item.data as Historico;
+        const historicoRow: CellInput[] = [
+          historico.latitud?.toString() || '',
+          historico.longitud?.toString() || '',
+          historico.fecha ? formatDate(new Date(historico.fecha)) : '',
+          '' // Placeholder for alert description
+        ];
+        rows.push(historicoRow);
+      } else if (item.type === 'alerta') {
+        const alerta = item.data as Alerta;
+        const alertaRow: CellInput[] = [
+          { content: `ALERTA/HORA/FECHA: \n${alerta.descripcion || ''} ${formatDate(new Date(alerta.fecha || 0))}`, colSpan: 3, styles: { halign: 'center', valign: 'middle' } }
+        ];
+        rows.push(alertaRow);
+      }
+    });
+
+    // Generar tabla con estilos
     autoTable(doc, {
       head: [columns],
       body: rows,
       theme: 'striped',
       headStyles: {
-        fillColor: '#343a40',
-        textColor: '#ffffff'
+        fillColor: '#007bff', // Color de fondo del encabezado
+        textColor: '#ffffff' // Color de texto del encabezado
       },
-      startY: tableStartY
+      bodyStyles: {
+        fillColor: '#f3f3f3', // Color de fondo del cuerpo de la tabla
+        textColor: '#000000' // Color de texto del cuerpo de la tabla
+      },
+      alternateRowStyles: { fillColor: '#e0e0e0' }, // Color de fondo de filas alternas
+      startY: tableStartY,
+      margin: { top: 10 }
     });
   
-    // Generar el blob y abrir en una nueva pestaña
+    // Guardar y abrir el documento PDF en una nueva ventana
     const pdfBlob = doc.output('blob');
     const pdfUrl = URL.createObjectURL(pdfBlob);
     window.open(pdfUrl, '_blank');
   }
+  
+  
+  
+
+  
+  
+  
 
   isValidDate(date: any): boolean {
     return date instanceof Date && !isNaN(date.getTime());
