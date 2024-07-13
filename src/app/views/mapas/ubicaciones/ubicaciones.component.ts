@@ -306,6 +306,8 @@ private limpiarPosiciones() {
                             () => {
                               this.zonasSeguras.splice(this.zonasSeguras.findIndex(zona => zona.idZonaSegura === this.id_zona), 1);
                               Swal.fire('Zona segura eliminada', '', 'success');
+                              var indice = this.zonasSeguras.findIndex(zona => zona.idZonaSegura === this.id_zona);
+                              this.zonasSeguras.splice(indice, 1);
                               this.arrayPoligonos.forEach(overlay => {
                                 if (overlay instanceof google.maps.Polygon) {
                                   overlay.setMap(null); // Elimina el polígono del mapa
@@ -332,6 +334,7 @@ private limpiarPosiciones() {
           );
         }
       });
+
     }
   }
 
