@@ -314,7 +314,9 @@ private limpiarPosiciones() {
                                     overlay.setMap(null); // Elimina el polígono del mapa
                                   }
                                 });
-                              },
+                              },error => {
+                                Swal.fire('Error al eliminar la zona segura', error.message, 'error');
+                              }
                             );                            
                         } else {
                           Swal.fire('No se puede eliminar la zona segura', 'La zona segura tiene dispositivos asociados', 'error');
@@ -516,7 +518,7 @@ private limpiarPosiciones() {
                       this.crearPoligono(this.id_zona);
                     }
                   });
-
+                  this.opcionSeleccionada = '';
                   break;
                 case 'AÑADIR PUNTOS':
                   Swal.fire({
@@ -580,6 +582,7 @@ private limpiarPosiciones() {
                       this.nuevos_marcadores = [];
                     }
                   });
+                  this.opcionSeleccionada = '';
                   break;
               }
               break;
@@ -614,7 +617,6 @@ private limpiarPosiciones() {
             this.opcionSeleccionada = 'AÑADIR PUNTOS';
           } else if (result.dismiss === Swal.DismissReason.backdrop || result.dismiss === Swal.DismissReason.close || result.dismiss === Swal.DismissReason.esc) {
             // El usuario cerró el modal
-        
             this.clicks_posiciones = 0;
             this.puntosEditar = [];
             this.marcadores = [];

@@ -33,5 +33,9 @@ export class Zona_seguraService {
   eliminar(id_auto: number): Observable<Zona_segura> {
     return this.http.delete<Zona_segura>(`${this.UrlEndPoint}/${id_auto}`);
   }
+
+  BuscarPorNombre(descripcion: string): Observable<Zona_segura[]> {
+    return this.http.get<Zona_segura[]>(`${this.UrlEndPoint+'/descripcion/'}${descripcion}`);
+  }
 }
 
