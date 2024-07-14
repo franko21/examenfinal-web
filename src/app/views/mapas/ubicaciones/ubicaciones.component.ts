@@ -276,7 +276,7 @@ private limpiarPosiciones() {
         confirmButtonText: 'Sí, eliminar',
         cancelButtonText: 'Cancelar'
       }).then((result) => {
-        var validar_dispositivos: Boolean = false;
+        var borrados_puntos:boolean = false;
         var listadispositivos: Dispositivo[] = [];
         if (result.isConfirmed) {
           // Aquí llamas a la función para eliminar la zona segura
@@ -287,34 +287,35 @@ private limpiarPosiciones() {
                   listadispositivos = dispositivos;
                   this.puntoService.BuscarPorZonaSegura(this.id_zona).subscribe({
                     next: (puntos: Punto[]) => {
-                      zona.puntos = puntos;
-                      if (zona.puntos && zona.puntos.length > 0) {
+                      if (puntos && puntos.length > 0) {
                         if (listadispositivos.length === 0) {
-                          zona.puntos.forEach((punto, index) => {
+                          puntos.forEach((punto, index) => {
                             if (punto.id_punto) {
                               this.puntoService.eliminar(punto.id_punto).subscribe(
                                 () => {
+                                  borrados_puntos = true;
+                                  //AQUI QUIERO PONER MI CÓDIGO DE ELIMINAR ZONA SEGURA
                                   console.log('Punto eliminado:', punto);
                                 },
                                 error => {
-                                  console.error('Error al eliminar el punto:', error);
+                                  borrados_puntos = false;
                                 }
                               );
                             }
                           });
-                          this.zonasSegurasService.eliminar(this.id_zona).subscribe(
-                            () => {
-                              this.zonasSeguras.splice(this.zonasSeguras.findIndex(zona => zona.idZonaSegura === this.id_zona), 1);
-                              Swal.fire('Zona segura eliminada', '', 'success');
-                              var indice = this.zonasSeguras.findIndex(zona => zona.idZonaSegura === this.id_zona);
-                              this.zonasSeguras.splice(indice, 1);
-                              this.arrayPoligonos.forEach(overlay => {
-                                if (overlay instanceof google.maps.Polygon) {
-                                  overlay.setMap(null); // Elimina el polígono del mapa
-                                }
-                              });
-                            },
-                          );
+                            this.zonasSegurasService.eliminar(this.id_zona).subscribe(
+                              () => {
+                                this.zonasSeguras.splice(this.zonasSeguras.findIndex(zona => zona.idZonaSegura === this.id_zona), 1);
+                                Swal.fire('Zona segura eliminada', '', 'success');
+                                var indice = this.zonasSeguras.findIndex(zona => zona.idZonaSegura === this.id_zona);
+                                this.zonasSeguras.splice(indice, 1);
+                                this.arrayPoligonos.forEach(overlay => {
+                                  if (overlay instanceof google.maps.Polygon) {
+                                    overlay.setMap(null); // Elimina el polígono del mapa
+                                  }
+                                });
+                              },
+                            );                            
                         } else {
                           Swal.fire('No se puede eliminar la zona segura', 'La zona segura tiene dispositivos asociados', 'error');
                         }
