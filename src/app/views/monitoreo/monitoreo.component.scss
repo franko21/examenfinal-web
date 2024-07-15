@@ -164,4 +164,22 @@
   }
 }
 
+.dispositivo-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dispositivo-item:hover {
+  background-color: #2a303d;
+  color: #ffffff;
+}
+
+.total-dispositivos {
+  color: #28a745; /* Verde de Bootstrap por defecto */
+}
+
+
 

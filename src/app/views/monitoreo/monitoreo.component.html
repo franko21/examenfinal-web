@@ -1,22 +1,53 @@
 <div class="card mb-4">
   <div class="card-body">
     <div class="row">
-      <div class="col-lg-3">
-        <h5>Resumen</h5>
-      </div>
+      <div class="col-lg-3 text-center">Dispositivos totales
+        <h1 class="mt-4 total-dispositivos">{{ totales }}</h1>
+      </div>          
       <div class="col-lg-9">
-        <div class="scrollable-list">
-          <ul class="list-group list-group-horizontal">
-            <!-- Ejemplo de ítems de lista -->
-            <li class="list-group-item">Dispositivo 1</li>
-            <li class="list-group-item">Dispositivo 2</li>
-            <li class="list-group-item">Dispositivo 3</li>
-            <li class="list-group-item">Dispositivo 1</li>
-            <li class="list-group-item">Dispositivo 1</li>
-            <!-- Puedes usar *ngFor para generar dinámicamente según tus datos -->
-          </ul>
+        <div class="row">
+          <div class="col-md-4">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                Tabletas
+                <span class="badge bg-info rounded-pill">{{ tabletas }}</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                Teléfonos
+                <span class="badge bg-info rounded-pill">{{ telefonos }}</span>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                Conectados
+                <span class="badge bg-success rounded-pill">{{ conectados }}</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                Desconectados
+                <span class="badge bg-danger rounded-pill">{{ desconectados }}</span>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                Disponibles
+                <span class="badge bg-primary rounded-pill">{{ disponibles }}</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                No Disponibles
+                <span class="badge bg-warning rounded-pill">{{ noDisponibles }}</span>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
+      
+      
+      
+      
       <hr class="mt-4 mb-4" />
       <!-- Margen arriba y abajo para la línea divisora -->
     </div>
@@ -27,40 +58,27 @@
         </section>
       </div>
       <div class="col-lg-3">
-        <section class="right-section text-right">
-          <!-- Alineación a la derecha -->
-          <div class="mb-4">
-            <h5>Dispositivos</h5>
-            <hr />
-            <div class="scrollable-card">
-              <ul class="list-group list-group-flush custom-list-group">
-                <li
-                [cPopoverTrigger]="'hover'"
-                cButton
-                cPopover="{{ estado.dispositivo?.modelo?.marca?.nombre + ' ' + estado.dispositivo?.modelo?.nombre }}"
-                cPopoverPlacement="left"
-                class="me-1"
-                color="information"
-
-
-                  class="list-group-item"
-                  *ngFor="let estado of estados"
-                  (click)="ubicarDispositivo(estado.dispositivo)"
-                  (mouseenter)="hoverEffect($event, estado)"
-                  (mouseleave)="hoverEffect($event, null)"
-                  [ngClass]="{ selected: estado === selectedEstado }"
-                  style="
-                    max-width: 90%;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                  "
-                >
-                  {{ estado.dispositivo?.nombre }}
-                </li>
-              </ul>
+        <!-- Alineación a la derecha -->
+        <div class="mb-4">
+          <h5>Dispositivos</h5>
+          <hr />
+          <div style="width: 100%; max-height: 400px; overflow-y: auto">
+            <div *ngFor="let dispositivo of dispositivos"
+            
+                  class="dispositivo-item"
+                 [cPopoverTrigger]="'hover'"
+                 cPopover="{{ dispositivo?.modelo?.marca?.nombre + ' ' + dispositivo?.modelo?.nombre }}"
+                 cPopoverPlacement="left"
+                 (click)="ubicarDispositivo(dispositivo)"
+                 (mouseenter)="hoverEffect($event, dispositivo)"
+                 (mouseleave)="hoverEffect($event, null)"
+                 [ngClass]="{ 'me-1': dispositivo !== dispositivos[dispositivos.length - 1], 'selected': dispositivo === selectedEstado }"
+                 style="max-width: 90%; overflow: hidden; text-overflow: ellipsis;">
+              {{ dispositivo?.nombre }}
             </div>
           </div>
-        </section>
+          
+        </div>
       </div>
     </div>
   </div>

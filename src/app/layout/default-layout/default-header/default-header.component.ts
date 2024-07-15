@@ -1,4 +1,4 @@
-import {Component, computed, DestroyRef, inject, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import { Component, computed, DestroyRef, ElementRef, inject, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import {
   AvatarComponent,
   BadgeComponent,
@@ -33,7 +33,7 @@ import {
 
 
 } from '@coreui/angular';
-import {DatePipe, NgStyle, NgTemplateOutlet} from '@angular/common';
+import { DatePipe, NgStyle, NgTemplateOutlet } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { IconDirective } from '@coreui/icons-angular';
@@ -49,41 +49,52 @@ import { ConfiguracionService } from 'src/app/service/configuracion.service';
 import { Prestamo } from 'src/app/model/prestamo.model';
 import { PrestamoService } from 'src/app/service/prestamo.service';
 import Swal from 'sweetalert2';
-import {LoginService} from "../../../views/pages/login/login.service";
-import {WebSocketDispositivos} from "../../../service/WebSocketDispositivos.service";
+import { LoginService } from "../../../views/pages/login/login.service";
+import { WebSocketDispositivos } from "../../../service/WebSocketDispositivos.service";
+import { MomentModule } from 'ngx-moment';
+import { Subscription } from 'rxjs';
+import { EstadoService } from 'src/app/service/estado.service';
+import { Estado } from 'src/app/model/estado.model';
 
 @Component({
   selector: 'app-default-header',
   templateUrl: './default-header.component.html',
-  styleUrl:'./default-header.component.scss',
-  providers:[ConfiguracionService,AlertaService,PrestamoService,LoginService,AlertaService,DatePipe],
+  styleUrl: './default-header.component.scss',
+  providers: [ConfiguracionService, AlertaService, PrestamoService, LoginService, AlertaService, DatePipe],
   standalone: true,
-  imports: [ContainerComponent,ReactiveFormsModule,FormsModule,CommonModule,CardBodyComponent,CardComponent, HeaderTogglerDirective, SidebarToggleDirective, IconDirective, HeaderNavComponent, NavItemComponent, NavLinkDirective, RouterLink, RouterLinkActive, NgTemplateOutlet, BreadcrumbRouterComponent, ThemeDirective, DropdownComponent, DropdownToggleDirective, TextColorDirective, AvatarComponent, DropdownMenuDirective, DropdownHeaderDirective, DropdownItemDirective, BadgeComponent, DropdownDividerDirective, ProgressBarDirective, ProgressComponent, NgStyle,HttpClientModule,ButtonDirective, ModalComponent, ModalHeaderComponent, ModalTitleDirective, ThemeDirective, ButtonCloseDirective, ModalBodyComponent, ModalFooterComponent]
+  imports: [MomentModule,
+    ContainerComponent, ReactiveFormsModule, FormsModule, CommonModule, CardBodyComponent, CardComponent, HeaderTogglerDirective, SidebarToggleDirective, IconDirective, HeaderNavComponent, NavItemComponent, NavLinkDirective, RouterLink, RouterLinkActive, NgTemplateOutlet, BreadcrumbRouterComponent, ThemeDirective, DropdownComponent, DropdownToggleDirective, TextColorDirective, AvatarComponent, DropdownMenuDirective, DropdownHeaderDirective, DropdownItemDirective, BadgeComponent, DropdownDividerDirective, ProgressBarDirective, ProgressComponent, NgStyle, HttpClientModule, ButtonDirective, ModalComponent, ModalHeaderComponent, ModalTitleDirective, ThemeDirective, ButtonCloseDirective, ModalBodyComponent, ModalFooterComponent]
 })
+
 export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
+  alertasSubscription: Subscription;
 
   readonly #activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   readonly #colorModeService = inject(ColorModeService);
   readonly colorMode = this.#colorModeService.colorMode;
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
 
-  public configuracion:Configuracion=new Configuracion();
-  public segundo: number=0;
-  recop :number=0;
+  public configuracion: Configuracion = new Configuracion();
+  public segundo: number = 0;
+  recop: number = 0;
   value = 1;
   public visible = false;
-  alertas:Alerta[]=[];
-  alerta: any;
-  isVisible = true;
+  alertas: Alerta[] = [];
+  alertSeleccionado: Alerta;
+  estadoDispositivo: Estado;
+  isAlertaInfo = false;
+
+  iconoAlerta = 'assets/images/Tableta-falla.png';
 
   @ViewChild('alertModal') alertModal: TemplateRef<any>;
   constructor(
     private router: Router,
     private serconfig: ConfiguracionService,
     private seralerta: AlertaService,
+    private serestado: EstadoService,
     private serpres: PrestamoService,
-    private loginService:LoginService,
-    private datePipe:DatePipe,
+    private loginService: LoginService,
+    private datePipe: DatePipe,
     private webSocket: WebSocketDispositivos
 
   ) {
@@ -103,31 +114,99 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
       )
       .subscribe();
   }
+  
 
   ngOnInit(): void {
-    this.seralerta.getAlertas().subscribe(
-      alert=>{
-        this.alertas=alert.sort((a, b) => {
-          // @ts-ignore
-          return new Date(b.fecha).getTime() - new Date(a.fecha).getTime();
-        });
+    this.loadMoreAlerts(); // Cargar las primeras alertas al inicializar el componente
+  
+    // Suscribirse a las actualizaciones de alertas desde WebSocket
+    this.alertasSubscription = this.webSocket.obtenerAlertas().subscribe(
+      (alertas: any[]) => {
+        alertas.reverse();
+        this.alertas = alertas; // Actualizar alertas cuando se recibe una nueva lista
+      },
+      error => {
+        console.error('Error al recibir alertas desde WebSocket:', error);
       }
-    )
-    this.webSocket.obtenerAlertas().subscribe((alerta) => {
-      this.alertas.unshift(alerta); // Agregar al inicio del array
-      this.alerta = alerta;
-      this.isVisible = true;
-      console.log('Alerta recibida:', alerta);
-      setTimeout(() => this.isVisible = false, 5000); // Cierra automáticamente después de 5 segundos
-    });
+    );
+  }
+  
 
+  startIndex: number = 0; // Índice inicial de las alertas a mostrar
+  chunkSize: number = 10; // Cantidad de alertas a cargar por cada carga
+  allAlertsLoaded: boolean = false; // Variable para indicar si se han cargado todas las alertas disponibles
+  loadingMore = false; // Estado de carga
+  
+  loadMoreAlerts(): void {
+    if (this.allAlertsLoaded) {
+      return; // No cargar más alertas si ya se han cargado todas
+    }
+  
+    this.loadingMore = true; // Activar el estado de carga
+  
+    this.seralerta.getAlertas().subscribe(
+      alerts => {
+        alerts.reverse();
+        // Slice para obtener el próximo grupo de alertas según el startIndex y chunkSize
+        const newAlerts = alerts.slice(this.startIndex, this.startIndex + this.chunkSize);
+  
+        // Agregar las nuevas alertas al arreglo existente
+        this.alertas.push(...newAlerts);
+  
+        // Incrementar el startIndex para la siguiente carga
+        this.startIndex += this.chunkSize;
+  
+        // Verificar si no se han devuelto más alertas que el tamaño del chunkSize
+        if (alerts.length < this.startIndex) {
+          this.allAlertsLoaded = true; // Marcar que se han cargado todas las alertas
+        }
+  
+        this.loadingMore = false;
+      },
+      error => {
+        console.error('Error al cargar más alertas:', error);
+        this.loadingMore = false; // Asegurarse de desactivar el estado de carga en caso de error
+      }
+    );
+  }
+  
+  
+  onScroll(event: Event): void {
+    const container = event.target as HTMLElement;
+  
+    // Calcula si el scroll está cerca del máximo de abajo con un margen de error de 20 píxeles
+    const margin = 5; // Margen en píxeles desde el final
+    const atBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + margin;
+  
+    if (atBottom && !this.allAlertsLoaded) {
+      this.loadingMore = true; // Activar el estado de carga
+      setTimeout(() => {
+        this.loadMoreAlerts();
+      }, 1000); // Tiempo en milisegundos (por ejemplo, 500ms)
+    }
   }
 
-  closeModal() {
-    this.isVisible = false;
+  abrirAlertaInfo(alert: any) {
+    this.alertSeleccionado = alert;
+    this.serestado.buscarpornumeroserie(alert.dispositivo.numSerie).subscribe(
+      estado => {
+        this.estadoDispositivo = estado;
+        this.isAlertaInfo = true;
+      },
+      error => {
+        console.error('Error al asignar estado:', error);
+      }
+    );
+}
+
+
+  cerrarAlertaInfo() {
+    this.isAlertaInfo = false;
   }
+
+
   prestamos: Prestamo[] = [];
-  configuraciones:Configuracion[]=[];
+  configuraciones: Configuracion[] = [];
 
   showTable: boolean = false;
   toggleView() {
@@ -155,9 +234,9 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
     return <string>this.datePipe.transform(date, format);
   }
 
- convertirASegundos(): number {
-  return this.recop=this.value
-}
+  convertirASegundos(): number {
+    return this.recop = this.value
+  }
 
   desplegarcrud() {
     this.toggleView();
@@ -165,16 +244,16 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
   }
 
 
-  crud_close():void{
-    this.showTable=false;
+  crud_close(): void {
+    this.showTable = false;
     this.mostrarconfig();
 
 
   }
   actualizartiempo() {
 
-   const tiempo :number=this.convertirASegundos();
-    if (tiempo==0) {
+    const tiempo: number = this.convertirASegundos();
+    if (tiempo == 0) {
       Swal.fire({
         icon: 'question',
         title: 'Valor incorrecto',
@@ -215,30 +294,6 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   //////////////////////////////////////////
 
   readonly colorModes = [
@@ -249,7 +304,7 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
 
   readonly icons = computed(() => {
     const currentMode = this.colorMode();
-    return this.colorModes.find(mode=> mode.name === currentMode)?.icon ?? 'cilSun';
+    return this.colorModes.find(mode => mode.name === currentMode)?.icon ?? 'cilSun';
   });
 
 
@@ -332,8 +387,8 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
     { id: 4, title: 'Angular Version', value: 100, color: 'success' }
   ];
 
-  public logout(){
-    environment.islogged=false;
+  public logout() {
+    environment.islogged = false;
     this.loginService.logout();
     this.router.navigate(['/login']);
   }

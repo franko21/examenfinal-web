@@ -25,6 +25,9 @@ export class EstadoService {
   buscarporid(id: number): Observable<Estado> {
     return this.http.get<Estado>(`${this.urlEndPoint}/${id}`);
   }
+  buscarpornumeroserie(numSerie: string):Observable<Estado>{
+    return this.http.get<Estado>(`${this.urlEndPoint+'PorNumSerie'}/${numSerie}`);
+  }
 
   editar(estado: Estado): Observable<Estado> {
     const url = `${this.urlEndPoint}/${estado.idEstado}`;
