@@ -35,8 +35,8 @@ export class LoginService {
   login(credentials: LoginRequest): Observable<any> {
     return this.http.post<any>(environment.urlHost + "auth/v1/signin", credentials).pipe(
         tap((userData) => {
-            console.log("Datos de usuario recibidos:", userData);
-            if (userData && userData.token) {
+            if (userData!==null && userData.token) {
+                console.log("Datos de usuario recibidos:", userData);
                 sessionStorage.setItem("token", userData.token);
                 sessionStorage.setItem("cedula", userData.usuario.persona.cedula);
                 sessionStorage.setItem("nombre", userData.usuario.persona.nombre);
@@ -44,39 +44,19 @@ export class LoginService {
                 sessionStorage.setItem("usuario", userData.usuario.username);
                 this.currentUserData.next(userData.token);
                 console.log("Token de sesión almacenado:", userData.token);
-                // console.log("Token de sesión almacenado:", userData.empleado.nombre);
                 this.currentUserLoginOn.next(true);
                 console.log(this.currentUserLoginOn.value);
-                // Swal.fire({
-                //     icon: 'success',
-                //     title: '¡Inicio de sesión exitoso!',
-                //     text: 'Bienvenido de nuevo ',
-                //     confirmButtonColor: '#3085d6',
-                //     confirmButtonText: 'OK'
-                // }).then((result)=>{
-                //     if(result.isConfirmed){
                         environment.islogged=true;
                         environment.cedula=userData.usuario.persona.cedula;
                         environment.nombre=userData.usuario.persona.nombre;
                         environment.apellido=userData.usuario.persona.apellido;
                         console.log(environment.nombre);
                         environment.username=credentials.username;
-                        // authGuard(this.route,this.state).valueOf.prototype.islogged=true;
                         this.router.navigate(['/monitoreo']);
-                //     }
-                // }
-                //
-                // );
+
             } else {
-                console.log("Datos de usuario recibidos:", userData);
+                // console.log("Datos de usuario recibidos:", userData);
                 console.log(this.currentUserLoginOn.value);
-                // Swal.fire({
-                //     icon: 'error',
-                //     title: 'Error de inicio de sesión',
-                //     text: 'Error al ingresar los datos.',
-                //     confirmButtonColor: '#3085d6',
-                //     confirmButtonText: 'OK'
-                // });
                 console.error("Respuesta de inicio de sesión incompleta o sin token.");
             }
         }),

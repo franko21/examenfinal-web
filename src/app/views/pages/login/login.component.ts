@@ -71,30 +71,22 @@ export class LoginComponent {
     });
   }
   login() {
-    // Aquí puedes agregar lógica de autenticación si es necesario.
-    // Si la autenticación es exitosa, redirige al dashboard.
+    // Si la autenticación es exitosa, redirige al monitoreo.
     const formValues = this.loginForm.value;
     const loginRequest = formValues as LoginRequest;
     if(this.loginForm.valid) {
       this.loginService.login(loginRequest).subscribe({
       next: (userData) => {
-          console.log('Datos de usuario recibidos:', userData);
+          if (userData==null){
+            this.toggleToast();
+
+          }
       },
       error: (errorData) => {
           console.error('Error al iniciar sesión:', errorData);
-          // Muestra una notificación de error con SweetAlert2
-          // Swal.fire({
-          //     icon: 'error',
-          //     title: 'Error de inicio de sesión',
-          //     text: 'Error al ingresar los datos.',
-          //     confirmButtonColor: '#3085d6',
-          //     confirmButtonText: 'OK'
           this.toggleToast();
       },
       complete: () => {
-        // this.toggleToast();
-        console.info("Inicio de sesión completo");
-          // Realiza acciones adicionales después del inicio de sesión, si es necesario
           this.loginForm.reset();
       }
   });}else{
