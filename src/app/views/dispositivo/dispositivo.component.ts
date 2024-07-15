@@ -113,6 +113,9 @@ export class DispositivoComponent implements OnInit {
   position2 = 'top-end';
   visible2 = false;
   percentage2 = 0;
+  position3 = 'top-end';
+  visible3 = false;
+  percentage3 = 0;
 
  
 
@@ -218,6 +221,20 @@ export class DispositivoComponent implements OnInit {
     this.percentage2 = $event * 25;
   }
 
+
+  toggleToast3() {
+    this.visible3 = !this.visible3;
+  }
+
+  onVisibleChange3($event: boolean) {
+    this.visible2 = $event;
+    this.percentage3 = !this.visible3 ? 0 : this.percentage3;
+  }
+
+  onTimerChange3($event: number) {
+    this.percentage3 = $event * 25;
+  }
+
   toggleView() {
     this.showTable = !this.showTable;
      this.titulo="Dispositivo"
@@ -308,6 +325,22 @@ export class DispositivoComponent implements OnInit {
     }
   }
 
+  filtrarModelosPorMarcaparaedicion() {
+    
+    console.log("Modelos org antes del filtro para editar:");
+    console.log(this.modelos);
+    this.dispositivo.modelo?.marca?.nombre
+    if (this.dispositivo?.nombre) {
+      this.modelosfiltro = this.modelos.filter(modelo => modelo.marca?.nombre === this.dispositivo.modelo?.marca?.nombre);
+      console.log("Nombre de marca");
+      console.log("Nombre de marca");
+      console.log(this.dispositivo.modelo?.marca?.nombre);
+    console.log(this.modelosfiltro);
+    } else {
+
+    }
+  }
+
   filtrarModelosPorMarcaid() {
     console.log("Modelos org antes del filtro:");
     console.log(this.modelos);
@@ -321,6 +354,65 @@ export class DispositivoComponent implements OnInit {
 
     }
   }
+    
+  isFieldEmpty(): boolean {
+    // Devuelve true si el campo contiene solo espacios vacíos o está vacío
+    console.log("numero de caracters");
+    console.log(this.nombredispo.length);
+    return this.nombredispo.length===0;
+  }
+isNombreInvalid(form: NgForm): boolean {
+  const nombreControl = form.controls['nombre'];
+  if (nombreControl) {
+    const nombreValue = nombreControl.value;
+    // Verifica si el campo está vacío o contiene solo espacios
+    return !nombreValue || nombreValue.trim().length === 0;
+  }
+  return true; // Si no se puede obtener el control, se considera inválido
+}
+
+  longitid0(): boolean {
+   
+    if( this.nombredispo.length==0){
+      console.log("se supone que es 0")
+      console.log(this.nombredispo)
+    }else{
+      console.log("direfente de 0")
+      console.log(this.nombredispo)
+    }
+    return this.nombredispo.length==0;
+  }
+
+
+  isSubmitDisabled(myForm: NgForm): boolean {
+    return myForm.invalid || this.isFieldEmpty();
+  }
+
+  trimStart(event: any): void {
+    const value = event.target.value;
+    event.target.value = value.trimStart();
+    this.nombredispo = event.target.value;
+  }
+
+  onInput(event: any): void {
+    let value = event.target.value;
+    
+    // Eliminar espacios en blanco al inicio del campo
+    if (value.length > 0 && value[0] === ' ') {
+      value = value.trimStart();
+    }
+    
+    // Limitar la longitud total del campo a 100 caracteres
+    if (value.length > 100) {
+      value = value.substring(0, 100); // Recorta el valor a los primeros 100 caracteres
+      event.preventDefault(); // Consumir el evento para evitar que se ingrese más texto
+    }
+    
+    // Actualizar el modelo nombredispo con el valor modificado
+    this.nombredispo = value;
+  }
+  
+  
 
   filtrarModelosPorMarcaidini() {
     console.log("Modelos org antes del filtro:");
@@ -439,6 +531,7 @@ export class DispositivoComponent implements OnInit {
     this.asigparaedit();
     this.showTablem = false;
     this.toggleView();
+   
     this.titulo = "Editar dispostivo";
   }
 
@@ -450,7 +543,7 @@ export class DispositivoComponent implements OnInit {
       this.dispositivo.categoria = this.categoriaselet;
       this.dispositivo.modelo = this.modeloselet;
       this.dispositivo.zonaSegura=this.zonaSeleccionado;
-      this.dispositivo.nombre=this.nombredispo;
+      this.dispositivo.nombre = this.nombredispo.trim();
       this.dispositivo.disponible=this.disponible;
       this.dispositivo.vinculado=true;
 
@@ -458,6 +551,7 @@ export class DispositivoComponent implements OnInit {
       this.dispositivo.categoria = this.categoriamod;
       this.dispositivo.modelo = this.modelomod;
       this.dispositivo.zonaSegura= this.zonamod;
+      this.dispositivo.nombre= this.dispositivo.nombre?.trim();
 
       }
 
@@ -468,6 +562,7 @@ export class DispositivoComponent implements OnInit {
   }
   asigparaedit() {
     if (this.dispositivo) {
+      this.filtrarModelosPorMarcaparaedicion();
       if (this.dispositivo.categoria&&this.dispositivo.modelo?.marca?.id_marca&&this.dispositivo.zonaSegura) {
         this.categoriamod = this.dispositivo.categoria;
         this.zonamod=this.dispositivo.zonaSegura;
@@ -494,11 +589,7 @@ export class DispositivoComponent implements OnInit {
       if (result.isConfirmed) {
         this.serdispo.eliminar(dispo.idDispositivo!).subscribe(
           () => {
-            Swal.fire(
-              '¡Eliminado!',
-              'El dispositivo ha sido eliminado.',
-              'success'
-            );
+            this.toggleToast3();
             this.listardispo(); // Actualizar la lista de dispositivos después de eliminar uno
           },
           (error) => {
@@ -553,14 +644,14 @@ export class DispositivoComponent implements OnInit {
     validateForm(): boolean {
       // Verificar si los campos obligatorios están llenos
       if (
-        !this.dispositivo ||
-        !this.dispositivo.nombre ||
+        !this.dispositivo ||this.dispositivo?.nombre==" "||
+        !this.dispositivo.nombre|| 
         !this.dispositivo.categoria ||
         !this.dispositivo.modelo ||
         !this.dispositivo.numSerie// ||
         //!this.dispositivo.disponible
       ) {
-        Swal.fire('¡Error!', 'Por favor, completa todos los campos obligatorios.', 'error');
+        Swal.fire('¡Error!', 'Por favor, no ingrese espacios vacios en el nombre', 'error');
         return false;
       }
       return true;
