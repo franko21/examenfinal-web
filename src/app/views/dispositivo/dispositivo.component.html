@@ -52,7 +52,9 @@
                   <div class="fw-semibold text-nowrap">{{ dispo.numSerie }}</div>
                 </td>
                 <td>
-                  <div class="fw-semibold text-nowrap">{{ dispo.nombre }}</div>
+                  <div class="fw-semibold" style="max-width: 250px;">
+                    {{ dispo.nombre }}
+                  </div>
                 </td>
                 <td>
                   <div class="fw-semibold text-nowrap" [ngStyle]="{ 'color': dispo.disponible ? 'green' : 'red', 'font-weight': dispo.disponible ? 'bold' : 'normal' }">
@@ -163,8 +165,9 @@
               <span cInputGroupText>
                 <svg cIcon name="cil-file"></svg>
               </span>
-              <input id="nombre" class="form-control" type="text" placeholder="Nombre" [(ngModel)]="nombredispo" name="nombre" required/>
-              <div *ngIf="myForm.controls['nombre']?.invalid && myForm.controls['nombre']?.touched" class="invalid-feedback">
+              <input id="nombre" class="form-control" type="text" placeholder="Nombre"(input)="onInput($event)" [(ngModel)]="nombredispo" name="nombre" required maxlength="100" />
+              <div *ngIf="myForm.controls['nombre']?.invalid && myForm.controls['nombre']?.touched"
+                   class="invalid-feedback">
                 El nombre es obligatorio.
               </div>
             </c-input-group>
@@ -203,9 +206,9 @@
           </c-input-group>
           <c-input-group class="mb-3">
             <span cInputGroupText>
-              <svg cIcon name="cilItalic"></svg>
+              <svg cIcon name="cil-tags"></svg>
             </span>
-            <select class="form-control" name="Marcas" id="Marcas" [(ngModel)]="id_marca">
+            <select class="form-control" name="Marcas" id="Marcas" [(ngModel)]="id_marca" (change)="filtrarModelosPorMarcaid()">
               <option value="null" disabled selected>Seleccione la Marca</option>
               <option *ngFor="let marca of marcas" [ngValue]="marca.id_marca" >
                 {{ marca.nombre }}
@@ -218,7 +221,7 @@
             </span>
             <select name="Modelo" id="Modelo" class="form-control" [(ngModel)]="modelomod.id_modelo">
               <option  [ngValue]="null" disabled selected>Seleccione el Modelo</option>
-              <option *ngFor="let modelo of modelos" [ngValue]="modelo.id_modelo">
+              <option *ngFor="let modelo of modelosfiltro" [ngValue]="modelo.id_modelo">
                 {{ modelo.nombre }}
               </option>
             </select>
@@ -237,9 +240,9 @@
           </c-input-group>
           <c-input-group class="mb-3">
             <span cInputGroupText>
-              <svg cIcon name="cilUser"></svg>
+              <svg cIcon name="cil-file"></svg>
             </span>
-            <input id="nombre" class="form-control" type="text" placeholder="Nombre" [(ngModel)]="dispositivo.nombre" name="nombre" required/>
+            <input id="nombre" class="form-control" type="text" placeholder="Nombre" (input)="onInput($event)" [(ngModel)]="dispositivo.nombre" name="nombre" required maxlength="100"/>
             <div *ngIf="myForm.controls['nombre']?.invalid && myForm.controls['nombre']?.touched" class="invalid-feedback">
               El nombre es obligatorio.
             </div>
@@ -311,6 +314,22 @@
     </c-toast-header>
     <c-toast-body class="success-toast-body">
       <p class="success-toast-message" >Dispositivo editado con exito</p>
+    </c-toast-body>
+  </c-toast>
+</c-toaster>
+
+<c-toaster [placement]="position3" class="p-3" position="fixed" style="position: fixed; top: 20px; right: 20px; z-index: 1050;">
+  <c-toast
+    (timer)="onTimerChange3($event)"
+    (visibleChange)="onVisibleChange3($event)"
+    [visible]="visible3"
+    class="danger-toast">
+    <c-toast-header class="danger-toast-header">
+      <svg cIcon name="cilCheck" class="icon-success"></svg> <!-- Icono de éxito -->
+      <h5 class="success-heading">Eliminacios de Dispositivo exitoso</h5>
+    </c-toast-header>
+    <c-toast-body class="danger-toast-body">
+      <p class="danger-toast-message">Dispositivo eliminado con exito</p>
     </c-toast-body>
   </c-toast>
 </c-toaster>

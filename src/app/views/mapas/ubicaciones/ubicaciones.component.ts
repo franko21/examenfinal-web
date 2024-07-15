@@ -276,7 +276,7 @@ private limpiarPosiciones() {
         confirmButtonText: 'Sí, eliminar',
         cancelButtonText: 'Cancelar'
       }).then((result) => {
-        var validar_dispositivos: Boolean = false;
+        var borrados_puntos:boolean = false;
         var listadispositivos: Dispositivo[] = [];
         if (result.isConfirmed) {
           // Aquí llamas a la función para eliminar la zona segura
@@ -287,34 +287,37 @@ private limpiarPosiciones() {
                   listadispositivos = dispositivos;
                   this.puntoService.BuscarPorZonaSegura(this.id_zona).subscribe({
                     next: (puntos: Punto[]) => {
-                      zona.puntos = puntos;
-                      if (zona.puntos && zona.puntos.length > 0) {
+                      if (puntos && puntos.length > 0) {
                         if (listadispositivos.length === 0) {
-                          zona.puntos.forEach((punto, index) => {
+                          puntos.forEach((punto, index) => {
                             if (punto.id_punto) {
                               this.puntoService.eliminar(punto.id_punto).subscribe(
                                 () => {
+                                  borrados_puntos = true;
+                                  //AQUI QUIERO PONER MI CÓDIGO DE ELIMINAR ZONA SEGURA
                                   console.log('Punto eliminado:', punto);
                                 },
                                 error => {
-                                  console.error('Error al eliminar el punto:', error);
+                                  borrados_puntos = false;
                                 }
                               );
                             }
                           });
-                          this.zonasSegurasService.eliminar(this.id_zona).subscribe(
-                            () => {
-                              this.zonasSeguras.splice(this.zonasSeguras.findIndex(zona => zona.idZonaSegura === this.id_zona), 1);
-                              Swal.fire('Zona segura eliminada', '', 'success');
-                              var indice = this.zonasSeguras.findIndex(zona => zona.idZonaSegura === this.id_zona);
-                              this.zonasSeguras.splice(indice, 1);
-                              this.arrayPoligonos.forEach(overlay => {
-                                if (overlay instanceof google.maps.Polygon) {
-                                  overlay.setMap(null); // Elimina el polígono del mapa
-                                }
-                              });
-                            },
-                          );
+                            this.zonasSegurasService.eliminar(this.id_zona).subscribe(
+                              () => {
+                                this.zonasSeguras.splice(this.zonasSeguras.findIndex(zona => zona.idZonaSegura === this.id_zona), 1);
+                                Swal.fire('Zona segura eliminada', '', 'success');
+                                var indice = this.zonasSeguras.findIndex(zona => zona.idZonaSegura === this.id_zona);
+                                this.zonasSeguras.splice(indice, 1);
+                                this.arrayPoligonos.forEach(overlay => {
+                                  if (overlay instanceof google.maps.Polygon) {
+                                    overlay.setMap(null); // Elimina el polígono del mapa
+                                  }
+                                });
+                              },error => {
+                                Swal.fire('Error al eliminar la zona segura', error.message, 'error');
+                              }
+                            );                            
                         } else {
                           Swal.fire('No se puede eliminar la zona segura', 'La zona segura tiene dispositivos asociados', 'error');
                         }
@@ -476,6 +479,20 @@ private limpiarPosiciones() {
                   }).then((result) => {
                     if (result.isConfirmed) {
                       // Código para realizar los cambios
+                      if(this.EliminarPuntos.length ===0){
+                        Swal.fire('VACÍO', 'NO HA SELECCIONADO NINGÚN PUNTO A ELIMINAR', 'error');
+                        this.finalizarEdicion();
+                        this.crearPoligono(this.id_zona);
+                        this.eliminarTodosLosPuntos();
+                        this.puntosEditar = [];
+                        this.marcadores = [];
+                        this.punto_borrado = {};
+                        this.EliminarPuntos = [];
+                        this.nuevos_marcadores = [];
+                        this.crearPoligono(this.id_zona);
+                        this.opcionSeleccionada = "";
+                        this.marcadores.forEach(marcador => marcador.setMap(null));
+                      }
                       this.EliminarPuntos.forEach((punto, index) => {
                         try {
                           if (punto.id_punto) {
@@ -515,7 +532,7 @@ private limpiarPosiciones() {
                       this.crearPoligono(this.id_zona);
                     }
                   });
-
+                  this.opcionSeleccionada = '';
                   break;
                 case 'AÑADIR PUNTOS':
                   Swal.fire({
@@ -579,6 +596,7 @@ private limpiarPosiciones() {
                       this.nuevos_marcadores = [];
                     }
                   });
+                  this.opcionSeleccionada = '';
                   break;
               }
               break;
@@ -596,24 +614,23 @@ private limpiarPosiciones() {
           icon: 'question',
           showCancelButton: true,
           showDenyButton: true,
-          showConfirmButton: false,
-          //showConfirmButton: true, // Comentado para eliminar la opción de "EDITAR PUNTOS"
-          //confirmButtonText: 'EDITAR PUNTOS', // Comentado para eliminar la opción de "EDITAR PUNTOS"
+          //showConfirmButton: false,
+          showConfirmButton: true, // Comentado para eliminar la opción de "EDITAR PUNTOS"
+          confirmButtonText: 'CAMBIAR NOMBRE', // Comentado para eliminar la opción de "EDITAR PUNTOS"
           denyButtonText: 'ELIMINAR PUNTOS',
           cancelButtonText: 'AÑADIR PUNTOS',
-          //confirmButtonColor: '#3085d6', // Comentado ya que no se utiliza el botón de confirmación
+          confirmButtonColor: '#3085d6', // Comentado ya que no se utiliza el botón de confirmación
           denyButtonColor: '#d33',
           cancelButtonColor: '#aaa'
         }).then((result) => {
           if (result.isConfirmed) {
-            this.opcionSeleccionada = 'EDITAR PUNTOS';
+            this.opcionSeleccionada = 'CAMBIAR NOMBRE';
           } else if (result.isDenied) {
             this.opcionSeleccionada = 'ELIMINAR PUNTOS';
           } else if (result.dismiss === Swal.DismissReason.cancel) {
             this.opcionSeleccionada = 'AÑADIR PUNTOS';
           } else if (result.dismiss === Swal.DismissReason.backdrop || result.dismiss === Swal.DismissReason.close || result.dismiss === Swal.DismissReason.esc) {
             // El usuario cerró el modal
-        
             this.clicks_posiciones = 0;
             this.puntosEditar = [];
             this.marcadores = [];
@@ -621,11 +638,78 @@ private limpiarPosiciones() {
           }
           // Aquí puedes programar las acciones según la opción seleccionada
           switch (this.opcionSeleccionada) {
-            case 'EDITAR PUNTOS':
+            case 'CAMBIAR NOMBRE':
               // Código para editar un punto
-              boton.textContent = "Guardar";
-              boton.innerText = "Guardar";
-              this.textoBoton = "Guardar";
+              //boton.textContent = "Guardar";
+              //boton.innerText = "Guardar";
+              //this.textoBoton = "Guardar";
+              Swal.fire({
+                title: 'Ingrese el nombre de la zona segura',
+                input: 'text',
+                inputPlaceholder: 'Nombre de la zona segura',
+                showCancelButton: true,
+                confirmButtonText: 'Guardar',
+                showLoaderOnConfirm: true,
+                preConfirm: (zoneName) => {
+                  if (!zoneName) {
+                    Swal.showValidationMessage('Debe ingresar un nombre para la zona segura');
+                  }
+                  return zoneName;
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then((result) => {
+              const zoneName = convertirString(result.value);
+              console.log(zoneName.length);
+              if (result.isConfirmed) {
+                if(zoneName.length > 25){
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'La zona segura no puede tener más de 25 caracteres',
+                  });
+                }else{
+                const zona = new Zona_segura();
+                zona.descripcion = zoneName;
+                zona.idZonaSegura = this.id_zona;
+                this.zonasSegurasService.BuscarPorNombre(zoneName).subscribe({
+                  next: (data) => {
+                    if(data.length >0){
+                      Swal.fire({
+                        icon: 'error',
+                        title: 'Error al actualizar la zona segura',
+                        text: `Ya existe una zona segura con el nombre: ${zoneName}`,
+                        confirmButtonColor: '#d33',
+                        confirmButtonText: 'OK'
+                      });
+                    }else{
+                      this.zonasSegurasService.updatePosicion(zona).subscribe({
+                        next: (data) => {
+                            Swal.fire({
+                              icon: 'success',
+                              title: 'Zona segura actualizada',
+                              text: `Nuevo nombre: ${data.descripcion}`,
+                              confirmButtonColor: '#d33',
+                              confirmButtonText: 'OK'
+                            });
+                            
+                          },
+                          error: (error) => {
+                            Swal.fire({
+                              icon: 'error',
+                              title: 'Error al actualizar la zona segura',
+                              text: error.message,
+                              confirmButtonColor: '#d33',
+                              confirmButtonText: 'OK'
+                            });
+                          }
+                      });  
+                    }
+                  }
+                });
+                   
+                } 
+              }
+            });
               break;
             case 'ELIMINAR PUNTOS':
               // Código para eliminar un punto
@@ -932,4 +1016,8 @@ function boostrapApplication(App: any, arg1: { providers: any[]; }) {
 
 function esDivisiblePorDos(numero: number): boolean {
   return numero % 2 === 0;
+}
+function convertirString(str: string): string {
+  if (!str) return str;
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }

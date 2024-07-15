@@ -32,6 +32,7 @@ export class ZonasSegurasComponent{
   center: google.maps.LatLngLiteral = { lat: -2.879767894744873, lng: -78.97490692138672 };
   zoom = 13;
   showOptions = false;
+  arraListasRepetidas:Zona_segura[]=[];
   clickPosition = { x: 0, y: 0 };
   marker: google.maps.Marker | null = null;
   @ViewChild(GoogleMap, { static: false }) map: GoogleMap;
@@ -178,36 +179,53 @@ export class ZonasSegurasComponent{
         allowOutsideClick: () => !Swal.isLoading()
       }).then((result) => {
         if (result.isConfirmed) {
-          const zoneName = result.value;
+          const zoneName = convertirString(result.value);
           const zona = new Zona_segura();
           zona.descripcion = zoneName;
-          this.zonaService.crear(zona).subscribe({
+          this.zonaService.BuscarPorNombre(zoneName).subscribe({
             next: (data) => {
-              this.listadoPuntos.forEach(punto => {
-                punto.zonaSegura = data;
-                data.puntos?.push(punto);
-              });
-              if(data.idZonaSegura){
-                this.IngresarPuntos(data.idZonaSegura);
+              if (data.length > 0) {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error al ingresar la zona segura',
+                  text: `Ya existe una zona segura con el nombre: ${zoneName}`,
+                  confirmButtonColor: '#d33',
+                  confirmButtonText: 'OK'
+                });
+              } else {
+                this.zonaService.crear(zona).subscribe({
+                  next: (data) => {
+                    this.listadoPuntos.forEach(punto => {
+                      punto.zonaSegura = data;
+                      data.puntos?.push(punto);
+                    });
+                    if(data.idZonaSegura){
+                      this.IngresarPuntos(data.idZonaSegura);
+                    }
+                    Swal.fire({
+                      icon: 'success',
+                      title: 'Zona segura ingresada correctamente',
+                      text: `Nombre de la zona segura: ${zoneName}`,
+                      confirmButtonColor: '#3085d6',
+                      confirmButtonText: 'OK'
+                    });
+                  },
+                  error: (err) => {
+                    Swal.fire({
+                      icon: 'error',
+                      title: 'Error al ingresar la zona segura',
+                      text: err.message || 'Ocurrió un error desconocido.',
+                      confirmButtonColor: '#d33',
+                      confirmButtonText: 'OK'
+                    });
+                  }
+                });
               }
-              Swal.fire({
-                icon: 'success',
-                title: 'Zona segura ingresada correctamente',
-                text: `Nombre de la zona segura: ${zoneName}`,
-                confirmButtonColor: '#3085d6',
-                confirmButtonText: 'OK'
-              });
             },
             error: (err) => {
-              Swal.fire({
-                icon: 'error',
-                title: 'Error al ingresar la zona segura',
-                text: err.message || 'Ocurrió un error desconocido.',
-                confirmButtonColor: '#d33',
-                confirmButtonText: 'OK'
-              });
+              console.error(err);
             }
-          });
+          });          
         }
       });
     }
@@ -250,7 +268,7 @@ export class ZonasSegurasComponent{
             this.zonaService.buscar(id_zona).subscribe({
               next: (datazona) => {
                 datazona.puntos?.push(data);
-                this.zonaService.editar(datazona);
+                //this.zonaService.editar(datazona);
               }
             }
             );
@@ -380,4 +398,8 @@ function convertirALatLng(vertices: google.maps.LatLngLiteral[]): google.maps.La
   return vertices.map(punto => new google.maps.LatLng(punto.lat, punto.lng));
 }
 
+function convertirString(str: string): string {
+  if (!str) return str;
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
 
