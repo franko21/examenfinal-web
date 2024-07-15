@@ -268,7 +268,7 @@ export class ZonasSegurasComponent{
             this.zonaService.buscar(id_zona).subscribe({
               next: (datazona) => {
                 datazona.puntos?.push(data);
-                this.zonaService.editar(datazona);
+                //this.zonaService.editar(datazona);
               }
             }
             );

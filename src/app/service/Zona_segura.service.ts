@@ -25,7 +25,7 @@ export class Zona_seguraService {
     return this.http.post<Zona_segura>(this.UrlEndPoint, zona, { headers: this.httpHeaders });
   }
 
-  editar(zona: Zona_segura): Observable<Zona_segura> {
+  updatePosicion(zona: Zona_segura): Observable<Zona_segura> {
     const id_zona = `${this.UrlEndPoint}/${zona.idZonaSegura}`;
     return this.http.put<Zona_segura>(id_zona, zona, { headers: this.httpHeaders });
   }
