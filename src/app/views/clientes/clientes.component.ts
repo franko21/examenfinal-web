@@ -22,6 +22,8 @@ import {Rol} from "../../model/rol.model";
 import {Persona} from "../../model/persona.model";
 import Swal from "sweetalert2";
 import * as icons from '@coreui/icons';
+import { map } from 'rxjs/operators';
+
 
 @Component({
   selector: 'app-clientes',
@@ -118,16 +120,39 @@ export class ClientesComponent {
     this.iconSet.icons = icons;
   }
   ngOnInit():void {
-    this.rolService.getRoles().subscribe(
-      rol=>{
-        this.roles=rol;
+    // this.rolService.getRoles().subscribe(
+    //   rol=>{
+    //     this.roles=rol;
+    //   }
+    // )
+    this.rolService.getRoles().pipe(
+      map(roles => roles.filter(rol => rol.rol !== 'administrador'))
+    ).subscribe(
+      rolesFiltrados => {
+        console.log('Roles después de filtrar:', rolesFiltrados);
+        this.roles = rolesFiltrados;
+      },
+      error => {
+        console.error('Error al cargar los roles', error);
       }
-    )
-    this.personaService.getPersonas().subscribe(
-      persona=>{
-        this.personas=persona;
+    );
+    // this.personaService.getPersonas().subscribe(
+    //   persona=>{
+    //     this.personas=persona;
+    //   }
+    // )
+    this.personaService.getPersonas().pipe(
+      map((personas: any[]) => personas.filter(persona => persona.rol!==null&&persona.rol?.rol!=='administrador'))
+    ).subscribe(
+      personasFiltradas => {
+        this.personas = personasFiltradas;
+        console.log('Personas después de filtrar:', this.personas);
+      },
+      error => {
+        console.error('Error al cargar las personas', error);
       }
-    )
+    );
+
   }
 
   ingresarPersona(){
@@ -173,9 +198,15 @@ export class ClientesComponent {
     this.personaService.editPersona(this.selectedPersona.id_persona,persona).subscribe({
       next:(userData)=>{
         console.log('Datos de presona recibidos:', userData);
-        this.personaService.getPersonas().subscribe(
-          persona => {
-            this.personas = persona;
+        this.personaService.getPersonas().pipe(
+          map((personas: any[]) => personas.filter(persona => persona.rol!==null&&persona.rol?.rol!=='administrador'))
+        ).subscribe(
+          personasFiltradas => {
+            this.personas = personasFiltradas;
+            console.log('Personas después de filtrar:', this.personas);
+          },
+          error => {
+            console.error('Error al cargar las personas', error);
           }
         );
         // Swal.fire({
@@ -268,9 +299,15 @@ export class ClientesComponent {
           // this.registerForm.reset();
           this.existsP = false;
           this.ingresarPersona();
-          this.personaService.getPersonas().subscribe(
-            persona => {
-              this.personas = persona;
+          this.personaService.getPersonas().pipe(
+            map((personas: any[]) => personas.filter(persona => persona.rol!==null&&persona.rol?.rol!=='administrador'))
+          ).subscribe(
+            personasFiltradas => {
+              this.personas = personasFiltradas;
+              console.log('Personas después de filtrar:', this.personas);
+            },
+            error => {
+              console.error('Error al cargar las personas', error);
             }
           );
           // Swal.fire({
@@ -315,9 +352,15 @@ export class ClientesComponent {
       if (result.isConfirmed) {
         this.personaService.deletePersona(id).subscribe(
           () => {
-            this.personaService.getPersonas().subscribe(
-              persona => {
-                this.personas = persona;
+            this.personaService.getPersonas().pipe(
+              map((personas: any[]) => personas.filter(persona => persona.rol!==null&&persona.rol?.rol!=='administrador'))
+            ).subscribe(
+              personasFiltradas => {
+                this.personas = personasFiltradas;
+                console.log('Personas después de filtrar:', this.personas);
+              },
+              error => {
+                console.error('Error al cargar las personas', error);
               }
             );
             swalWithBootstrapButtons.fire({
