@@ -2,6 +2,7 @@ import { Component,ElementRef,NgModule,OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule,FormBuilder,FormGroup, ReactiveFormsModule,Validators,AbstractControl, NgForm } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
+import { Howl } from 'howler';
 import {
   AvatarComponent,
   InputGroupTextDirective,
@@ -117,7 +118,12 @@ export class DispositivoComponent implements OnInit {
   visible3 = false;
   percentage3 = 0;
 
- 
+  playAlertSound() {
+    const sound = new Howl({
+      src: ['assets/sounds/alerta7.mp3']
+    });
+    sound.play();
+  }
 
 
   generatePDF() {
@@ -642,16 +648,9 @@ isNombreInvalid(form: NgForm): boolean {
     this.titulo="Ingresar dispostivo"
     }
     validateForm(): boolean {
-      // Verificar si los campos obligatorios están llenos
-      if (
-        !this.dispositivo ||this.dispositivo?.nombre==" "||
-        !this.dispositivo.nombre|| 
-        !this.dispositivo.categoria ||
-        !this.dispositivo.modelo ||
-        !this.dispositivo.numSerie// ||
-        //!this.dispositivo.disponible
-      ) {
-        Swal.fire('¡Error!', 'Por favor, no ingrese espacios vacios en el nombre', 'error');
+      // Verificar si el campo 'nombre' está vacío o contiene solo espacios en blanco
+      if (!this.dispositivo.nombre || this.dispositivo.nombre.trim() === "") {
+        Swal.fire('¡Error!', 'Por favor, no ingrese espacios vacíos en el nombre', 'error');
         return false;
       }
       return true;
