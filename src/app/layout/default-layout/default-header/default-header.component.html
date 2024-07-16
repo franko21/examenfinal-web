@@ -268,9 +268,11 @@
 </ng-template>
 <ng-template #AlertDropdown>
   <c-dropdown alignment="end" variant="nav-item" [autoClose]="false">
-    <button [caret]="false" cDropdownToggle aria-label="Open configuration picker">
+    <button [caret]="false" cDropdownToggle aria-label="Open configuration picker" class="notification-button">
       <svg cIcon name="cilBell" size="lg"></svg>
+      <span *ngIf="alertas.length > 0" class="badge bg-danger rounded-pill notification-badge">{{'+'+alertas.length }}</span>
     </button>
+    
     <div cDropdownMenu class="dropdown-menu dropdown-menu-end p-0" style="width: 400px; max-height: 450px">
       <div class="d-flex align-items-center justify-content-center mb-3">
         <h5 class="card-title">Notificaciones</h5>
@@ -283,7 +285,7 @@
           <!-- Contenedor de nombre y contenido -->
           <div>
             <!-- Mostrar solo la descripción y fecha -->
-            <p class="alerta-descripcion mb-2">{{ alerta.descripcion }}</p>
+            <p class="alerta-descripcion mb-2">{{alerta.dispositivo?.nombre +' '+alerta.descripcion }}</p>
             <span class="small">{{ alerta.fecha | amTimeAgo }}</span>
           </div>
         </div>
