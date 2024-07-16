@@ -2,6 +2,7 @@ import { Component,ElementRef,NgModule,OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule,FormBuilder,FormGroup, ReactiveFormsModule,Validators,AbstractControl, NgForm } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
+import { Howl } from 'howler';
 import {
   AvatarComponent,
   InputGroupTextDirective,
@@ -117,7 +118,12 @@ export class DispositivoComponent implements OnInit {
   visible3 = false;
   percentage3 = 0;
 
- 
+  playAlertSound() {
+    const sound = new Howl({
+      src: ['assets/sounds/alerta7.mp3']
+    });
+    sound.play();
+  }
 
 
   generatePDF() {
