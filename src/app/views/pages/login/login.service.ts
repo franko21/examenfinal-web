@@ -44,20 +44,12 @@ export class LoginService {
                 sessionStorage.setItem("usuario", userData.usuario.username);
                 this.currentUserData.next(userData.token);
                 console.log("Token de sesión almacenado:", userData.token);
+                console.log(userData.usuario);
                 this.currentUserLoginOn.next(true);
                 console.log(this.currentUserLoginOn.value);
-                        environment.islogged=true;
-                        environment.cedula=userData.usuario.persona.cedula;
-                        environment.nombre=userData.usuario.persona.nombre;
-                        environment.apellido=userData.usuario.persona.apellido;
-                        console.log(environment.nombre);
-                        environment.username=credentials.username;
-                        this.router.navigate(['/monitoreo']);
-
+                this.router.navigate(['/monitoreo']);
             } else {
-                // console.log("Datos de usuario recibidos:", userData);
-                console.log(this.currentUserLoginOn.value);
-                console.error("Respuesta de inicio de sesión incompleta o sin token.");
+                // console.log("Datos de usuario recibidos:", userData);               console.error("Respuesta de inicio de sesión incompleta o sin token.");
             }
         }),
 
@@ -77,8 +69,6 @@ register(credentials: RegisterRequest): Observable<any> {
                 console.log("Token de sesión almacenado:", userData.token);
                 this.currentUserLoginOn.next(true);
             } else {
-                console.log("Datos de usuario recibidos:", userData);
-
                 console.error("Respuesta de inicio de sesión incompleta o sin token.");
             }
         }),

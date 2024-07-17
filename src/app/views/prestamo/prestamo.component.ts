@@ -212,7 +212,7 @@ export class PrestamoComponent {
           }
           return 0;
         });
-  
+
         this.alertaservice.listar().subscribe(
           alertas => {
             this.alertas = alertas.filter(alerta => {
@@ -231,7 +231,7 @@ export class PrestamoComponent {
               }
               return 0;
             });
-  
+
             this.generatePDF(prestamo);
           },
           error => {
@@ -249,16 +249,16 @@ export class PrestamoComponent {
     const imageWidth = 90;
     const imageHeight = 40;
     const imageURL = '../../../assets/images/jedanklogofondoo.jpg';
-  
+
     // Agregar imagen de encabezado
     doc.addImage(imageURL, 'JPEG', 20, 8, imageWidth, imageHeight);
-  
+
     // Configurar estilos y posiciones iniciales
     const textX = 20 + imageWidth + 10;
     const textY = 11;
     const titleY = imageHeight + 20;
     const tableStartY = titleY + 20;
-  
+
     // Función para formatear fecha y hora
     function formatDate(date: Date): string {
       const year = date.getFullYear();
@@ -269,7 +269,7 @@ export class PrestamoComponent {
       const seconds = String(date.getSeconds()).padStart(2, '0');
       return `${hours}:${minutes}:${seconds} ${year}-${month}-${day}`;
     }
-  
+
     // Información del préstamo
     const textLines = [
       `Administrador: ${prestamo.persona.nombre}`,
@@ -279,39 +279,39 @@ export class PrestamoComponent {
       `Inicia: ${formatDate(new Date(prestamo.fecha_prestamo))}`,
       `Devuelve: ${formatDate(new Date(prestamo.fecha_finalizacion))}`
     ];
-  
+
     // Escribir información del préstamo
     const fontSize = 12;
     doc.setFontSize(fontSize);
     textLines.forEach((line, index) => {
       doc.text(line, textX, textY + (index * 7));
     });
-  
+
     // Título de la sección de historicos y alertas
     doc.setFontSize(16);
     doc.text('Históricos de posiciones y alertas', 20, titleY);
-  
+
     // Datos de historicos y alertas
     const columns = ['Latitud', 'Longitud', 'Hora / Fecha'];
     const rows: RowInput[] = [];
-  
+
     // Combinar y ordenar historicos y alertas por fecha
     const combinedData: { type: 'historico' | 'alerta', data: Historico | Alerta }[] = [];
-  
+
     this.historicos.forEach(historico => {
       combinedData.push({ type: 'historico', data: historico });
     });
-  
+
     this.alertas.forEach(alerta => {
       combinedData.push({ type: 'alerta', data: alerta });
     });
-  
+
     combinedData.sort((a, b) => {
       const dateA = new Date(a.data.fecha || 0);
       const dateB = new Date(b.data.fecha || 0);
       return dateA.getTime() - dateB.getTime();
     });
-  
+
     // Crear filas de datos
     combinedData.forEach(item => {
       if (item.type === 'historico') {
@@ -349,19 +349,19 @@ export class PrestamoComponent {
       startY: tableStartY,
       margin: { top: 10 }
     });
-  
+
     // Guardar y abrir el documento PDF en una nueva ventana
     const pdfBlob = doc.output('blob');
     const pdfUrl = URL.createObjectURL(pdfBlob);
     window.open(pdfUrl, '_blank');
   }
-  
-  
-  
 
-  
-  
-  
+
+
+
+
+
+
 
   isValidDate(date: any): boolean {
     return date instanceof Date && !isNaN(date.getTime());
@@ -663,26 +663,12 @@ export class PrestamoComponent {
             }); // @ts-ignore
           }
         );
-      //   Swal.fire({
-      //     icon: 'success',
-      //     title: '¡Edicion de prestamo exitosa!',
-      //     text: 'EXITO',
-      //     confirmButtonColor: '#3085d6',
-      //     confirmButtonText: 'OK'
-      // })
+
         this.toggleToast();
       },
       error:(errorData)=>{
         console.error('Error al editar prestamo:', errorData);
-      //   Swal.fire({
-      //     icon: 'error',
-      //     title: 'Error al edita prestamo',
-      //     text: 'Error al ingresar los datos.',
-      //     confirmButtonColor: '#3085d6',
-      //     confirmButtonText: 'OK'
-      // });
         this.toggleToast2();
-
       },
       complete:()=>{
         console.info("Edicion completa");

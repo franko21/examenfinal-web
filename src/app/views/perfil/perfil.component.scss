@@ -3,3 +3,15 @@ img.rounded-circle {
   height: 120px;
   border-radius: 50%;
 }
+
+.ng-touched.ng-invalid {
+  border-color: #dc3545; /* color rojo para indicar error */
+}
+
+.invalid-feedback {
+  display: none;
+}
+
+.ng-touched.ng-invalid ~ .invalid-feedback {
+  display: block;
+}

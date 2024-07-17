@@ -3,6 +3,7 @@ import { HttpClient,HttpErrorResponse  } from '@angular/common/http';
 import { Observable, catchError, throwError } from 'rxjs';
 import { environment } from '../../enviroments/environment';
 import { Usuario } from '../model/usuario.model';
+import {Persona} from "../model/persona.model";
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,9 @@ export class UsuarioService {
     return this.http.get<Usuario>(`${environment.urlHost}api/usuarios/existe/${username}`).pipe(
       catchError(this.handleError)
     );
+  }
+  editUsuario(id:any,cedula:any,usuario:Usuario):Observable<any>{
+    return this.http.put<Usuario>(`${environment.urlHost}api/usuarios/${id}/${cedula}`,usuario)
   }
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'Error desconocido';
