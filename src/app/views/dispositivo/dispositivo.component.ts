@@ -2,7 +2,6 @@ import { Component,ElementRef,NgModule,OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule,FormBuilder,FormGroup, ReactiveFormsModule,Validators,AbstractControl, NgForm } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-import { Howl } from 'howler';
 import {
   AvatarComponent,
   InputGroupTextDirective,
@@ -85,7 +84,7 @@ export class DispositivoComponent implements OnInit {
    public modelomod: Modelo = new Modelo();
    public zonamod: Zona_segura = new Zona_segura();
    public marcaselect: Marca | null = new Marca();
-   public titulo: string = "Dispositivo";
+   public titulo: string = "Dispositivos";
    dispositivos: Dispositivo[] = [];
    dispositivosfiltro: Dispositivo[] = [];
    dispovincu: Dispositivo[] = [];
@@ -117,14 +116,6 @@ export class DispositivoComponent implements OnInit {
   position3 = 'top-end';
   visible3 = false;
   percentage3 = 0;
-
-  playAlertSound() {
-    const sound = new Howl({
-      src: ['assets/sounds/alerta7.mp3']
-    });
-    sound.play();
-  }
-
 
   generatePDF() {
 

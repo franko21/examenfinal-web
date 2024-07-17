@@ -4,12 +4,9 @@
       <c-card-body>
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <h5 class="card-title" style="margin-bottom: 0;">{{titulo}}</h5>
+          <button type="button" class="btn btn-outline-success bi bi-plus-circle" *ngIf="showTable" (click)="btncrear()">Vincular dispositivo</button>
         </div>
         <br>
-        <div class="button-container">
-          <button type="button" class="btn btn-outline-info bi bi-plus-circle" *ngIf="showTable" (click)="btncrear()">Agregar dispositivo</button>
-        </div><br>
-
 
         <!-- Tabla de dispositivos -->
         <div *ngIf="showTable">
@@ -71,7 +68,6 @@
                   <button type="button" class="btn btn-danger" (click)="eliminardispo(dispo)"> <svg cIcon name="cilTrash" size="lg"></svg></button>
                 </td>
               </tr>
-              <button (click)="playAlertSound()">Reproducir Sonido de Alerta</button>
             </tbody>
           </table>
           <div class="d-flex justify-content-center mt-3">
@@ -276,10 +272,10 @@
     class="success-toast">
     <c-toast-header class="success-toast-header">
       <svg cIcon name="cilCheck" class="icon-success"></svg> <!-- Icono de éxito -->
-      <h5 class="success-heading">Edicion de Dispositivo exitoso</h5>
+      <h5 class="success-heading">Edición exitosa</h5>
     </c-toast-header>
     <c-toast-body class="success-toast-body">
-      <p class="success-toast-message" >Dispositivo editado con exito</p>
+      <p class="success-toast-message" >Dispositivo editado correctamente</p>
     </c-toast-body>
   </c-toast>
 </c-toaster>
@@ -294,10 +290,10 @@
     class="success-toast">
     <c-toast-header class="success-toast-header">
       <svg cIcon name="cilCheck" class="icon-success"></svg> <!-- Icono de éxito -->
-      <h5 class="success-heading">Creacion de Dispositivo exitoso</h5>
+      <h5 class="success-heading">Vinculación exitosa</h5>
     </c-toast-header>
     <c-toast-body class="success-toast-body">
-      <p class="success-toast-message" >Dispositivo creado con exito</p>
+      <p class="success-toast-message" >Dispositivo vinculado correctamente</p>
     </c-toast-body>
   </c-toast>
 </c-toaster>
@@ -311,10 +307,10 @@
     class="success-toast">
     <c-toast-header class="success-toast-header">
       <svg cIcon name="cilCheck" class="icon-success"></svg> <!-- Icono de éxito -->
-      <h5 class="success-heading">Edicion de Dispositivo exitoso</h5>
+      <h5 class="success-heading">Edición exitosa</h5>
     </c-toast-header>
     <c-toast-body class="success-toast-body">
-      <p class="success-toast-message" >Dispositivo editado con exito</p>
+      <p class="success-toast-message" >Dispositivo editado correctamente</p>
     </c-toast-body>
   </c-toast>
 </c-toaster>
@@ -327,10 +323,10 @@
     class="danger-toast">
     <c-toast-header class="danger-toast-header">
       <svg cIcon name="cilCheck" class="icon-success"></svg> <!-- Icono de éxito -->
-      <h5 class="success-heading">Eliminacios de Dispositivo exitoso</h5>
+      <h5 class="success-heading">Eliminación exitosa</h5>
     </c-toast-header>
     <c-toast-body class="danger-toast-body">
-      <p class="danger-toast-message">Dispositivo eliminado con exito</p>
+      <p class="danger-toast-message">Dispositivo eliminado correctamente</p>
     </c-toast-body>
   </c-toast>
 </c-toaster>

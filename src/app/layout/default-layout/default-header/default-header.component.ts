@@ -31,7 +31,6 @@ import {
   ModalHeaderComponent,
   ModalTitleDirective,
 
-
 } from '@coreui/angular';
 import { DatePipe, NgStyle, NgTemplateOutlet } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -55,6 +54,7 @@ import { MomentModule } from 'ngx-moment';
 import { Subscription } from 'rxjs';
 import { EstadoService } from 'src/app/service/estado.service';
 import { Estado } from 'src/app/model/estado.model';
+import { Howl } from 'howler';
 
 @Component({
   selector: 'app-default-header',
@@ -78,8 +78,10 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
   public segundo: number = 0;
   recop: number = 0;
   value = 1;
+  newNotificaciones: number = 0;
   public visible = false;
   alertas: Alerta[] = [];
+  alertasTotales: Alerta[] = [];
   alertSeleccionado: Alerta;
   estadoDispositivo: Estado;
   isAlertaInfo = false;
@@ -114,53 +116,65 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
       )
       .subscribe();
   }
-  
+  /// INICIO DE ALERTAS -----------------------------
 
   ngOnInit(): void {
     this.loadMoreAlerts(); // Cargar las primeras alertas al inicializar el componente
-  
+
     // Suscribirse a las actualizaciones de alertas desde WebSocket
     this.alertasSubscription = this.webSocket.obtenerAlertas().subscribe(
       (alertas: any[]) => {
-        alertas.reverse();
+        alertas.sort((a, b) => {
+          const dateA = a.fecha ? new Date(a.fecha).getTime() : 0; // Usa 0 o una fecha predeterminada si a.fecha es undefined
+          const dateB = b.fecha ? new Date(b.fecha).getTime() : 0; // Usa 0 o una fecha predeterminada si b.fecha es undefined
+          return dateB - dateA;
+        });
+        this.newNotificaciones = alertas.filter(alerta => !alerta.visto).length;
         this.alertas = alertas; // Actualizar alertas cuando se recibe una nueva lista
+        this.alertasTotales = alertas;
+        this.playAlertSound();
       },
       error => {
         console.error('Error al recibir alertas desde WebSocket:', error);
       }
     );
   }
-  
 
   startIndex: number = 0; // Índice inicial de las alertas a mostrar
   chunkSize: number = 10; // Cantidad de alertas a cargar por cada carga
   allAlertsLoaded: boolean = false; // Variable para indicar si se han cargado todas las alertas disponibles
   loadingMore = false; // Estado de carga
-  
+
   loadMoreAlerts(): void {
     if (this.allAlertsLoaded) {
       return; // No cargar más alertas si ya se han cargado todas
     }
-  
+
     this.loadingMore = true; // Activar el estado de carga
-  
+
     this.seralerta.getAlertas().subscribe(
       alerts => {
-        alerts.reverse();
+        this.alertasTotales = alerts;
+        alerts.sort((a, b) => {
+          const dateA = a.fecha ? new Date(a.fecha).getTime() : 0; // Usa 0 o una fecha predeterminada si a.fecha es undefined
+          const dateB = b.fecha ? new Date(b.fecha).getTime() : 0; // Usa 0 o una fecha predeterminada si b.fecha es undefined
+          return dateB - dateA;
+        });
+        this.newNotificaciones = alerts.filter(alerta => !alerta.visto).length;
         // Slice para obtener el próximo grupo de alertas según el startIndex y chunkSize
         const newAlerts = alerts.slice(this.startIndex, this.startIndex + this.chunkSize);
-  
+
         // Agregar las nuevas alertas al arreglo existente
         this.alertas.push(...newAlerts);
-  
+
         // Incrementar el startIndex para la siguiente carga
         this.startIndex += this.chunkSize;
-  
+
         // Verificar si no se han devuelto más alertas que el tamaño del chunkSize
         if (alerts.length < this.startIndex) {
           this.allAlertsLoaded = true; // Marcar que se han cargado todas las alertas
         }
-  
+
         this.loadingMore = false;
       },
       error => {
@@ -169,15 +183,14 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
       }
     );
   }
-  
-  
+
   onScroll(event: Event): void {
     const container = event.target as HTMLElement;
-  
+
     // Calcula si el scroll está cerca del máximo de abajo con un margen de error de 20 píxeles
     const margin = 5; // Margen en píxeles desde el final
     const atBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + margin;
-  
+
     if (atBottom && !this.allAlertsLoaded) {
       this.loadingMore = true; // Activar el estado de carga
       setTimeout(() => {
@@ -197,13 +210,39 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
         console.error('Error al asignar estado:', error);
       }
     );
-}
+  }
 
 
   cerrarAlertaInfo() {
     this.isAlertaInfo = false;
   }
 
+  playAlertSound() {
+    const sound = new Howl({
+      src: ['assets/sounds/alerta7.mp3']
+    });
+    sound.play();
+  }
+
+  updateAlertasVistas() {
+    console.log('Update alertasVistas');
+    console.log(this.alertasTotales.length);
+
+    for (const alerta of this.alertasTotales) {
+      alerta.visto = true;
+      this.seralerta.crear(alerta).subscribe(
+        (updatedAlerta) => {
+          this.newNotificaciones = 0;
+        },
+        (error) => {
+          console.error('Error al editar alerta:', error);
+          this.loadingMore = false; // Asegurarse de desactivar el estado de carga en caso de error
+        }
+      );
+    }
+  }
+
+  /// FIN DE ALERTAS -----------------------------
 
   prestamos: Prestamo[] = [];
   configuraciones: Configuracion[] = [];

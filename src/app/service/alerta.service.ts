@@ -23,6 +23,7 @@ export class AlertaService {
     return this.http.get<Alerta[]>(this.urlEndPoint);
   }
 
-
-
+  crear(alerta: Alerta): Observable<Alerta> {
+    return this.http.post<Alerta>(this.urlEndPoint, alerta, { headers: this.httpHeaders });
+  }
 }

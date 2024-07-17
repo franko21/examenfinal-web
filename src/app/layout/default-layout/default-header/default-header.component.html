@@ -268,10 +268,10 @@
 </ng-template>
 <ng-template #AlertDropdown>
   <c-dropdown alignment="end" variant="nav-item" [autoClose]="false">
-    <button [caret]="false" cDropdownToggle aria-label="Open configuration picker" class="notification-button">
+    <button [caret]="false" cDropdownToggle aria-label="Open configuration picker" class="notification-button" (click)="updateAlertasVistas()">
       <svg cIcon name="cilBell" size="lg"></svg>
-      <span *ngIf="alertas.length > 0" class="badge bg-danger rounded-pill notification-badge">{{'+'+alertas.length }}</span>
-    </button>
+      <span *ngIf="newNotificaciones > 0" class="badge bg-danger rounded-pill notification-badge">{{ '+' + newNotificaciones }}</span>
+    </button>    
     
     <div cDropdownMenu class="dropdown-menu dropdown-menu-end p-0" style="width: 400px; max-height: 450px">
       <div class="d-flex align-items-center justify-content-center mb-3">
@@ -294,13 +294,14 @@
           <span class="small">Cargando más alertas...</span>
         </div>
         
-        <div *ngIf="this.allAlertsLoaded" class="text-center text-muted my-2">
+        <div *ngIf="this.allAlertsLoaded && this.alertas.length > 0" class="text-center text-muted my-2">
           <span class="small">No hay más alertas para mostrar.</span>
         </div>
-
-        <div *ngIf="this.alertas.length ==0" class="text-center text-muted my-2">
+        
+        <div *ngIf="this.alertas.length == 0" class="text-center text-muted my-2">
           <span class="small">No hay alertas para mostrar.</span>
         </div>
+        
       </div>
       
     </div>

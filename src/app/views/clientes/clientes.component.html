@@ -30,10 +30,15 @@
 </c-toaster>
 <div class="card">
   <div class="card-body">
-    <h5 class="card-title">Cliente</h5>
-    <div class="button-container" *ngIf="!mostrarFormularioEditar">
-      <button id="guardar-persona" (click)="ingresarPersona()">Ingresar Persona</button>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <h5 class="card-title" style="margin-bottom: 0;">Clientes</h5>
+      <div *ngIf="!mostrarFormularioEditar">
+        <button type="button" class="btn btn-outline-success bi bi-plus-circle" (click)="ingresarPersona()">
+          Ingresar Persona
+        </button>
+      </div>
     </div>
+    
     <div *ngIf="mostrarFormularioIngreso && !mostrarFormularioEditar">
       <form [formGroup]="registerFormIn" (ngSubmit)="onSubmit2()">
         <h1>Ingresar Persona</h1>
