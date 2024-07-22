@@ -40,7 +40,7 @@
       </div>
     </div>
 
-    <div *ngIf="mostrarFormularioIngreso && !mostrarFormularioEditar">
+    <div *ngIf="mostrarFormularioIngreso && mostrarFormularioEditar">
       <form [formGroup]="registerFormIn" (ngSubmit)="onSubmit2()">
         <h1>Ingresar Prestamo</h1>
         <c-input-group class="mb-3">
@@ -48,7 +48,7 @@
             <svg cIcon name="cilUser"></svg>
           </span>
           <select class="form-select" formControlName="beneficiario" cFormControl required>
-            <option value="" disabled selected>Seleccione un Beneficiario</option>
+            <option value="null" disabled selected>Seleccione un Beneficiario</option>
             <option *ngFor="let persona of personas" [value]="persona.id_persona">
               {{ persona.nombre }} {{ persona.apellido }}
             </option>
@@ -62,7 +62,7 @@
             <svg cIcon name="cil-phone"></svg>
           </span>
           <select class="form-select" formControlName="dispositivo" cFormControl required>
-            <option value="" disabled selected>Seleccione un Dispositivo</option>
+            <option value="null" disabled selected>Seleccione un Dispositivo</option>
             <option *ngFor="let dispo of dispositivos" [value]="dispo.idDispositivo">
               {{ dispo.nombre }}-{{ dispo.modelo?.marca?.nombre }}
             </option>
@@ -134,7 +134,7 @@
           <th>Tiempo Restante</th>
           <th>Finalizado</th>
           <th>Finalizar</th>
-<!--          <th>Editar</th>-->
+          <th>Editar</th>
           <th>Eliminar</th>
           <th>Historico</th>
         </tr>
@@ -170,9 +170,9 @@
               <svg cIcon name="cilCheck" size="lg"></svg>
             </button>
           </td>
-<!--          <td>-->
-<!--            <button type="button" name="button" (click)="edit(i)" class="btn btn-primary"><svg cIcon name="cilPencil" size="lg"></svg></button>-->
-<!--          </td>-->
+         <td>
+            <button type="button" name="button"  (click)="edit(i, prestamo)"  class="btn btn-primary"><svg cIcon name="cilPencil" size="lg"></svg></button>
+          </td>
           <td>
             <button type="button" (click)="eliminarPrestamo(prestamo.id_prestamo)" class="btn btn-danger"><svg cIcon name="cilTrash" size="lg"></svg></button>
           </td>
@@ -187,98 +187,156 @@
         <pagination-controls (pageChange)="p = $event"></pagination-controls>
       </div>
     </div>
-    <div *ngIf="filaEditada !== null &&!mostrarFormularioIngreso &&mostrarFormularioEditar">
-
-          <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-            <h1>Editar</h1>
-            <c-input-group class="mb-3">
-                <span cInputGroupText>
-                  <svg cIcon name="cilCreditCard"></svg>
-                </span>
-              <select class="form-select" formControlName="beneficiario" required
-              >
-                <option value="" disabled selected>Seleccione un Beneficiario</option>
-                <option *ngFor="let persona of personas" [value]="persona.id_persona">
-                  {{ persona.nombre }} {{ persona.apellido }}
-                </option>
-              </select>
-              <div *ngIf="registerForm.controls['beneficiario']?.invalid && registerFormIn.controls['beneficiario']?.touched" class="invalid-feedback">
-                El Beneficiario es obligatorio.
-              </div>
-            </c-input-group>
-            <c-input-group class="mb-3">
-                <span cInputGroupText>
-                  <svg cIcon name="cilItalic"></svg>
-                </span>
-              <select class="form-select" formControlName="dispositivo" required
-              >
-                <option value="" disabled selected>Seleccione un Dispositivo</option>
-                <option *ngFor="let dispo of dispositivos" [value]="dispo.idDispositivo">
-                  {{ dispo.nombre }}-{{ dispo.modelo?.marca?.nombre }}
-                </option>
-              </select>
-              <div *ngIf="registerForm.controls['dispositivo']?.invalid && registerFormIn.controls['dispositivo']?.touched" class="invalid-feedback">
-                El Dispositivo es obligatorio.
-              </div>
-            </c-input-group>
-            <c-input-group class="mb-3">
-                <span cInputGroupText>
-                  <svg cIcon name="cilItalic"></svg>
-                </span>
-              <input formControlName="fecha" type="datetime-local" cFormControl placeholder="Fecha Devolucion" required
-                     min="{{ hoy | date: 'yyyy-MM-ddTHH:mm' }}"
-              />
-              <div *ngIf="registerForm.controls['fecha']?.invalid && registerFormIn.controls['fecha']?.touched" class="invalid-feedback">
-                La Fecha es obligatoria.
-              </div>
-            </c-input-group>
-            <c-input-group class="mb-3">
-                <span cInputGroupText>
-                  <svg cIcon name="cilUser"></svg>
-                </span>
-              <input formControlName="motivo" cFormControl placeholder="Motivo" required
-              />
-              <div *ngIf="registerForm.controls['motivo']?.invalid && registerFormIn.controls['motivo']?.touched" class="invalid-feedback">
-                El Motivo es obligatorio.
-              </div>
-            </c-input-group>
-            <c-input-group class="mb-3">
-                <span cInputGroupText>
-                  <svg cIcon name="cilUser"></svg>
-                </span>
-              <select class="form-select" formControlName="estado_devolucion" required
-              >
-                <option value="" disabled selected>Seleccione Estado Devolución</option>
-                <option value="Pendiente">Pendiente</option>
-                <option value="Devuelto">Devuelto</option>
-                <option value="Perdido">Perdido</option>
-                <option value="Dañado">Dañado</option>
-              </select>
-              <div *ngIf="registerForm.controls['estado_devolucion']?.invalid && registerFormIn.controls['estado_devolucion']?.touched" class="invalid-feedback">
-                El Estado de Devolucion es obligatorio.
-              </div>
-            </c-input-group>
-            <c-input-group class="mb-3">
-                <span cInputGroupText>
-                  <svg cIcon name="cilUser"></svg>
-                </span>
-              <select class="form-select" formControlName="finalizado" cFormControl required>
-                <option value="" disabled selected>Seleccione si Finalizado</option>
-                <option [value]="true">Sí</option>
-                <option [value]="false">No</option>
-              </select>
-              <div *ngIf="registerForm.controls['finalizado']?.invalid && registerFormIn.controls['finalizado']?.touched" class="invalid-feedback">
-                Indique si esta finalizado el prestamo.
-              </div>
-            </c-input-group>
-            <div class="d-grid">
-              <button cButton color="success" type="submit">Guardar Cambios</button>
-            </div><br>
-            <div class="d-grid">
-              <button cButton color="secondary" type="button" (click)="cancelarEdicion()">Cancelar</button>
-            </div>
-          </form>
+    <div *ngIf="mostrarFormularioIngreso && !mostrarFormularioEditar">
+      <form [formGroup]="registerFormIn" (ngSubmit)="onSubmit2()">
+        <h1>Ingresar Prestamo</h1>
+        <c-input-group class="mb-3">
+          <span cInputGroupText>
+            <svg cIcon name="cilUser"></svg>
+          </span>
+          <select class="form-select" formControlName="beneficiario" cFormControl required>
+            <option value="null" disabled selected>Seleccione un Beneficiario</option>
+            <option *ngFor="let persona of personas" [value]="persona.id_persona">
+              {{ persona.nombre }} {{ persona.apellido }}
+            </option>
+          </select>
+          <div *ngIf="registerFormIn.controls['beneficiario']?.invalid && registerFormIn.controls['beneficiario']?.touched" class="invalid-feedback">
+            El Beneficiario es obligatorio.
+          </div>
+        </c-input-group>
+        <c-input-group class="mb-3">
+          <span cInputGroupText>
+            <svg cIcon name="cil-phone"></svg>
+          </span>
+          <select class="form-select" formControlName="dispositivo" cFormControl required>
+            <option value="null" disabled selected>Seleccione un Dispositivo</option>
+            <option *ngFor="let dispo of dispositivos" [value]="dispo.idDispositivo">
+              {{ dispo.nombre }}-{{ dispo.modelo?.marca?.nombre }}
+            </option>
+          </select>
+          <div *ngIf="registerFormIn.controls['dispositivo']?.invalid && registerFormIn.controls['dispositivo']?.touched" class="invalid-feedback">
+            El Dispositivo es obligatorio.
+          </div>
+        </c-input-group>
+        <c-input-group class="mb-3">
+          <span cInputGroupText>
+            <svg cIcon name="cil-clock"></svg>
+          </span>
+          <input formControlName="fecha" type="datetime-local" cFormControl placeholder="Fecha Devolucion" required
+                 min="{{ hoy | date: 'yyyy-MM-ddTHH:mm' }}"
+          />
+          <div *ngIf="registerFormIn.controls['fecha']?.invalid && registerFormIn.controls['fecha']?.touched" class="invalid-feedback">
+            El Fecha es obligatoria.
+          </div>
+        </c-input-group>
+        <c-input-group class="mb-3">
+          <span cInputGroupText>
+            <svg cIcon name="cil-comment-bubble"></svg>
+          </span>
+          <input formControlName="motivo" cFormControl placeholder="Motivo" required
+          />
+          <div *ngIf="registerFormIn.controls['motivo']?.invalid && registerFormIn.controls['motivo']?.touched" class="invalid-feedback">
+            El Motivo es obligatorio.
+          </div>
+        </c-input-group>
+        <div class="d-grid">
+          <button cButton color="success" type="submit">Guardar Prestamo</button>
+        </div><br>
+        <div class="d-grid">
+          <button cButton color="secondary" type="button" (click)="ingresarPrestamo()">Cancelar</button>
+        </div>
+      </form>
     </div>
+    
+    <div *ngIf="filaEditada !== null && !mostrarFormularioIngreso && mostrarFormularioEditar">
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <h1>Editar</h1>
+        <c-input-group class="mb-3">
+          <span cInputGroupText>
+            <svg cIcon name="cilCreditCard"></svg>
+          </span>
+          <select class="form-select" formControlName="beneficiario" required>
+            <option value="" disabled selected>Seleccione un Beneficiario</option>
+            <option *ngFor="let persona of personas" [value]="persona.id_persona">
+              {{ persona.nombre }} {{ persona.apellido }}
+            </option>
+          </select>
+          <div *ngIf="registerForm.controls['beneficiario']?.invalid && registerForm.controls['beneficiario']?.touched" class="invalid-feedback">
+            El Beneficiario es obligatorio.
+          </div>
+        </c-input-group>
+        <c-input-group class="mb-3">
+          <span cInputGroupText>
+            <svg cIcon name="cilItalic"></svg>
+          </span>
+          <select class="form-select" formControlName="dispositivo" required>
+            <option value="" disabled selected>Seleccione un Dispositivo</option>
+            <option *ngFor="let dispo of dispositivosall" [value]="dispo.idDispositivo">
+              {{ dispo.nombre }}-{{ dispo.modelo?.marca?.nombre }}
+            </option>
+          </select>
+          <div *ngIf="registerForm.controls['dispositivo']?.invalid && registerForm.controls['dispositivo']?.touched" class="invalid-feedback">
+            El Dispositivo es obligatorio.
+          </div>
+        </c-input-group>
+        <c-input-group class="mb-3">
+          <span cInputGroupText>
+            <svg cIcon name="cilItalic"></svg>
+          </span>
+          <input formControlName="fecha" type="datetime-local" cFormControl placeholder="Fecha Devolucion" required
+                 min="{{ hoy | date: 'yyyy-MM-ddTHH:mm' }}"
+          />
+          <div *ngIf="registerForm.controls['fecha']?.invalid && registerForm.controls['fecha']?.touched" class="invalid-feedback">
+            La Fecha es obligatoria.
+          </div>
+        </c-input-group>
+        <c-input-group class="mb-3">
+          <span cInputGroupText>
+            <svg cIcon name="cilUser"></svg>
+          </span>
+          <input formControlName="motivo" cFormControl placeholder="Motivo" required
+          />
+          <div *ngIf="registerForm.controls['motivo']?.invalid && registerForm.controls['motivo']?.touched" class="invalid-feedback">
+            El Motivo es obligatorio.
+          </div>
+        </c-input-group>
+        <c-input-group class="mb-3">
+          <span cInputGroupText>
+            <svg cIcon name="cilUser"></svg>
+          </span>
+          <select class="form-select" formControlName="estado_devolucion" required>
+            <option value="" disabled selected>Seleccione Estado Devolución</option>
+            <option value="Pendiente">Pendiente</option>
+            <option value="Devuelto">Devuelto</option>
+            <option value="Perdido">Perdido</option>
+            <option value="Dañado">Dañado</option>
+          </select>
+          <div *ngIf="registerForm.controls['estado_devolucion']?.invalid && registerForm.controls['estado_devolucion']?.touched" class="invalid-feedback">
+            El Estado de Devolucion es obligatorio.
+          </div>
+        </c-input-group>
+        <c-input-group class="mb-3">
+          <span cInputGroupText>
+            <svg cIcon name="cilUser"></svg>
+          </span>
+          <select class="form-select" formControlName="finalizado" cFormControl required>
+            <option value="" disabled selected>Seleccione si Finalizado</option>
+            <option [value]="true">Sí</option>
+            <option [value]="false">No</option>
+          </select>
+          <div *ngIf="registerForm.controls['finalizado']?.invalid && registerForm.controls['finalizado']?.touched" class="invalid-feedback">
+            Indique si esta finalizado el prestamo.
+          </div>
+        </c-input-group>
+        <div class="d-grid">
+          <button cButton color="success" type="submit">Guardar Cambios</button>
+        </div><br>
+        <div class="d-grid">
+          <button cButton color="secondary" type="button" (click)="cancelarEdicion()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+    
 
   </div>
 </div>
