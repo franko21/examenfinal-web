@@ -101,7 +101,7 @@ export class PrestamoComponent {
   ngOnInit():void {
     this.usuarioService.getUsuarioByUsername(environment.username).subscribe(
       usu=>{
-        this.idusu=usu.id_usuario;
+        this.idusu=usu.idUsuario;
       }
     )
     this.prestamoService.getPrestamos().subscribe(
