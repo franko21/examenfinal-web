@@ -1,100 +1,245 @@
-<!--<div class="card border-0 shadow-sm" style="max-width: 80%; margin: auto;">-->
-<!--  <div class="card-body">-->
-<!--    <div class="row align-items-center">-->
-<!--      <div class="col-md-4 text-center">-->
-<!--        <img src="./assets/jedanklosin.ico" alt="Avatar" class="rounded-circle img-fluid" style="width: 250px; height: 250px; object-fit: cover;">-->
-<!--      </div>-->
-<!--      <div class="col-md-8">-->
-<!--        <h2 class="text-primary mb-4">Mi Perfil</h2>-->
-<!--        <hr>-->
-<!--        <div class="mb-4">-->
-<!--          <div class="row">-->
-<!--            <div class="col-sm-6"><strong>Usuario</strong></div>-->
-<!--            <div class="col-sm-6 text-end">{{ sessionStorage.getItem('usuario') }}</div>-->
-<!--          </div>-->
-<!--          <hr>-->
-<!--          <div class="row">-->
-<!--            <div class="col-sm-6"><strong>Cédula</strong></div>-->
-<!--            <div class="col-sm-6 text-end">{{ sessionStorage.getItem('cedula') }}</div>-->
-<!--          </div>-->
-<!--          <hr>-->
-<!--          <div class="row">-->
-<!--            <div class="col-sm-6"><strong>Nombre</strong></div>-->
-<!--            <div class="col-sm-6 text-end">{{ sessionStorage.getItem('nombre') }}</div>-->
-<!--          </div>-->
-<!--          <hr>-->
-<!--          <div class="row">-->
-<!--            <div class="col-sm-6"><strong>Apellido</strong></div>-->
-<!--            <div class="col-sm-6 text-end">{{ sessionStorage.getItem('apellido') }}</div>-->
-<!--          </div>-->
-<!--          <hr>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
-<!--</div>-->
-<div class="card border-0 shadow-sm" style="max-width: 80%; margin: auto;">
-  <div class="card-body">
-    <div class="row align-items-center">
-      <div class="col-md-4 text-center">
-        <img src="./assets/jedanklosin.ico" alt="Avatar" class="rounded-circle img-fluid" style="width: 250px; height: 250px; object-fit: cover;">
-      </div>
-      <div class="col-md-8">
-        <h2 class="text-primary mb-4">Mi Perfil</h2>
-        <hr>
-        <div class="mb-4">
-          <div class="row">
-            <div class="col-sm-6"><strong>Usuario</strong></div>
-            <div class="col-sm-6 text-end">{{ usuario }}</div>
-          </div>
-          <hr>
-          <div class="row">
-            <div class="col-sm-6"><strong>Cédula</strong></div>
-            <div class="col-sm-6 text-end">{{ cedula }}</div>
-          </div>
-          <hr>
-          <div class="row">
-            <div class="col-sm-6"><strong>Nombre</strong></div>
-            <div class="col-sm-6 text-end">{{ nombre }}</div>
-          </div>
-          <hr>
-          <div class="row">
-            <div class="col-sm-6"><strong>Apellido</strong></div>
-            <div class="col-sm-6 text-end">{{ apellido }}</div>
-          </div>
-          <hr>
-        </div>
-        <div class="text-center">
-          <button class="btn btn-primary" (click)="toggleEditProfile()">Editar Perfil</button>
-        </div>
-        <div *ngIf="isEditingProfile" class="mt-4">
-          <form (ngSubmit)="saveChanges()" [formGroup]="formUser">
-            <div class="mb-3">
-              <label for="cedula" class="form-label">Nueva Cedula</label>
-              <input type="text" class="form-control" id="cedula" name="cedula" placeholder="Ingrese nueva cedula" formControlName="cedula" required>
-              <div *ngIf="formUser.controls['cedula']?.invalid && formUser.controls['cedula']?.touched" class="invalid-feedback">
-                Debe ingresar la cedula.
-              </div>
-            </div>
-            <div class="mb-3">
-              <label for="username" class="form-label">Nuevo Usuario</label>
-              <input type="text" class="form-control" id="username" [(ngModel)]="newUsername" name="username" placeholder="Ingrese nuevo usuario" formControlName="username" required>
-              <div *ngIf="formUser.controls['username']?.invalid && formUser.controls['username']?.touched" class="invalid-feedback">
-                Debe ingresar el usuario.
-              </div>
-            </div>
-            <div class="mb-3">
-              <label for="password" class="form-label">Nueva Contraseña</label>
-              <input type="password" class="form-control" id="password" [(ngModel)]="newPassword" name="password" placeholder="Ingrese nueva contraseña" formControlName="password" required>
-              <div *ngIf="formUser.controls['password']?.invalid && formUser.controls['password']?.touched" class="invalid-feedback">
-                Debe ingresar la contraseña.
-              </div>
-            </div>
-            <button type="submit" class="btn btn-success">Guardar Cambios</button>
-          </form>
-        </div>
-      </div>
+<div class="text-center mb-4">
+  <!-- Título fuera del card -->
+  <h3 class="profile-title">{{titulo}}</h3>
+</div>
+<div
+  class="card border-0 shadow-sm profile-card"
+  style="max-width: 80%; margin: auto"
+>
+  <div class="profile-header text-center mb-4">
+    <!-- Encabezado del card con colores arcoíris -->
+  </div>
+
+  <!-- Cuerpo del card -->
+  <div class="card-body text-center" *ngIf="!isEditingProfile">
+    <!-- Foto de Perfil en el body -->
+    <img
+      [src]="getImagenURL(usuario.persona.imagen) || './assets/jedanklosin.ico'"
+      alt="Avatar"
+      class="profile-img mb-3"
+    />
+    <!-- Nombre y Apellido en grande -->
+    <h1 class="profile-name mb-2">
+      {{ usuario.persona.nombre }} {{ usuario.persona.apellido }}
+    </h1>
+    <!-- Username con icono de verificación -->
+    <h3 class="d-flex align-items-center justify-content-center mb-3">
+      <span class="text-muted profile-username"
+        >{{ usuario.username }}
+        <i class="fa-solid fa-circle-check" title="Verificado"></i>
+      </span>
+    </h3>
+    <hr class="my-3" />
+
+    <!-- Cargo -->
+    <div class="badges-container">
+      <div class="badge profile-role">Administrador</div>
+    </div>
+
+    <hr class="my-3" />
+
+    <!-- Información Adicional -->
+    <div class="profile-info">
+      <div>Nombre: {{ usuario.persona.nombre }}</div>
+      <div>Apellido: {{ usuario.persona.apellido }}</div>
+      <div>Cédula: {{ usuario.persona.cedula }}</div>
+    </div>
+
+    <div class="d-grid">
+      <button
+        class="btn btn-primary"
+        type="button"
+        (click)="toggleEditProfile()"
+      >
+        <i class="fas fa-pencil-alt"></i> Editar mi perfil
+      </button>
     </div>
   </div>
-</div>
 
+  <div class="card-body p-4" *ngIf="isEditingProfile">
+    <!-- Imagen y botón para cargar imagen -->
+    <div class="text-center mb-4">
+      <img
+        [src]="previewImageUrl || './assets/jedanklosin.ico'"
+        alt="Avatar"
+        class="rounded-circle img-fluid mb-3 profile-img"
+      />
+      <div class="d-flex justify-content-center">
+        <c-input-group class="w-75">
+          <span cInputGroupText>
+            <svg cIcon name="cil-image"></svg>
+          </span>
+          <input
+            type="file"
+            (change)="onImageSelect($event)"
+            cFormControl
+            accept="image/*"
+          />
+        </c-input-group>
+      </div>
+    </div>
+  
+    <!-- Formulario de edición -->
+    <form
+      (ngSubmit)="saveChanges()"
+      [formGroup]="formUser"
+      autocomplete="off"
+    >
+      <div class="row">
+        <!-- Columna Izquierda -->
+        <div class="col-md-6">
+          <!-- Cedula -->
+          <c-input-group class="mb-3">
+            <span cInputGroupText>
+              <svg cIcon name="cil-credit-card"></svg>
+            </span>
+            <input
+              type="text"
+              formControlName="newCedula"
+              cFormControl
+              placeholder="Número de cédula"
+              [value]="usuario.persona.cedula"
+              required
+              autocomplete="off"
+            />
+            <div
+              *ngIf="formUser.controls['newCedula']?.invalid && formUser.controls['newCedula']?.touched"
+              class="invalid-feedback"
+            >
+              Debe ingresar la cédula.
+            </div>
+          </c-input-group>
+    
+          <!-- Nombre -->
+          <c-input-group class="mb-3">
+            <span cInputGroupText>
+              <svg cIcon name="cil-user"></svg>
+            </span>
+            <input
+              type="text"
+              formControlName="newNombre"
+              cFormControl
+              placeholder="Nombre"
+              [value]="usuario.persona.nombre"
+              required
+              autocomplete="off"
+            />
+            <div
+              *ngIf="formUser.controls['newNombre']?.invalid && formUser.controls['newNombre']?.touched"
+              class="invalid-feedback"
+            >
+              El nombre es obligatorio.
+            </div>
+          </c-input-group>
+    
+          <!-- Apellido -->
+          <c-input-group class="mb-3">
+            <span cInputGroupText>
+              <svg cIcon name="cil-user"></svg>
+            </span>
+            <input
+              type="text"
+              formControlName="newApellido"
+              cFormControl
+              placeholder="Apellido"
+              [value]="usuario.persona.apellido"
+              required
+              autocomplete="off"
+            />
+            <div
+              *ngIf="formUser.controls['newApellido']?.invalid && formUser.controls['newApellido']?.touched"
+              class="invalid-feedback"
+            >
+              El apellido es obligatorio.
+            </div>
+          </c-input-group>
+        </div>
+        
+        <!-- Columna Derecha -->
+        <div class="col-md-6">
+          <!-- Usuario (Username) -->
+          <c-input-group class="mb-3">
+            <span cInputGroupText>
+              <svg cIcon name="cil-user"></svg>
+            </span>
+            <input
+              type="text"
+              formControlName="newUsername"
+              cFormControl
+              placeholder="Nombre de usuario"
+              [value]="usuario.username"
+              autocomplete="new-username"
+              required
+            />
+            <div
+              *ngIf="formUser.controls['newUsername']?.invalid && formUser.controls['newUsername']?.touched"
+              class="invalid-feedback"
+            >
+              El usuario es obligatorio.
+            </div>
+          </c-input-group>
+    
+          <!-- Contraseña -->
+          <c-input-group class="mb-3">
+            <span cInputGroupText>
+              <svg cIcon name="cil-lock-locked"></svg>
+            </span>
+            <input
+              type="password"
+              formControlName="newPassword"
+              cFormControl
+              placeholder="Nueva contraseña (opcional)"
+              autocomplete="new-password"
+            />
+            <div
+              *ngIf="formUser.controls['newPassword']?.invalid && formUser.controls['newPassword']?.touched"
+              class="invalid-feedback"
+            >
+              La nueva contraseña es opcional.
+            </div>
+          </c-input-group>
+    
+          <!-- Contraseña Actual -->
+          <c-input-group class="mb-4">
+            <span cInputGroupText>
+              <svg cIcon name="cil-lock-locked"></svg>
+            </span>
+            <input
+              type="password"
+              formControlName="actualPassword"
+              cFormControl
+              placeholder="Contraseña actual"
+              required
+              autocomplete="off"
+            />
+            <div
+              *ngIf="formUser.controls['actualPassword']?.invalid && formUser.controls['actualPassword']?.touched"
+              class="invalid-feedback"
+            >
+              La contraseña actual es obligatoria.
+            </div>
+          </c-input-group>
+        </div>
+      </div>
+  
+      <!-- Botones -->
+      <div class="d-grid mb-3">
+        <button cButton color="success" type="submit">
+          Guardar Cambios
+        </button>
+      </div>
+      <div class="d-grid">
+        <button
+          cButton
+          color="secondary"
+          type="button"
+          (click)="toggleEditProfile()"
+        >
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+  
+  
+</div>

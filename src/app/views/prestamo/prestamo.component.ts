@@ -73,6 +73,7 @@ export class PrestamoComponent {
   alerta:Alerta=new Alerta;
   personas:Persona[]=[];
   dispositivos:Dispositivo[]=[];
+  dispositivosall:Dispositivo[]=[];
   historicos:Historico[]=[];
   finalizarForm: FormGroup;
   filaEditada: number | null = null;
@@ -101,7 +102,7 @@ export class PrestamoComponent {
   ngOnInit():void {
     this.usuarioService.getUsuarioByUsername(environment.username).subscribe(
       usu=>{
-        this.idusu=usu.id_usuario;
+        this.idusu=usu.idUsuario;
       }
     )
     this.prestamoService.getPrestamos().subscribe(
@@ -126,6 +127,11 @@ export class PrestamoComponent {
     this.dispoService.listar().subscribe(
       dipo=>{
         this.dispositivos=dipo.filter(dispositivo => dispositivo.disponible);
+      }
+    )
+    this.dispoService.listar().subscribe(
+      dipo=>{
+        this.dispositivosall=dipo
       }
     )
   }
@@ -522,30 +528,62 @@ export class PrestamoComponent {
     this.registerFormIn.reset();
     console.log(this.dispositivos);
   }
-  edit(index: number) {
+  edit(index: number, prestamo: Prestamo) {
+    this.prestamo=prestamo;
     this.mostrarFormularioEditar = true;
     this.selectedPrestamo = this.prestamos[index];
     console.log(this.selectedPrestamo.fecha_finalizacion);
     console.log(index);
 
-    console.log(this.formatDate(this.selectedPrestamo.fecha_finalizacion));
+    // Verifica si fecha_finalizacion es una instancia de Date
+    const fechaFinalizacion = this.selectedPrestamo.fecha_finalizacion;
+    const fechaFinalizacionFormateada = this.formatDateForInput(fechaFinalizacion);
+    console.log(fechaFinalizacionFormateada);
     this.filaEditada = index;
+    const iddispo = this.selectedPrestamo.idDispositivo;
+    console.log("iddispositivo");
+    console.log(fechaFinalizacionFormateada);
     const prestamoSeleccionado = this.prestamos[index]; // Suponiendo que prestamos es el array de datos
+
+    console.log("Aquí se encuentra el préstamo seleccionado:");
     console.log(prestamoSeleccionado);
+    console.log("Aquí el id del dispositivo:");
+    console.log(prestamoSeleccionado.dispositivo?.idDispositivo);
+
     this.registerForm.patchValue({
-      beneficiario: prestamoSeleccionado.persona.id_persona,
-      dispositivo: prestamoSeleccionado.dispositivo.idDispositivo,
-      // zona_segura:prestamoSeleccionado.zona_segura.id_zona_segura,
-      estado_devolucion:prestamoSeleccionado.estado_devolucion,
-      fecha: this.formatDate(this.selectedPrestamo.fecha_finalizacion),
-      motivo: prestamoSeleccionado.motivo_prestamo,
-      finalizado: prestamoSeleccionado.finalizado,
-      // Ajusta el resto de los campos según sea necesario
+        beneficiario: prestamoSeleccionado.persona?.id_persona ?? '',
+        dispositivo: prestamoSeleccionado.dispositivo?.idDispositivo?? '',
+        fecha: fechaFinalizacionFormateada,
+        motivo:prestamoSeleccionado.motivo_prestamo,
+
+        // Ajusta los campos restantes según sea necesario
     });
-  }
-  formatDate(date: Date): string {
-    return this.datePipe.transform(date, 'yyyy-MM-dd') || '';
-  }
+}
+
+// Función para formatear la fecha en el formato requerido por datetime-local
+formatDateForInput(date: any): string {
+    // Verifica si el valor es una instancia de Date
+    if (!(date instanceof Date)) {
+        // Si es una cadena, intenta convertirla a Date
+        if (typeof date === 'string') {
+            date = new Date(date);
+        } else {
+            return ''; // Si no es una fecha válida, retorna una cadena vacía
+        }
+    }
+    
+    // Asegúrate de que la fecha sea válida
+    if (isNaN(date.getTime())) {
+        return ''; // Fecha no válida
+    }
+    
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
 
 
 
@@ -638,13 +676,19 @@ export class PrestamoComponent {
     prestamo.persona=personaa;
     let usuarioo:Usuario=new Usuario();
     // prestamo.usuario=usuarioo;
-
     prestamo.dispositivo.idDispositivo=formValues.dispositivo;
     prestamo.persona.id_persona=formValues.beneficiario;
-    prestamo.fecha_finalizacion=formValues.fecha;
+    prestamo.fecha_finalizacion=new Date(formValues.fecha);
+
+    console.log("aqui el tiempo nuevo de supone");
+    console.log(formValues.fecha);
+    console.log("aqui el tiempo nuevo de supone");
+    console.log(prestamo.fecha_finalizacion);
+
     prestamo.motivo_prestamo=formValues.motivo;
     prestamo.estado_devolucion=formValues.estado_devolucion;
     prestamo.finalizado=formValues.finalizado;
+    prestamo.fecha_prestamo=this.prestamo.fecha_prestamo
     // prestamo.usuario.id_usuario=this.idusu;
     this.prestamoService.editPrestamo(this.selectedPrestamo.id_prestamo,prestamo).subscribe({
       next:(userData)=>{
@@ -682,6 +726,18 @@ export class PrestamoComponent {
   cancelarEdicion() {
     this.filaEditada = null;
     this.mostrarFormularioEditar=false;
+    this.prestamo=new Prestamo();
+    this.registerForm.patchValue({
+      finalizado: '',
+      estado_devolucion: '',
+      beneficiario: '',
+      dispositivo: ''
+    });
+  
+    // Marca los controles como no tocados para evitar la validación inmediata
+    this.registerForm.markAsUntouched();
+    this.registerForm.updateValueAndValidity();
+
 
   }
   eliminarPrestamo(id: any): void {

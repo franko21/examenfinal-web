@@ -5,6 +5,8 @@ export class Persona {
     nombre:String;
     apellido:String;
     id_persona:number;
+    imagen:String;
+    descripcion:String;
     rol:Rol;
     fecha_registro:Date;
 }

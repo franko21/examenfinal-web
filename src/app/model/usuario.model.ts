@@ -2,7 +2,7 @@ import { Persona } from "./persona.model";
 import { Prestamo } from "./prestamo.model";
 
 export class Usuario {
-    id_usuario:number;
+    idUsuario:number;
     persona:Persona
     username:String;
     password:String;
