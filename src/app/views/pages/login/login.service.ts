@@ -22,9 +22,6 @@ export class LoginService {
 
     // Comprueba si hay un token en el sessionStorage al inicializar el servicio
     const token = sessionStorage.getItem("token");
-    const cedula = sessionStorage.getItem("cedula");
-    const nombre = sessionStorage.getItem("nombre");
-    const apellido = sessionStorage.getItem("apellido");
     const usuario = sessionStorage.getItem("usuario");
     if (token) {
         this.currentUserLoginOn.next(true);

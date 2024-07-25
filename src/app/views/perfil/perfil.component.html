@@ -1,3 +1,29 @@
+<c-toaster [placement]="position" class="p-3" position="fixed" style="position: fixed; top: 20px; right: 20px; z-index: 1050;">
+  <c-toast
+    [visible]="visible"
+    [class.success-toast]="toastType === 'success'"
+    [class.error-toast]="toastType === 'error'">
+    <c-toast-header
+      [class.success-toast-header]="toastType === 'success'"
+      [class.danger-toast-header]="toastType === 'error'">
+      <svg *ngIf="toastType === 'success'" cIcon name="cilCheck" class="icon-success"></svg>
+      <svg *ngIf="toastType === 'error'" cIcon name="cilXCircle" class="icon-danger"></svg>
+      <h5 [class.success-heading]="toastType === 'success'"
+          [class.error-heading]="toastType === 'error'">
+        {{ tituloMensaje }}
+      </h5>
+    </c-toast-header>
+    <c-toast-body
+      [class.success-toast-body]="toastType === 'success'"
+      [class.error-toast-body]="toastType === 'error'">
+      <p [class.success-toast-message]="toastType === 'success'"
+         [class.danger-toast-message]="toastType === 'error'">
+        {{ descripcionMensaje }}
+      </p>
+    </c-toast-body>
+  </c-toast>
+</c-toaster>
+
 <div class="text-center mb-4">
   <!-- Título fuera del card -->
   <h3 class="profile-title">{{titulo}}</h3>
@@ -240,6 +266,9 @@
       </div>
     </form>
   </div>
-  
-  
 </div>
+
+
+
+
+

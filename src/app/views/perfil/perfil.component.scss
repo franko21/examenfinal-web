@@ -94,3 +94,71 @@ img.rounded-circle {
   margin-bottom: 10px; /* Espacio debajo de cada línea de información */
   text-align: left; /* Asegura que el texto esté alineado a la izquierda */
 }
+
+.success-toast {
+  background-color: #f3f4f7; /* Color de fondo claro */
+  border: 1px solid #86c686; /* Borde verde más oscuro */
+  border-radius: 0.25rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.success-toast-header {
+  display: flex;
+  align-items: center;
+  background-color: #1b9e3e; /* Verde claro */
+  color: #f3f4f7; /* Texto blanco */
+  font-weight: bold;
+  border-bottom: 1px solid #86c686;
+  padding: 0.75rem;
+  border-top-left-radius: 0.25rem;
+  border-top-right-radius: 0.25rem;
+}
+
+.success-toast-body {
+  padding: 1rem;
+}
+
+.success-toast-message {
+  margin: 0;
+  color: #6b7785; /* Texto gris oscuro */
+  font-size: 18px;
+}
+
+.icon-success {
+  transform: scale(1.5); /* Tamaño del icono */
+  margin-right: 10px; /* Espacio entre el icono y el texto */
+}
+
+.error-toast {
+  background-color: #f3f4f7; /* Color de fondo claro */
+  border: 1px solid #e55353; /* Borde rojo oscuro */
+  border-radius: 0.25rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.danger-toast-header {
+  display: flex;
+  align-items: center;
+  background-color: #e55353; /* Rojo claro */
+  color: #f3f4f7; /* Texto blanco */
+  font-weight: bold;
+  border-bottom: 1px solid #e55353;
+  padding: 0.75rem;
+  border-top-left-radius: 0.25rem;
+  border-top-right-radius: 0.25rem;
+}
+
+.danger-toast-body {
+  padding: 1rem;
+}
+
+.danger-toast-message {
+  margin: 0;
+  color: #6b7785; /* Texto gris oscuro */
+  font-size: 18px;
+}
+
+.icon-danger {
+  transform: scale(1.5); /* Tamaño del icono */
+  margin-right: 10px; /* Espacio entre el icono y el texto */
+}

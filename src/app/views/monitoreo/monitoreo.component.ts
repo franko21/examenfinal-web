@@ -116,9 +116,7 @@ export class MonitoreoComponent implements OnInit, OnDestroy {
         // Otro procesamiento que necesites hacer con los estados ordenados
         this.asignarPosicion(this.estados);
       });
-    
   }
-  
 
   ngOnDestroy(): void {
     if (this.estadosSubscription) {

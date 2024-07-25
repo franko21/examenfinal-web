@@ -7,7 +7,11 @@ import {
   ButtonDirective,
   FormControlDirective,
   InputGroupComponent,
-  InputGroupTextDirective
+  InputGroupTextDirective,
+  ToastBodyComponent,
+  ToastComponent,
+  ToasterComponent,
+  ToastHeaderComponent
 } from "@coreui/angular";
 
 import { IconDirective, IconSetService } from "@coreui/icons-angular";
@@ -25,13 +29,32 @@ import { environment } from 'src/enviroments/environment';
     InputGroupTextDirective,
     FormsModule,
     NgIf,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ToasterComponent, ToastComponent, ToastHeaderComponent, ToastBodyComponent
   ],
   providers: [UsuarioService],
   templateUrl: './perfil.component.html',
   styleUrl: './perfil.component.scss'
 })
 export class PerfilComponent implements OnInit {
+  //configuracion de toaster:
+  visible = false;
+  toastType: 'success' | 'error' = 'success'; // Puede ser 'success' o 'error'
+  tituloMensaje = 'Titulo del Mensaje';
+  descripcionMensaje = 'Descripción del Mensaje';
+  position = 'top-right';
+  percentage = 0;
+
+  // Método para mostrar el toast con un tipo específico
+  showToast(type: 'success' | 'error', titulo: string, descripcion: string) {
+    this.toastType = type;
+    this.tituloMensaje = titulo;
+    this.descripcionMensaje = descripcion;
+    this.visible = true;
+    setTimeout(() => this.visible = false, 2000); // Ocultar el toast después de 3 segundos
+  }
+  /////
+
   isEditingProfile: boolean = false;
   titulo = 'Perfil de usuario';
   formUser: FormGroup;
@@ -98,9 +121,10 @@ export class PerfilComponent implements OnInit {
         next: (usuario) => {
           this.usuario = usuario;
           this.toggleEditProfile();
+          this.showToast('success', 'Actualización exitosa', 'El usuario fue actualizado con éxito');
         },
         error: (errorData) => {
-          console.error('Error al editar usuario:', errorData);
+          this.showToast('error', 'Error al actualizar', 'Hubo un error al actualizar el usuario');
         }
       });
     } else {
