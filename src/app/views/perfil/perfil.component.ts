@@ -120,6 +120,7 @@ export class PerfilComponent implements OnInit {
       this.usuarioService.updateUsuario(usuario, this.selectedImage).subscribe({
         next: (usuario) => {
           this.usuario = usuario;
+          sessionStorage.setItem('usuario', usuario.username);
           this.toggleEditProfile();
           this.showToast('success', 'Actualización exitosa', 'El usuario fue actualizado con éxito');
         },
