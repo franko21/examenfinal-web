@@ -5,9 +5,9 @@
 
 export const environment = {
   production: false,
-  websocketUrl: 'ws://localhost:8080/',
-  urlHost: 'http://localhost:8080/',
-  urlApi: 'http://localhost:8080/auth/v1/signin',
+  websocketUrl: 'ws://134.209.113.34:9094/',
+  urlHost: 'http://134.209.113.34:9094/',
+  urlApi: 'http://134.209.113.34:9094/auth/v1/signin',
   userId:1,
   islogged:false,
   username:'',
