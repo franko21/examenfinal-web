@@ -84,6 +84,8 @@ export class DispositivoComponent implements OnInit {
    public modelomod: Modelo = new Modelo();
    public zonamod: Zona_segura = new Zona_segura();
    public marcaselect: Marca | null = new Marca();
+   public marca: Marca = new Marca();
+   public modelo: Modelo = new Modelo();
    public titulo: string = "Dispositivos";
    dispositivos: Dispositivo[] = [];
    dispositivosfiltro: Dispositivo[] = [];
@@ -256,6 +258,13 @@ export class DispositivoComponent implements OnInit {
     this.listarmarcas();
     this.listarZonas();
   }
+
+  vincular() {
+    if (this.dispositivoSeleccionado?.modelo?.marca) {
+      this.marca = this.dispositivoSeleccionado?.modelo.marca;
+      this.modelo= this.dispositivoSeleccionado?.modelo;
+    }
+  }
   listardispo() {
     this.serdispo.listar().subscribe(
       dispositivos => {
@@ -341,6 +350,9 @@ export class DispositivoComponent implements OnInit {
   filtrarModelosPorMarcaid() {
     console.log("Modelos org antes del filtro:");
     console.log(this.modelos);
+    console.log("Modelo seleccionado");
+    console.log(this.modelomod.id_modelo);
+
     if (this.id_marca ) {
       this.modelosfiltro = this.modelos.filter(modelo => modelo.marca?.id_marca === this.id_marca);
       console.log("Id de marca");
@@ -477,6 +489,7 @@ isNombreInvalid(form: NgForm): boolean {
     console.log(this.modeloselet);
     console.log(this.marcaselect);
     console.log(this.dispositivo);
+    console.log(this.modelomod);
     if (this.validateForm()) {
       //////////
     this.serdispo.crear(this.dispositivo).subscribe(
@@ -534,22 +547,23 @@ isNombreInvalid(form: NgForm): boolean {
 
 
   asignacatmar() {
-    if (this.dispositivo && this.categoriaselet&&this.modeloselet&&this.dispositivoSeleccionado&&this.zonaSeleccionado) {
+    if (this.dispositivo && this.categoriaselet&&this.dispositivoSeleccionado&&this.zonaSeleccionado) {
       if(this.titulo=="Ingresar dispostivo"){
       this.dispositivo=this.dispositivoSeleccionado;
       this.dispositivo.categoria = this.categoriaselet;
-      this.dispositivo.modelo = this.modeloselet;
+      //this.dispositivo.modelo = this.modelo;
       this.dispositivo.zonaSegura=this.zonaSeleccionado;
       this.dispositivo.nombre = this.nombredispo.trim();
       this.dispositivo.disponible=this.disponible;
       this.dispositivo.vinculado=true;
-
-      }else{
+      }else{  
+      console.log("se supone que se esta modificando")  
+      console.log("aqui el nuevo modelo") 
+      console.log(this.modelomod.nombre) 
       this.dispositivo.categoria = this.categoriamod;
       this.dispositivo.modelo = this.modelomod;
       this.dispositivo.zonaSegura= this.zonamod;
       this.dispositivo.nombre= this.dispositivo.nombre?.trim();
-
       }
 
     }
@@ -566,7 +580,7 @@ isNombreInvalid(form: NgForm): boolean {
         this.id_marca=this.dispositivo.modelo?.marca?.id_marca
       }
       if (this.dispositivo.modelo) {
-        this.modelomod = this.dispositivo.modelo;
+       this.modelomod = this.dispositivo.modelo;
       }
     }
     console.log(this.categoriaselet);
@@ -608,12 +622,15 @@ isNombreInvalid(form: NgForm): boolean {
   this.dispositivo = new Dispositivo();
   this.categoriaselet= new Categoria();
   this.modeloselet =new Modelo();
+  this.marca=new Marca();
+  this.modelo=new Modelo();
   this.modelomod=new Modelo();
   this.categoriamod=new Categoria();
   this.modelosfiltro= [];
   this.nombredispo="";
   this.id_marca=0;
   this.disponible=false;
+
 
   }
   cancelar(): void{
@@ -641,7 +658,9 @@ isNombreInvalid(form: NgForm): boolean {
     validateForm(): boolean {
       // Verificar si el campo 'nombre' está vacío o contiene solo espacios en blanco
       if (!this.dispositivo.nombre || this.dispositivo.nombre.trim() === "") {
-        Swal.fire('¡Error!', 'Por favor, no ingrese espacios vacíos en el nombre', 'error');
+        Swal.fire('¡Error!', 'Por favor, no ingrese espacios vacíos en el nombrezz', 'error');
+        console.log("aqui el nombre")
+        console.log(this.dispositivo.nombre)
         return false;
       }
       return true;

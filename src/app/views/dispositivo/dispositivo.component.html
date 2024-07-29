@@ -82,68 +82,55 @@
             </button>
           </div>
           
-          <!-- AQUI INICIAN LOS FORMULARIOS DE INGRESO Y MODIFICACION SEGUN CORRESPONDA-->
+          <!-- AQUI INICIA EL FORMULARIO DE CREACION DE DISPOSITIVO-->
           <div *ngIf="!showTablec">
             <form #myForm="ngForm" (ngSubmit)="crearDispositivo()">
               <c-input-group class="mb-3">
                 <span cInputGroupText>
-                <svg cIcon name="cilItalic"></svg>
-              </span>
-              <select name="Categoria" id="Categoria" class="form-control" [(ngModel)]="categoriaselet" required>
-                <option value="null" disabled selected>Seleccione la Categoría</option>
-                <option *ngFor="let cate of categorias" [ngValue]="cate">
-                  {{ cate.nombre }}
-                </option>
-              </select>
-              <div *ngIf="myForm.controls['Categoria']?.invalid && myForm.controls['Categoria']?.touched" class="invalid-feedback">
-                La Categoria es obligatoria.
-              </div>
-            </c-input-group>
-
+                  <svg cIcon name="cil-list-numbered"></svg>
+                </span>
+                <select name="numero_serie" id="numero_serie" class="form-control" (change)="vincular()"  [(ngModel)]="dispositivoSeleccionado" required>
+                  <option value="null" disabled selected>Seleccione el numero de serie</option>
+                  <option *ngFor="let dispo of dispositivosfiltro" [ngValue]="dispo">
+                    {{ dispo.numSerie }}
+                  </option>
+                </select>
+                <div *ngIf="myForm.controls['numero_serie']?.invalid && myForm.controls['numero_serie']?.touched" class="invalid-feedback">
+                  El número de serie es obligatorio.
+                </div>
+              </c-input-group>
+              <c-input-group class="mb-3">
+                <span cInputGroupText>
+                  <svg cIcon name="cil-file"></svg>
+                </span>
+                <input id="marca" class="form-control"type="text" placeholder="Marca" [(ngModel)]="marca.nombre"name="marca" readonly/>
+                <div *ngIf="myForm.controls['marca']?.invalid && myForm.controls['marca']?.touched" class="invalid-feedback">
+                  La marca es obligatoria.
+                </div>
+              </c-input-group>
+              <c-input-group class="mb-3">
+                <span cInputGroupText>
+                  <svg cIcon name="cil-file"></svg>
+                </span>
+                <input id="modelo" class="form-control"type="text" placeholder="Modelo" [(ngModel)]="modelo.nombre"name="modelo" readonly/>
+                <div *ngIf="myForm.controls['modelo']?.invalid && myForm.controls['modelo']?.touched" class="invalid-feedback">
+                  El modelo es obligatorio.
+                </div>
+              </c-input-group>
             <c-input-group class="mb-3">
               <span cInputGroupText>
-                <svg cIcon name="cil-tags"></svg>
-              </span>
-              <select class="form-control" name="Marcas" id="Marcas" [(ngModel)]="marcaselect" required (change)="filtrarModelosPorMarca()">
-                <option value="null" disabled selected>Seleccione la Marca</option>
-                <option *ngFor="let marca of marcas" [ngValue]="marca">
-                  {{ marca.nombre }}
-                </option>
-              </select>
-              <div *ngIf="myForm.controls['Marcas']?.invalid && myForm.controls['Marcas']?.touched" class="invalid-feedback">
-                La Marca es obligatoria.
-              </div>
-            </c-input-group>
-
-            <c-input-group class="mb-3">
-              <span cInputGroupText>
-                <svg cIcon name="cilItalic"></svg>
-              </span>
-              <select name="Modelo" id="Modelo" class="form-control" [(ngModel)]="modeloselet" required>
-                <option value="null" disabled selected>Seleccione el Modelo</option>
-                <option *ngFor="let modelo of modelosfiltro" [ngValue]="modelo">
-                  {{ modelo.nombre }}
-                </option>
-              </select>
-              <div *ngIf="myForm.controls['Modelo']?.invalid && myForm.controls['Modelo']?.touched" class="invalid-feedback">
-                El Modelo es obligatorio.
-              </div>
-            </c-input-group>
-
-            <c-input-group class="mb-3">
-              <span cInputGroupText>
-                <svg cIcon name="cil-list-numbered"></svg>
-              </span>
-              <select name="numero_serie" id="numero_serie" class="form-control" [(ngModel)]="dispositivoSeleccionado" required>
-                <option value="null" disabled selected>Seleccione el numero de serie</option>
-                <option *ngFor="let dispo of dispositivosfiltro" [ngValue]="dispo">
-                  {{ dispo.numSerie }}
-                </option>
-              </select>
-              <div *ngIf="myForm.controls['numero_serie']?.invalid && myForm.controls['numero_serie']?.touched" class="invalid-feedback">
-                El número de serie es obligatorio.
-              </div>
-            </c-input-group>
+              <svg cIcon name="cilItalic"></svg>
+            </span>
+            <select name="Categoria" id="Categoria" class="form-control" [(ngModel)]="categoriaselet" required>
+              <option value="null" disabled selected>Seleccione la Categoría</option>
+              <option *ngFor="let cate of categorias" [ngValue]="cate">
+                {{ cate.nombre }}
+              </option>
+            </select>
+            <div *ngIf="myForm.controls['Categoria']?.invalid && myForm.controls['Categoria']?.touched" class="invalid-feedback">
+              La Categoria es obligatoria.
+            </div>
+          </c-input-group>
             <c-input-group class="mb-3">
               <span cInputGroupText>
                 <svg cIcon name="cil-location-pin"></svg>
@@ -205,24 +192,23 @@
             <span cInputGroupText>
               <svg cIcon name="cil-tags"></svg>
             </span>
-            <select class="form-control" name="Marcas" id="Marcas" [(ngModel)]="id_marca" (change)="filtrarModelosPorMarcaid()">
-              <option value="null" disabled selected>Seleccione la Marca</option>
-              <option *ngFor="let marca of marcas" [ngValue]="marca.id_marca" >
-                {{ marca.nombre }}
-              </option>
-            </select>
+            <input
+              id="marcas"
+              class="form-control"
+              type="text"
+              placeholder="Seleccione la Marca"
+              [value]="(modelomod.marca?.nombre)"
+              readonly
+            />
           </c-input-group>
           <c-input-group class="mb-3">
             <span cInputGroupText>
-              <svg cIcon name="cilItalic"></svg>
+              <svg cIcon name="cil-file"></svg>
             </span>
-            <select name="Modelo" id="Modelo" class="form-control" [(ngModel)]="modelomod.id_modelo">
-              <option  [ngValue]="null" disabled selected>Seleccione el Modelo</option>
-              <option *ngFor="let modelo of modelosfiltro" [ngValue]="modelo.id_modelo">
-                {{ modelo.nombre }}
-              </option>
-            </select>
-
+            <input id="modelo" class="form-control"type="text"placeholder="Seleccione el Modelo"[value]="(modelomod.nombre)"readonly />
+            <div *ngIf="myForm.controls['Modelo']?.invalid && myForm.controls['Modelo']?.touched" class="invalid-feedback">
+              El Modelo es obligatorio.
+            </div>
           </c-input-group>
           <c-input-group class="mb-3">
             <span cInputGroupText>
@@ -330,5 +316,3 @@
     </c-toast-body>
   </c-toast>
 </c-toaster>
-
-
