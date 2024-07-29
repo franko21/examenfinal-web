@@ -48,8 +48,11 @@
           </span>
           <input formControlName="cedula" cFormControl placeholder="Cedula" required
           />
-          <div *ngIf="registerFormIn.controls['cedula']?.invalid && registerFormIn.controls['cedula']?.touched" class="invalid-feedback">
-            La Cedula es obligatoria.
+          <div *ngIf="cedula?.invalid && cedula?.touched" class="invalid-feedback">
+            <div *ngIf="cedula?.errors?.['required']">La Cédula es obligatoria.</div>
+            <div *ngIf="cedula?.errors?.['pattern']">La Cédula solo puede contener números.</div>
+            <div *ngIf="cedula?.errors?.['minlength']">La Cédula debe tener 10 números.</div>
+            <div *ngIf="cedula?.errors?.['maxlength']">La Cédula debe tener 10 números.</div>
           </div>
         </c-input-group>
         <c-input-group class="mb-3">
@@ -58,8 +61,9 @@
           </span>
           <input formControlName="nombre" cFormControl placeholder="Nombre" required
           />
-          <div *ngIf="registerFormIn.controls['nombre']?.invalid && registerFormIn.controls['nombre']?.touched" class="invalid-feedback">
-            El Nombre es obligatorio.
+          <div *ngIf="nombre?.invalid && nombre?.touched" class="invalid-feedback">
+            <div *ngIf="nombre?.errors?.['required']">El Nombre es obligatorio.</div>
+            <div *ngIf="nombre?.errors?.['pattern']">El Nombre solo puede contener letras.</div>
           </div>
         </c-input-group>
         <c-input-group class="mb-3">
@@ -68,8 +72,9 @@
           </span>
           <input formControlName="apellido" cFormControl placeholder="Apellido" required
           />
-          <div *ngIf="registerFormIn.controls['apellido']?.invalid && registerFormIn.controls['apellido']?.touched" class="invalid-feedback">
-            El Apellido es obligatorio.
+          <div *ngIf="apellido?.invalid && apellido?.touched" class="invalid-feedback">
+            <div *ngIf="apellido?.errors?.['required']">El Apellido es obligatorio.</div>
+            <div *ngIf="apellido?.errors?.['pattern']">El Apellido solo puede contener letras.</div>
           </div>
         </c-input-group>
         <c-input-group class="mb-3">
@@ -85,6 +90,17 @@
           </select>
           <div *ngIf="registerFormIn.controls['rol']?.invalid && registerFormIn.controls['rol']?.touched" class="invalid-feedback">
             El Rol es obligatorio.
+          </div>
+        </c-input-group>
+        <c-input-group class="mb-3">
+          <span cInputGroupText>
+            <svg cIcon name="cil-paragraph"></svg>
+          </span>
+          <input formControlName="descripcion" cFormControl placeholder="Descripcion" required
+          />
+          <div *ngIf="descripcion?.invalid && descripcion?.touched" class="invalid-feedback">
+            <div *ngIf="descripcion?.errors?.['required']">La descripción es obligatorio.</div>
+            <div *ngIf="descripcion?.errors?.['pattern']">La descripción solo puede contener letras y numeros.</div>
           </div>
         </c-input-group>
         <div class="d-grid">
@@ -141,10 +157,12 @@
           <span cInputGroupText>
             <svg cIcon name="cilCreditCard"></svg>
           </span>
-              <input formControlName="cedula" cFormControl placeholder="Cedula" required
-              />
-              <div *ngIf="registerForm.controls['cedula']?.invalid && registerForm.controls['cedula']?.touched" class="invalid-feedback">
-                La Cedula es obligatoria.
+              <input formControlName="cedula" cFormControl placeholder="Cedula" required/>
+              <div *ngIf="cedulam?.invalid && cedulam?.touched" class="invalid-feedback">
+                <div *ngIf="cedulam?.errors?.['required']">La Cédula es obligatoria.</div>
+                <div *ngIf="cedulam?.errors?.['pattern']">La Cédula solo puede contener números.</div>
+                <div *ngIf="cedulam?.errors?.['minlength']">La Cédula debe tener 10 números.</div>
+                <div *ngIf="cedulam?.errors?.['maxlength']">La Cédula debe tener 10 números.</div>
               </div>
             </c-input-group>
             <c-input-group class="mb-3">
@@ -153,8 +171,9 @@
           </span>
               <input formControlName="nombre" cFormControl placeholder="Nombre" required
               />
-              <div *ngIf="registerForm.controls['nombre']?.invalid && registerForm.controls['nombre']?.touched" class="invalid-feedback">
-                El Nombre es obligatorio.
+              <div *ngIf="nombrem?.invalid && nombrem?.touched" class="invalid-feedback">
+                <div *ngIf="nombrem?.errors?.['required']">El Nombre es obligatorio.</div>
+                <div *ngIf="nombrem?.errors?.['pattern']">El Nombre solo puede contener letras.</div>
               </div>
             </c-input-group>
             <c-input-group class="mb-3">
@@ -163,8 +182,9 @@
           </span>
               <input formControlName="apellido" cFormControl placeholder="Apellido" required
               />
-              <div *ngIf="registerForm.controls['apellido']?.invalid && registerForm.controls['apellido']?.touched" class="invalid-feedback">
-                El Apellido es obligatorio.
+              <div *ngIf="apellidom?.invalid && apellidom?.touched" class="invalid-feedback">
+                <div *ngIf="apellidom?.errors?.['required']">El Apellido es obligatorio.</div>
+                <div *ngIf="apellidom?.errors?.['pattern']">El Apellido solo puede contener letras.</div>
               </div>
             </c-input-group>
             <c-input-group class="mb-3">
@@ -178,8 +198,19 @@
                   {{ rol.rol }}
                 </option>
               </select>
-              <div *ngIf="registerForm.controls['rol']?.invalid && registerForm.controls['rol']?.touched" class="invalid-feedback">
+              <div *ngIf="registerFormIn.controls['rol']?.invalid && registerFormIn.controls['rol']?.touched" class="invalid-feedback">
                 El Rol es obligatorio.
+              </div>
+            </c-input-group>
+            <c-input-group class="mb-3">
+              <span cInputGroupText>
+                <svg cIcon name="cil-paragraph"></svg>
+              </span>
+              <input formControlName="descripcion" cFormControl placeholder="Descripcion" required
+              />
+              <div *ngIf="descripcionm?.invalid && descripcionm?.touched" class="invalid-feedback">
+                <div *ngIf="descripcionm?.errors?.['required']">La descripción es obligatorio.</div>
+                <div *ngIf="descripcionm?.errors?.['pattern']">La descripción solo puede contener letras y numeros.</div>
               </div>
             </c-input-group>
             <div class="d-grid">

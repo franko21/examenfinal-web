@@ -103,22 +103,119 @@ export class ClientesComponent {
   onTimerChange2($event: number) {
     this.percentage2 = $event * 25;
   }
-  constructor(private datePipe:DatePipe, private rolService:RolService, private personaService:PersonaService,private fb:FormBuilder,private iconSet: IconSetService) {
+  constructor(
+    private datePipe: DatePipe,
+    private rolService: RolService,
+    private personaService: PersonaService,
+    private fb: FormBuilder,
+    private iconSet: IconSetService
+  ) {
     this.registerFormIn = this.fb.group({
-      cedula: ['',[Validators.required, Validators.pattern('^[0-9]*$')]],
-      nombre: ['',Validators.required],
-      apellido: ['',Validators.required],
-      rol: ['',Validators.required]
+      cedula: ['', [
+        Validators.required,
+        Validators.pattern('^[0-9]*$'),
+        Validators.minLength(10),
+        Validators.maxLength(10)
+      ]],
+      nombre: ['', [
+        Validators.required,
+        Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1\s]+$')
+      ]],
+      apellido: ['', [
+        Validators.required,
+        Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1\s]+$')
+      ]],
+      rol: ['', Validators.required],
+      descripcion: ['', [
+        Validators.required,
+        Validators.pattern('^[a-zA-Z0-9]*$') // Permite solo letras y números
+      ]]
     });
+
     this.registerForm = this.fb.group({
-      cedula: ['',Validators.required],
-      nombre: ['',Validators.required],
-      apellido: ['',Validators.required],
-      rol: ['',Validators.required]
+      cedula: ['', [
+        Validators.required,
+        Validators.pattern('^[0-9]*$'),
+        Validators.minLength(10),
+        Validators.maxLength(10)
+      ]],
+      nombre: ['', [
+        Validators.required,
+        Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1\s]+$')
+      ]],
+      apellido: ['', [
+        Validators.required,
+        Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1\s]+$')
+      ]],
+      rol: ['', Validators.required],
+      descripcion: ['', [
+        Validators.required,
+        Validators.pattern('^[a-zA-Z0-9]*$') // Permite solo letras y números
+      ]]
     });
+
     // @ts-ignore
     this.iconSet.icons = icons;
   }
+  get cedula() {
+    return this.registerFormIn.get('cedula');
+  }
+  get nombre() {
+    return this.registerFormIn.get('nombre');
+  }
+  get apellido() {
+    return this.registerFormIn.get('apellido');
+  }
+  get descripcion() {
+    return this.registerFormIn.get('descripcion');
+  }
+  get cedulam() {
+    return this.registerForm.get('cedula');
+  }
+  get nombrem() {
+    return this.registerForm.get('nombre');
+  }
+  get apellidom() {
+    return this.registerForm.get('apellido');
+  }
+  get descripcionm() {
+    return this.registerForm.get('descripcion');
+  }
+
+  public cedulaRepetida(cedula: String): boolean {
+    // Verifica si existe alguna persona con la cédula dada
+    const existe = this.personas.some(persona => persona.cedula === cedula);
+    if(existe){
+       Swal.fire({
+           icon: 'error',
+           title: 'La cedula ya se encuentra registrada',
+           text: 'Error al ingresar los datos.',
+           confirmButtonColor: '#3085d6',
+           confirmButtonText: 'OK'
+         });
+    }
+    return !existe;
+  }
+
+  
+  public cedulaRepetidam(cedula: string, cedulaIgnorada: string): boolean {
+    // Verifica si existe alguna persona con la cédula dada, excluyendo la cédula ignorada
+    const existe = this.personas.some(persona => persona.cedula === cedula && persona.cedula !== cedulaIgnorada);
+  
+    if (existe) {
+      Swal.fire({
+        icon: 'error',
+        title: 'La cédula ya se encuentra registrada',
+        text: 'Error al ingresar los datos.',
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'OK'
+      });
+    }
+  
+    return !existe;
+  }
+
+
   ngOnInit():void {
     // this.rolService.getRoles().subscribe(
     //   rol=>{
@@ -157,6 +254,21 @@ export class ClientesComponent {
 
   ingresarPersona(){
     this.mostrarFormularioIngreso = !this.mostrarFormularioIngreso;
+    this.registerFormIn.patchValue({
+      descripcion: '',
+      cedula: '',
+      nombre: '',
+      apellido: '',
+      rol: ''
+    });
+    // Marca los controles como no tocados para evitar la validación inmediata
+    this.registerFormIn.markAsUntouched();
+    this.registerFormIn.updateValueAndValidity();
+
+
+
+
+
   }
   edit(index: number) {
     this.selectedPersona = this.personas[index];
@@ -168,6 +280,7 @@ export class ClientesComponent {
       nombre: personaSeleccionada.nombre,
       apellido: personaSeleccionada.apellido,
       rol: personaSeleccionada.rol.id_rol,
+      descripcion:personaSeleccionada.descripcion
       // Ajusta el resto de los campos según sea necesario
     });
   }
@@ -182,7 +295,7 @@ export class ClientesComponent {
   }
 
   onSubmit(){
-    if(this.registerForm.valid) {
+    if(this.registerForm.valid&&this.cedulaRepetidam(this.registerForm.value.cedula,this.selectedPersona.cedula)) {
     const formValues=this.registerForm.value;
     let persona:Persona=new Persona();
     const fecha=new Date();
@@ -194,6 +307,7 @@ export class ClientesComponent {
     persona.apellido=formValues.apellido;
     persona.rol.id_rol=formValues.rol;
     persona.fecha_registro=fecha;
+    persona.descripcion=formValues.descripcion;
 
     this.personaService.editPersona(this.selectedPersona.id_persona,persona).subscribe({
       next:(userData)=>{
@@ -241,18 +355,20 @@ export class ClientesComponent {
     }
   }
   onSubmit2(){
-    if(this.registerFormIn.valid) {
+    if(this.registerFormIn.valid&&this.cedulaRepetida(this.registerFormIn.value.cedula)) {
       const fecha = new Date();
       const formValues = this.registerFormIn.value;
       let persona: Persona = new Persona();
       let roll: Rol = new Rol();
+      
       persona.rol = roll;
-
+      persona.descripcion=formValues.descripcion;
       persona.cedula = formValues.cedula;
       persona.nombre = formValues.nombre;
       persona.apellido = formValues.apellido;
       persona.rol.id_rol = formValues.rol;
       persona.fecha_registro = fecha;
+      this.cedulaRepetida(persona.cedula);
       this.personaService.crearPersona(persona, formValues.rol).subscribe({
         next: (userData) => {
           console.log('Datos de persona recibidos:', userData);
@@ -329,6 +445,18 @@ export class ClientesComponent {
   cancelarEdicion() {
     this.filaEditada = null;
     this.mostrarFormularioEditar=false;
+    this.registerForm.patchValue({
+      descripcion: '',
+      cedula: '',
+      nombre: '',
+      apellido: '',
+      rol: ''
+    });
+    // Marca los controles como no tocados para evitar la validación inmediata
+    this.registerForm.markAsUntouched();
+    this.registerForm.updateValueAndValidity();
+
+
   }
 
   eliminarPersona(id: any): void {
