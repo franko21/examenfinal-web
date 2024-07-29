@@ -100,7 +100,7 @@ export class PrestamoComponent {
   fechaFin: string = '';
 
   ngOnInit():void {
-    this.usuarioService.getUsuarioByUsername(environment.username).subscribe(
+    this.usuarioService.getUsuarioByUsername(sessionStorage.getItem("usuario")).subscribe(
       usu=>{
         this.idusu=usu.idUsuario;
       }
