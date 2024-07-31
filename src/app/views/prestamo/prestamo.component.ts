@@ -80,6 +80,8 @@ export class PrestamoComponent {
   registerForm: FormGroup;
   registerFormIn: FormGroup;
   usuario:Usuario;
+  usuarioo:Usuario=new Usuario();
+
   hoy: Date = new Date();
   idusu:number;
   p: number = 1; // Página actual para la paginación
@@ -100,11 +102,23 @@ export class PrestamoComponent {
   fechaFin: string = '';
 
   ngOnInit():void {
-    this.usuarioService.getUsuarioByUsername(sessionStorage.getItem("usuario")).subscribe(
-      usu=>{
-        this.idusu=usu.idUsuario;
+    // this.usuarioService.getUsuarioByUsername(sessionStorage.getItem("usuario")).subscribe(
+    //   usu=>{
+    //     this.idusu=usu.idUsuario;
+    //   }
+    // )
+    const username = sessionStorage.getItem('usuario');
+    this.usuarioService.getUsuarioByUsername(username).subscribe(
+      (usuario) => {
+        this.usuarioo = usuario;
+        console.log(username);
+        this.idusu=this.usuarioo.idUsuario;
+        console.log(this.usuarioo.idUsuario);
+      },
+      (errorData) => {
+        console.error('Error al obtener usuario:', errorData);
       }
-    )
+    );
     this.prestamoService.getPrestamos().subscribe(
       prestamo => {
         this.prestamos = prestamo.sort((a, b) => {
@@ -571,12 +585,12 @@ formatDateForInput(date: any): string {
             return ''; // Si no es una fecha válida, retorna una cadena vacía
         }
     }
-    
+
     // Asegúrate de que la fecha sea válida
     if (isNaN(date.getTime())) {
         return ''; // Fecha no válida
     }
-    
+
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
@@ -596,16 +610,15 @@ formatDateForInput(date: any): string {
       let prestamo:Prestamo=new Prestamo();
       let dispositivoo:Dispositivo=new Dispositivo();
       prestamo.dispositivo=dispositivoo;
+      let usuarioo:Usuario=new Usuario();
+      prestamo.usuario=usuarioo;
       let personaa:Persona=new Persona();
       prestamo.persona=personaa;
-      let usuarioo:Usuario=new Usuario();
-      // prestamo.usuario=usuarioo;
-
       prestamo.dispositivo.idDispositivo=formValues.dispositivo;
       prestamo.persona.id_persona=formValues.beneficiario;
       prestamo.fecha_finalizacion=new Date(formValues.fecha);
       prestamo.motivo_prestamo=formValues.motivo;
-      // prestamo.usuario.id_usuario=this.idusu;
+      prestamo.usuario.idUsuario=this.idusu;
       prestamo.fecha_prestamo=fecha;
       //prestamo.usuario = new Usuario();
       this.prestamoService.crearPrestamo(prestamo).subscribe({
@@ -734,7 +747,7 @@ formatDateForInput(date: any): string {
       beneficiario: '',
       dispositivo: ''
     });
-  
+
     // Marca los controles como no tocados para evitar la validación inmediata
     this.registerForm.markAsUntouched();
     this.registerForm.updateValueAndValidity();
