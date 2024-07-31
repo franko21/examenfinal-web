@@ -607,6 +607,7 @@ formatDateForInput(date: any): string {
       prestamo.motivo_prestamo=formValues.motivo;
       // prestamo.usuario.id_usuario=this.idusu;
       prestamo.fecha_prestamo=fecha;
+      prestamo.usuario = new Usuario();
       this.prestamoService.crearPrestamo(prestamo).subscribe({
         next:(userData)=>{
           console.log('Datos de prestamo recibidos:', userData);
