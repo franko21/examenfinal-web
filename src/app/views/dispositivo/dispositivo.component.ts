@@ -124,10 +124,10 @@ export class DispositivoComponent implements OnInit {
     const doc = new jsPDF();
   
     // Encabezado
-    const imageWidth = 90;  
+    const imageWidth = 110;  
     const imageHeight = 40;  
-    const imageURL = '../../../assets/images/jedanklogofondoo.jpg';  // Ruta de tu imagen
-    doc.addImage(imageURL, 'JPEG', 20, 8, imageWidth, imageHeight);
+    const imageURL = '../../../assets/images/jedanlogofondo.png';  // Ruta de tu imagen
+    doc.addImage(imageURL, 'PNG', 15, 8, imageWidth, imageHeight);
   
     // Título de la tabla debajo de la imagen
     const titleY = 15 + imageHeight + 5; // Ajusta la posición Y para que esté debajo de la imagen con un pequeño margen

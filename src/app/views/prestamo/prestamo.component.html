@@ -123,66 +123,82 @@
           </div>
         </div>
       </div>
-
-      <table class="table table-bordered table-striped" >
-        <thead>
-        <tr>
-          <th>Beneficiario</th>
-          <th>Dispositivo</th>
-          <th>Fecha Prestamo</th>
-          <th>Fecha Devolucion</th>
-          <th>Tiempo Restante</th>
-          <th>Finalizado</th>
-          <th>Finalizar</th>
-          <th>Editar</th>
-          <th>Eliminar</th>
-          <th>Historico</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr *ngFor="let prestamo of filteredPrestamos()  | paginate: { itemsPerPage: 5, currentPage: p }; let i = index">
-          <td><div>{{ prestamo.persona?.nombre}} {{ prestamo.persona?.apellido }}  </div>
-             <div class="small text-body-secondary text-nowrap">
-               <span>{{ prestamo.persona?.cedula }} </span></div>
-          </td>
-          <td><div>{{ prestamo.dispositivo?.nombre }} {{ prestamo.dispositivo?.modelo?.marca?.nombre}}</div>
-            <div class="small text-body-secondary text-nowrap"><span>{{ prestamo.dispositivo?.numSerie }} {{ prestamo.dispositivo?.modelo?.nombre}}</span></div>
-            </td>
-          <td>
-            <div>{{ prestamo.fecha_prestamo ? prestamo.fecha_prestamo.toString().split("T")[0]  : 'NA' }}</div>
-            <div class="small text-body-secondary text-nowrap"><span>{{ prestamo.fecha_prestamo ? formatDate2(prestamo.fecha_prestamo, 'HH:mm') : 'NA' }}</span></div>
-          </td>
-          <td>
-            <div>{{ prestamo.fecha_finalizacion ? prestamo.fecha_finalizacion.toString().split("T")[0]: 'NA' }}</div>
-            <div class="small text-body-secondary text-nowrap"><span>{{ prestamo.fecha_finalizacion ? formatDate2(prestamo.fecha_finalizacion, 'HH:mm') : 'NA' }}</span></div>
-          </td>
-          <td>
-            <div [ngClass]="{'text-danger': calcularTiempoRestante(prestamo) === 'Caducado'}">
-              {{ calcularTiempoRestante(prestamo) }}
-            </div>
-          </td>
-          <td>
-            <div class="fw-semibold text-nowrap" [ngStyle]="{ 'color': prestamo.finalizado ? 'green' : 'red', 'font-weight': prestamo.finalizado ? 'bold' : 'normal' }">
-              {{ prestamo.finalizado? 'Finalizado' : 'Prestado' }}
-            </div>
-          <td>
-            <button type="button" (click)="toggleLiveDemo2(i)" class="btn btn-success" [disabled]="prestamo.finalizado">
-              <svg cIcon name="cilCheck" size="lg"></svg>
-            </button>
-          </td>
-         <td>
-            <button type="button" name="button"  (click)="edit(i, prestamo)"  class="btn btn-primary"><svg cIcon name="cilPencil" size="lg"></svg></button>
-          </td>
-          <td>
-            <button type="button" (click)="eliminarPrestamo(prestamo.id_prestamo)" class="btn btn-danger"><svg cIcon name="cilTrash" size="lg"></svg></button>
-          </td>
-          <td>
-            <button type="button" (click)="listarhistoalertas(prestamo) "class="btn btn-secondary" ><svg cIcon name="cil-print"></svg></button>
-          </td>
-        </tr>
-
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped w-100">
+          <thead>
+            <tr>
+              <th>Beneficiario</th>
+              <th>Dispositivo</th>
+              <th>Fecha Prestamo</th>
+              <th>Fecha Devolucion</th>
+              <th>Tiempo Restante</th>
+              <th>Finalizado</th>
+              <th>Finalizar</th>
+              <th>Editar</th>
+              <th>Eliminar</th>
+              <th>Historico</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let prestamo of filteredPrestamos() | paginate: { itemsPerPage: 5, currentPage: p }; let i = index">
+              <td>
+                <div>{{ prestamo.persona?.nombre}} {{ prestamo.persona?.apellido }}</div>
+                <div class="small text-body-secondary text-nowrap">
+                  <span>{{ prestamo.persona?.cedula }}</span>
+                </div>
+              </td>
+              <td>
+                <div>{{ prestamo.dispositivo?.nombre }} {{ prestamo.dispositivo?.modelo?.marca?.nombre}}</div>
+                <div class="small text-body-secondary text-nowrap">
+                  <span>{{ prestamo.dispositivo?.numSerie }} {{ prestamo.dispositivo?.modelo?.nombre}}</span>
+                </div>
+              </td>
+              <td>
+                <div>{{ prestamo.fecha_prestamo ? prestamo.fecha_prestamo.toString().split("T")[0] : 'NA' }}</div>
+                <div class="small text-body-secondary text-nowrap">
+                  <span>{{ prestamo.fecha_prestamo ? formatDate2(prestamo.fecha_prestamo, 'HH:mm') : 'NA' }}</span>
+                </div>
+              </td>
+              <td>
+                <div>{{ prestamo.fecha_finalizacion ? prestamo.fecha_finalizacion.toString().split("T")[0] : 'NA' }}</div>
+                <div class="small text-body-secondary text-nowrap">
+                  <span>{{ prestamo.fecha_finalizacion ? formatDate2(prestamo.fecha_finalizacion, 'HH:mm') : 'NA' }}</span>
+                </div>
+              </td>
+              <td>
+                <div [ngClass]="{'text-danger': calcularTiempoRestante(prestamo) === 'Caducado'}">
+                  {{ calcularTiempoRestante(prestamo) }}
+                </div>
+              </td>
+              <td>
+                <div class="fw-semibold text-nowrap" [ngStyle]="{ 'color': prestamo.finalizado ? 'green' : 'red', 'font-weight': prestamo.finalizado ? 'bold' : 'normal' }">
+                  {{ prestamo.finalizado ? 'Finalizado' : 'Prestado' }}
+                </div>
+              </td>
+              <td>
+                <button type="button" (click)="toggleLiveDemo2(i)" class="btn btn-success" [disabled]="prestamo.finalizado">
+                  <svg cIcon name="cilCheck" size="lg"></svg>
+                </button>
+              </td>
+              <td>
+                <button type="button" name="button" (click)="edit(i, prestamo)" class="btn btn-primary" [disabled]="prestamo.finalizado">
+                  <svg cIcon name="cilPencil" size="lg"></svg>
+                </button>
+              </td>
+              <td>
+                <button type="button" (click)="eliminarPrestamo(prestamo.id_prestamo)" class="btn btn-danger">
+                  <svg cIcon name="cilTrash" size="lg"></svg>
+                </button>
+              </td>
+              <td>
+                <button type="button" (click)="listarhistoalertas(prestamo)" class="btn btn-secondary">
+                  <svg cIcon name="cil-print"></svg>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>      
       <div class="d-flex justify-content-center mt-3">
         <pagination-controls (pageChange)="p = $event"></pagination-controls>
       </div>

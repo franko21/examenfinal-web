@@ -252,15 +252,15 @@ export class PrestamoComponent {
   }
   generatePDF(prestamo: Prestamo) {
     const doc = new jsPDF();
-    const imageWidth = 90;
+    const imageWidth = 110;
     const imageHeight = 40;
-    const imageURL = '../../../assets/images/jedanklogofondoo.jpg';
+    const imageURL = '../../../assets/images/jedanlogofondo.png';
 
     // Agregar imagen de encabezado
-    doc.addImage(imageURL, 'JPEG', 20, 8, imageWidth, imageHeight);
+    doc.addImage(imageURL, 'PNG', 8, 8, imageWidth, imageHeight);
 
     // Configurar estilos y posiciones iniciales
-    const textX = 20 + imageWidth + 10;
+    const textX = 10 + imageWidth ;
     const textY = 11;
     const titleY = imageHeight + 20;
     const tableStartY = titleY + 20;
@@ -352,7 +352,7 @@ export class PrestamoComponent {
         textColor: '#000000' // Color de texto del cuerpo de la tabla
       },
       alternateRowStyles: { fillColor: '#e0e0e0' }, // Color de fondo de filas alternas
-      startY: tableStartY,
+      startY: tableStartY-10,
       margin: { top: 10 }
     });
 
@@ -607,7 +607,7 @@ formatDateForInput(date: any): string {
       prestamo.motivo_prestamo=formValues.motivo;
       // prestamo.usuario.id_usuario=this.idusu;
       prestamo.fecha_prestamo=fecha;
-      prestamo.usuario = new Usuario();
+      //prestamo.usuario = new Usuario();
       this.prestamoService.crearPrestamo(prestamo).subscribe({
         next:(userData)=>{
           console.log('Datos de prestamo recibidos:', userData);

@@ -116,36 +116,42 @@
         <input type="text" placeholder="Buscar..." [(ngModel)]="searchText" class="form-control search-input" />
         <svg class="search-icon" cIcon name="cilMagnifyingGlass"></svg>
       </div>
-      <table class="table table-bordered table-striped">
-        <thead>
-        <tr>
-          <th>Cedula</th>
-          <th>Nombre</th>
-          <th>Apellido</th>
-          <th>Rol</th>
-          <th>Fecha Registro</th>
-          <th>Editar</th>
-          <th>Eliminar</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr *ngFor="let persona of filteredPersonas()  | paginate: { itemsPerPage: 5, currentPage: p }; let i = index">
-          <td>{{ persona.cedula }}</td>
-          <td>{{persona.nombre}}</td>
-          <td>{{ persona.apellido }}</td>
-          <td>{{ persona.rol.rol}}</td>
-          <td>
-            {{ persona.fecha_registro ? persona.fecha_registro.toString().split("T")[0] : 'NA' }}
-          </td>
-          <td>
-            <button type="button" name="button" (click)="edit(i)" class="btn btn-primary"><svg cIcon name="cilPencil" size="lg"></svg></button>
-          </td>
-          <td>
-            <button type="button" (click)="eliminarPersona(persona.id_persona)" class="btn btn-danger"><svg cIcon name="cilTrash" size="lg"></svg></button>
-          </td>
-        </tr>
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped w-100">
+          <thead>
+            <tr>
+              <th>Cedula</th>
+              <th>Nombre</th>
+              <th>Apellido</th>
+              <th>Rol</th>
+              <th>Fecha Registro</th>
+              <th>Editar</th>
+              <th>Eliminar</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let persona of filteredPersonas() | paginate: { itemsPerPage: 5, currentPage: p }; let i = index">
+              <td>{{ persona.cedula }}</td>
+              <td>{{ persona.nombre }}</td>
+              <td>{{ persona.apellido }}</td>
+              <td>{{ persona.rol.rol }}</td>
+              <td>
+                {{ persona.fecha_registro ? persona.fecha_registro.toString().split("T")[0] : 'NA' }}
+              </td>
+              <td>
+                <button type="button" name="button" (click)="edit(i)" class="btn btn-primary">
+                  <svg cIcon name="cilPencil" size="lg"></svg>
+                </button>
+              </td>
+              <td>
+                <button type="button" (click)="eliminarPersona(persona.id_persona)" class="btn btn-danger">
+                  <svg cIcon name="cilTrash" size="lg"></svg>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <div class="d-flex justify-content-center mt-3">
         <pagination-controls (pageChange)="p = $event"></pagination-controls>
       </div>
