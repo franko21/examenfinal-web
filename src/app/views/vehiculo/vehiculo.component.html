@@ -1,0 +1,38 @@
+<div class="container">
+  <div class="form-container">
+    <form [formGroup]="vehiculoForm" (ngSubmit)="onSubmit()">
+      <h2>{{ isEditing ? 'Editar Vehículo' : 'Crear Vehículo' }}</h2>
+      <div class="form-group">
+        <label for="modelo">Modelo:</label>
+        <input id="modelo" formControlName="modelo" type="text" placeholder="Modelo" required>
+      </div>
+      <div class="form-group">
+        <label for="anio">Año:</label>
+        <input id="anio" formControlName="anio" type="text" placeholder="Año" required>
+      </div>
+      <div class="form-group">
+        <label for="precio">Precio:</label>
+        <input id="precio" formControlName="precio" type="number" placeholder="Precio" required>
+      </div>
+      <div class="form-group">
+        <label for="descripcion">Descripción:</label>
+        <textarea id="descripcion" formControlName="descripcion" placeholder="Descripción"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="estado">Estado:</label>
+        <input id="estado" formControlName="estado" type="text" placeholder="Estado" required>
+      </div>
+      <button type="submit" class="btn-submit">{{ isEditing ? 'Actualizar Vehículo' : 'Crear Vehículo' }}</button>
+    </form>
+  </div>
+
+  <div class="list-container">
+    <h2>Lista de Vehículos</h2>
+    <div *ngFor="let vehiculo of vehiculos" class="vehiculo-item">
+      <p><strong>Modelo:</strong> {{ vehiculo.modelo }} <strong>Año:</strong> {{ vehiculo.anio }} <strong>Precio:</strong> ${{ vehiculo.precio }}</p>
+      <p><strong>Descripción:</strong> {{ vehiculo.descripcion }} <strong>Estado:</strong> {{ vehiculo.estado }}</p>
+      <button (click)="editVehiculo(vehiculo)" class="btn-edit">Editar</button>
+      <button (click)="deleteVehiculo(vehiculo.id)" class="btn-delete">Eliminar</button>
+    </div>
+  </div>
+</div>

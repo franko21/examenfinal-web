@@ -3,7 +3,7 @@ FROM node:lts-bullseye as build
 WORKDIR /app
 # se cambia el jar del microservicio a imagen
 COPY package*.json ./
-RUN npm ci
+RUN npm install --force
 COPY . .
 RUN npm run build
 

@@ -1,0 +1,24 @@
+<div class="container">
+  <div class="search-container">
+    <h2>Buscar Vehículos</h2>
+    <form (ngSubmit)="applyFilters()">
+      <div class="search-group">
+        <label for="search">Buscar:</label>
+        <input id="search" [(ngModel)]="searchTerm" name="search" placeholder="Buscar por modelo, año, precio, descripción o estado">
+        <button type="submit" class="btn-search">Buscar</button>
+      </div>
+    </form>
+    <button (click)="printPDF()" class="btn-print">Imprimir PDF</button>
+  </div>
+
+  <div class="list-container">
+    <h2>Lista de Vehículos</h2>
+    <div *ngIf="vehiculos.length === 0" class="no-results">
+      <p>No se encontraron vehículos.</p>
+    </div>
+    <div *ngFor="let vehiculo of filteredVehiculos" class="vehiculo-item">
+      <p><strong>Modelo:</strong> {{ vehiculo.modelo }} <strong>Año:</strong> {{ vehiculo.anio }} <strong>Precio:</strong> ${{ vehiculo.precio }}</p>
+      <p><strong>Descripción:</strong> {{ vehiculo.descripcion }} <strong>Estado:</strong> {{ vehiculo.estado }}</p>
+    </div>
+  </div>
+</div>

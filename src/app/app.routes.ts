@@ -11,48 +11,29 @@ export const routes: Routes = [
   {
     path: '',
     component: DefaultLayoutComponent,
-    canActivate: [authGuard],
     data: {
       title: 'Home'
     },
     children: [
+
+
       {
-        path: 'monitoreo',
-        loadChildren: () => import('./views/monitoreo/routes').then((m) => m.routes),
-      },
-      {
-        path: 'perfil',
-        loadChildren: () => import('./views/perfil/routes').then((m) => m.routes),
-      },
-      {
-        path: 'prestamo',
-        loadChildren: () => import('./views/prestamo/routes').then((m) => m.routes),
+        path: 'marca',
+        loadChildren: () => import('./views/marca/routes').then((m) => m.routes),
 
       },
       {
-        path: 'nosotros',
-        loadChildren: () => import('./views/nosotros/routes').then((m) => m.routes),
+        path: 'vehiculo',
+        loadChildren: () => import('./views/vehiculo/routes').then((m) => m.routes)
       },
+
       {
-        path: 'alerta',
-        loadChildren: () => import('./views/alerta/routes').then((m) => m.routes),
+        path: 'inventario',
+        loadChildren: () => import('./views/inventario/routes').then((m) => m.routes)
       },
-       { path: 'dispositivo',
-        loadChildren: () => import('./views/dispositivo/dispositivo.routes').then((m) => m.routes),
 
 
-      },
-      { path: 'clientes',
-        loadChildren: () => import('./views/clientes/routes').then((m) => m.routes),
-
-
-      },
       //NO TOCAR MAPA
-      {
-        path: 'mapas',
-        loadChildren: () => import('./views/mapas/routes').then((m) => m.routes),
-
-      }
     ]
   },
   {
@@ -76,13 +57,7 @@ export const routes: Routes = [
       title: 'Login Page'
     }
   },
-  {
-    path: 'register',
-    loadComponent: () => import('./views/pages/register/register.component').then(m => m.RegisterComponent),
-    data: {
-      title: 'Register Page'
-    }
-  },
+
   // {
   //   path: 'prestamo',
   //   loadComponent: () => import('./views/prestamo/prestamo.component').then(m => m.PrestamoComponent), // Añadir esta línea

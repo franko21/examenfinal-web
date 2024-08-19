@@ -39,7 +39,7 @@ import {ToastSampleIconComponent} from "../../notifications/toasters/toast-simpl
     styleUrls: ['./login.component.scss'],
     standalone: true,
     imports: [ContainerComponent, RowComponent, ColComponent, CardGroupComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, IconDirective, FormControlDirective, ButtonDirective, NgStyle, ReactiveFormsModule, HttpClientModule, NgIf,ToasterComponent, ToastComponent, ToastHeaderComponent, ToastBodyComponent, ProgressBarDirective, ProgressComponent, ProgressBarComponent, ButtonDirective],
-    providers: [LoginService]
+    providers: [LoginService,Router]
 })
 export class LoginComponent {
   position = 'middle-center';
@@ -75,24 +75,48 @@ export class LoginComponent {
     const formValues = this.loginForm.value;
     const loginRequest = formValues as LoginRequest;
     if(this.loginForm.valid) {
-      this.loginService.login(loginRequest).subscribe({
-      next: (userData) => {
-          if (userData==null){
-            this.toggleToast();
+      this.router.navigate(['/marca']);
 
-          }
-      },
-      error: (errorData) => {
-          console.error('Error al iniciar sesión:', errorData);
-          this.toggleToast();
-      },
-      complete: () => {
-          this.loginForm.reset();
+      sessionStorage.setItem("token", "aasa");
+      //   this.loginService.getLogin(formValues.username,formValues.password).subscribe({
+      //     next: (userData) => {
+      //
+      //       if (userData==null){
+      //         this.toggleToast();
+      //
+      //       }
+      //     },
+      //     error: (errorData) => {
+      //       console.error('Error al iniciar sesión:', errorData);
+      //       this.toggleToast();
+      //     },
+      //     complete: () => {
+      //       this.loginForm.reset();
+      //     }
+      //   });}else{
+      //   this.markFormGroupTouched(this.loginForm);
+      //
+      // }
+      //     this.loginService.login(loginRequest).subscribe({
+      //     next: (userData) => {
+      //         if (userData==null){
+      //           this.toggleToast();
+      //
+      //         }
+      //     },
+      //     error: (errorData) => {
+      //         console.error('Error al iniciar sesión:', errorData);
+      //         this.toggleToast();
+      //     },
+      //     complete: () => {
+      //         this.loginForm.reset();
+      //     }
+      // });}else{
+      //     this.markFormGroupTouched(this.loginForm);
+      //
+      //   }
+    //}
       }
-  });}else{
-      this.markFormGroupTouched(this.loginForm);
-
-    }
   }
   register(){
     this.router.navigate(['/register']);

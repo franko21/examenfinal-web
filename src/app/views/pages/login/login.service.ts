@@ -28,17 +28,18 @@ export class LoginService {
         this.currentUserData.next(token);
     }
   }
-
+  getLogin(username: any,clave:any):Observable< boolean >{
+    return this.http.get<boolean>(`${environment.urlHost}api/admin/${username}/${clave}`).pipe(
+      catchError(this.handleError)
+    );
+  }
   login(credentials: LoginRequest): Observable<any> {
     return this.http.post<any>(environment.urlHost + "auth/v1/signin", credentials).pipe(
         tap((userData) => {
             if (userData!==null && userData.token) {
                 console.log("Datos de usuario recibidos:", userData);
                 sessionStorage.setItem("token", userData.token);
-                sessionStorage.setItem("cedula", userData.usuario.persona.cedula);
-                sessionStorage.setItem("nombre", userData.usuario.persona.nombre);
-                sessionStorage.setItem("apellido", userData.usuario.persona.apellido);
-                sessionStorage.setItem("usuario", userData.usuario.username);
+
                 this.currentUserData.next(userData.token);
                 console.log("Token de sesión almacenado:", userData.token);
                 console.log(userData.usuario);

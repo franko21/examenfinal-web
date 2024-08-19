@@ -21,7 +21,6 @@ import { LoginService } from 'src/app/views/pages/login/login.service';
 import { HttpClientModule } from '@angular/common/http';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { authGuard } from 'src/app/auth.guard';
-import { PersonaService } from 'src/app/service/persona.service';
 import { LoginComponent } from 'src/app/views/pages/login/login.component';
 
 function isOverflown(element: HTMLElement) {

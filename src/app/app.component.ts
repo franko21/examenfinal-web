@@ -12,7 +12,7 @@ import { iconSubset } from './icons/icon-subset';
   imports: [RouterOutlet]
 })
 export class AppComponent implements OnInit {
-  title = 'JEDANK Sitema de Monitero';
+  title = 'URGENTITO';
 
   constructor(
     private router: Router,

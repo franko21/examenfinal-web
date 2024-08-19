@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  apiAutos:
+    image: franko21/api_spring
+    container_name: api_spring
+    networks:
+      - net-cloud
+    depends_on:
+      - mysql
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/examenfinal
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop
+      - SPRING_JPA_SHOW_SQL=false
+      - SPRING_DATASOURCE_CACHEPREPSTMTS=false
+    ports:
+      - 9094:8080
+    restart: always
+
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    networks:
+      - net-cloud
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_DATABASE=examenfinal
+      - MYSQL_ROOT_PASSWORD=
+    volumes:
+      - mysql-data:/var/lib/mysql
+    restart: always
+
+  webAutos:
+    image: franko21/web_autos
+    container_name: web_autos
+    networks:
+      - net-cloud
+    ports:
+      - 9096:80
+    depends_on:
+      - apiAutos
+    restart: always
+
+networks:
+  net-cloud:
+
+volumes:
+  mysql-data:

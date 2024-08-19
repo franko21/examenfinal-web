@@ -1,0 +1,75 @@
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.search-container {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+h2 {
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.search-group {
+  display: flex;
+  align-items: center;
+}
+
+label {
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.btn-search, .btn-print {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 10px;
+  font-size: 1rem;
+}
+
+.btn-search:hover, .btn-print:hover {
+  background-color: #0056b3;
+}
+
+.list-container {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.vehiculo-item {
+  border-bottom: 1px solid #ddd;
+  padding: 10px 0;
+}
+
+.vehiculo-item:last-child {
+  border-bottom: none;
+}
+
+.no-results {
+  text-align: center;
+  padding: 20px;
+  font-size: 1.2rem;
+  color: #888;
+}
